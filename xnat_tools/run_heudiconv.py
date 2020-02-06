@@ -5,8 +5,8 @@ import subprocess
 import sys
 import argparse
 import shlex
-from xnat_utils import *
-from bids_utils import *
+from xnat_tools.xnat_utils import *
+from xnat_tools.bids_utils import *
 
 
 def parse_args(args):

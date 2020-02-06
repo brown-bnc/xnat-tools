@@ -18,8 +18,8 @@ import sys
 import tempfile
 
 
-from bids_utils import *
-from xnat_utils import *
+from xnat_tools.bids_utils import *
+from xnat_tools.xnat_utils import *
 
 
 _logger = logging.getLogger(__name__)

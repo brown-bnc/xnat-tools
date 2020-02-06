@@ -3,7 +3,7 @@ import os
 import collections
 import six
 from six.moves import zip
-from xnat_utils import get, download
+from xnat_tools.xnat_utils import get, download
 
 def prepare_bids_prefixes(project, subject, session):
     #get PI from project name
