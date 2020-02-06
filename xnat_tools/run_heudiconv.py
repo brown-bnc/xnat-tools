@@ -99,7 +99,7 @@ def main(args):
 
     heudi_cmd = f"heudiconv -f reproin --bids \
     -o {heudi_output_dir} \
-    --dicom_dir_template /data/xnat/bids-export/{pi_prefix}/{study_prefix}/xnat-export/sub-{{subject}}/ses-{{session}}/*/*.dcm \
+    --dicom_dir_template {bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/sub-{{subject}}/ses-{{session}}/*/*.dcm \
     --subjects {subject_prefix} --ses {session_prefix}"
 
     heudi_split_cmd = shlex.split( heudi_cmd)
