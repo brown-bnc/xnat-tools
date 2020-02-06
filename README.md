@@ -3,7 +3,23 @@
 XNAT tools maintained by the Behavioral Neuroimaging Center for the Brown University MRI users
 
 ## XNAT2BIDS
-This python package provides scripts that facilitates exporting data from XNAT to BIDS format following these steps:
+This python package provides scripts that facilitates exporting data from XNAT to BIDS format.
+
+### Installation:
+
+We first need to install the dcm2niix dependency
+
+```
+brew install dcm2niix
+```
+
+
+### Running via poetry
+```
+poetry run xnat-dicom-export  --session XNAT_DEV_E00009 --host http://bnc.brown.edu/xnat-dev --user admin --pass admin --bids_root_dir "/Users/mrestrep/data/bids-export"
+```
+
+ following these steps:
 
 1. Export to a heudiconv friendly directory structure. We follow the structure sugegsted by [this ReproIn guide](https://github.com/ReproNim/reproin), enabling us to use their heuristic. Also, note that the given command exports to path /data/xnat/bids-export. We mount this path to our XNAT instance. This step is encapsulated in `src/dicom_export.py`
 2. We run Heudiconv using ReproIn heuristic. This step is encapsulated in `src/run_heudiconv.py`
