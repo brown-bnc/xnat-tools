@@ -1,14 +1,4 @@
 '''
-Filename: xnat2bids-heudiconv/dicom_simlink_dump.py
-Created Date: Friday, December 6th 2019, 2:28:10 pm
-Author: Isabel Restrepo
-
-Export XNAT DICOM SCANS as symlinks to the Resources folder for BIDS
-
-Copyright (c) 2019 Brown University
-'''
-
-'''
 Filename: /dicom2bids.py
 Path: xnat-dicom2bids-session
 Created Date: Monday, August 26th 2019, 10:12:40 am
@@ -95,7 +85,6 @@ def parse_args(args):
     return parser.parse_args(args)
 
     
-
 def main(args):
     """Main entry point allowing external calls
 
