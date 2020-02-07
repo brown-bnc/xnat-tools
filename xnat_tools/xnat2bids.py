@@ -1,7 +1,7 @@
 import sys
 import argparse
-import dicom_export
-import run_heudiconv
+import xnat_tools.dicom_export as dicom_export
+import xnat_tools.run_heudiconv as run_heudiconv
 
 
 def parse_args(args):
