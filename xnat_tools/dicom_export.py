@@ -76,6 +76,11 @@ def parse_args(args):
         "--bids_root_dir",
         help="Root output directory for BIDS files",
         required=True)
+    parser.add_argument(
+        "--bidsmap_file",
+        help="Bidsmap JSON file to correct sequence names",
+        required=False,
+        default="")
     # parser.add_argument("--overwrite", help="Overwrite NIFTI files if they exist")
     parser.add_argument(
         '--version',
@@ -97,6 +102,7 @@ def main(args):
     session = args.session
     subject = args.subject
     project = args.project
+    bidsmap_fie = atgs.bidsmap_fie
     # overwrite = isTrue(args.overwrite)
     # dicomdir = args.dicomdir
     bids_root_dir = args.bids_root_dir
@@ -123,7 +129,7 @@ def main(args):
     bids_session_dir = prepare_bids_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
     
     # Prepare files for heudiconv
-    bidsnamemap = populate_bidsmap(connection, host, project, seriesDescList)
+    bidsnamemap = populate_bidsmap(bidsnamemap, seriesDescList)
     assign_bids_name(connection, host, subject, session, scanIDList, seriesDescList, build_dir, bids_session_dir, bidsnamemap)
 
 

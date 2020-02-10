@@ -35,8 +35,8 @@ def prepare_heudi_prefixes(project, subject, session):
 
      # Paths to export source data in a BIDS friendly way
     study_prefix = "study-" + project.lower().split('_')[1]
-    subject_prefix = subject.lower()
-    session_prefix = session.lower()
+    subject_prefix = subject.lower().replace("_","-")
+    session_prefix = session.lower().replace("_","-")
 
     return pi_prefix, study_prefix, subject_prefix, session_prefix
 
@@ -52,35 +52,22 @@ def prepare_heudiconv_output_path(bids_root_dir, pi_prefix, study_prefix, subjec
 
     return heudi_output_dir
 
-def populate_bidsmap(connection, host, project, seriesDescList):
+def populate_bidsmap(bidsmap_file, seriesDescList):
     # Read bids map from input config
     bidsmaplist = []
 
-    print("Get project BIDS map if one exists")
-    # We don't use the convenience get() method because that throws exceptions when the object is not found.
-    r = connection.get(host + "/data/projects/%s/resources/config/files/bidsmap.json" % project, params={"contents": True})
-    if r.ok:
-        bidsmaptoadd = r.json()
-        print("BIDS bidsmaptoadd: ",  bidsmaptoadd)
-        for mapentry in bidsmaptoadd:
-            if mapentry not in bidsmaplist:
-                bidsmaplist.append(mapentry)
-    else:
-        print("Could not read project BIDS map")
+    print("Read bidsmap file if one exists")
+    
+    if bidsmap_file ! = " ":
+        with open(bidsmap_file) as json_file:
+            bidsmaptoadd = json.load(json_file)
+            print("BIDS bidsmaptoadd: ",  bidsmaptoadd)
+            for mapentry in bidsmaptoadd:
+                if mapentry not in bidsmaplist:
+                    bidsmaplist.append(mapentry)
+        else:
+            print("Could not read bidsmap json file")
 
-
-    # Get site-level configs
-    print("Get Site BIDS map ")
-    # We don't use the convenience get() method because that throws exceptions when the object is not found.
-    r = connection.get(host + "/data/config/bids/bidsmap", params={"contents": True})
-    if r.ok:
-        bidsmaptoadd = r.json()
-        print("BIDS bidsmaptoadd: ",  bidsmaptoadd)
-        for mapentry in bidsmaptoadd:
-            if mapentry not in bidsmaplist:
-                bidsmaplist.append(mapentry)
-    else:
-        print("Could not read site-wide BIDS map")
 
     print("BIDS bidsmaplist: ", json.dumps(bidsmaplist))
 
@@ -115,12 +102,15 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
         print('Assigning BIDS name for scan %s.' % scanid)
 
         #We use the bidsmap to correct miss-labeled series at the scanner.
-        #otherwise we assume decription is correct and let heudiconv tdo the work
+        #otherwise we assume decription is correct and let heudiconv do the work
         if seriesdesc.lower() not in bidsnamemap:
             print("Series " + seriesdesc + " not found in BIDSMAP")
             # bidsname = "Z"
             # continue  # Exclude series from processing
             match = seriesdesc.lower()
+            # T1W and T2W need to be upper case
+            match.replace("t1w", "T1w")
+            match.replace("t2w", "T2w")
         else:
             print("Series " + seriesdesc + " matched " + bidsnamemap[seriesdesc.lower()])
             match = bidsnamemap[seriesdesc.lower()]

@@ -48,6 +48,11 @@ def parse_args(args):
         '--version',
         action='version',
         version='%(prog)s 1')
+    parser.add_argument(
+        "--bidsmap_file",
+        help="Bidsmap JSON file to correct sequence names",
+        required=False,
+        default="")
 
     return parser.parse_args(args)
 

@@ -5,6 +5,7 @@ import subprocess
 import sys
 import argparse
 import shlex
+from pathlib import Path
 from xnat_tools.xnat_utils import *
 from xnat_tools.bids_utils import *
 
@@ -53,6 +54,11 @@ def parse_args(args):
         '--version',
         action='version',
         version='%(prog)s 1')
+    parser.add_argument(
+        "--bidsmap_file",
+        help="Bidsmap JSON file to correct sequence names",
+        required=False,
+        default="")
 
     return parser.parse_args(args)
 
@@ -94,8 +100,8 @@ def main(args):
     heudi_output_dir = prepare_heudiconv_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
     
 
-    stdout_file = open(heudi_output_dir + "/heudiconv_stdout.log", 'a')
-    stderr_file = open(heudi_output_dir + "/heudiconv_stderr.log", 'a') 
+    stdout_file = open(Path(heudi_output_dir).parent + "/heudiconv_stdout.log", 'a')
+    stderr_file = open(Path(heudi_output_dir).parent + "/heudiconv_stderr.log", 'a') 
 
     heudi_cmd = f"heudiconv -f reproin --bids \
     -o {heudi_output_dir} \
