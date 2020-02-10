@@ -102,7 +102,7 @@ def main(args):
     session = args.session
     subject = args.subject
     project = args.project
-    bidsmap_fie = atgs.bidsmap_fie
+    bidsmap_file = args.bidsmap_file
     # overwrite = isTrue(args.overwrite)
     # dicomdir = args.dicomdir
     bids_root_dir = args.bids_root_dir
@@ -129,7 +129,7 @@ def main(args):
     bids_session_dir = prepare_bids_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
     
     # Prepare files for heudiconv
-    bidsnamemap = populate_bidsmap(bidsnamemap, seriesDescList)
+    bidsnamemap = populate_bidsmap(bidsmap_file, seriesDescList)
     assign_bids_name(connection, host, subject, session, scanIDList, seriesDescList, build_dir, bids_session_dir, bidsnamemap)
 
 

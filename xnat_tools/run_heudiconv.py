@@ -100,8 +100,8 @@ def main(args):
     heudi_output_dir = prepare_heudiconv_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
     
 
-    stdout_file = open(Path(heudi_output_dir).parent + "/heudiconv_stdout.log", 'a')
-    stderr_file = open(Path(heudi_output_dir).parent + "/heudiconv_stderr.log", 'a') 
+    stdout_file = open(str(Path(heudi_output_dir).parent) + "/heudiconv_stdout.log", 'a')
+    stderr_file = open(str(Path(heudi_output_dir).parent) + "/heudiconv_stderr.log", 'a') 
 
     heudi_cmd = f"heudiconv -f reproin --bids \
     -o {heudi_output_dir} \

@@ -58,15 +58,13 @@ def populate_bidsmap(bidsmap_file, seriesDescList):
 
     print("Read bidsmap file if one exists")
     
-    if bidsmap_file ! = " ":
+    if os.path.exists(bidsmap_file):
         with open(bidsmap_file) as json_file:
             bidsmaptoadd = json.load(json_file)
             print("BIDS bidsmaptoadd: ",  bidsmaptoadd)
             for mapentry in bidsmaptoadd:
                 if mapentry not in bidsmaplist:
                     bidsmaplist.append(mapentry)
-        else:
-            print("Could not read bidsmap json file")
 
 
     print("BIDS bidsmaplist: ", json.dumps(bidsmaplist))
