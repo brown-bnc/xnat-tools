@@ -11,8 +11,8 @@ def prepare_bids_prefixes(project, subject, session):
 
      # Paths to export source data in a BIDS friendly way
     study_prefix = "study-" + project.lower().split('_')[1]
-    subject_prefix = "sub-" + subject.lower()
-    session_prefix = "ses-"+ session.lower()
+    subject_prefix = "sub-" + subject.lower().replace("_","-")
+    session_prefix = "ses-"+ session.lower().replace("_","-")
 
     return pi_prefix, study_prefix, subject_prefix, session_prefix
 
