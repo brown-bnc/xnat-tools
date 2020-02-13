@@ -83,6 +83,19 @@ def populate_bidsmap(bidsmap_file, seriesDescList):
 
     return bidsnamemap
 
+def handle_scanner_exceptions(match):
+    # T1W and T2W need to be upper case
+    match = match.replace("t1w", "T1w")
+    match = match.replace("t2w", "T2w")
+
+    # Handle the aascout planes
+    match = match.replace("_mpr_sag", "-mpr-sag")
+    match = match.replace("_mpr_cor", "-mpr-cor")
+    match = match.replace("_mpr_tra", "-mpr-tra") 
+
+    # Handle the mprage rms
+    match = match.replace(" rms", "-rms")
+
 def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescList, build_dir, bids_session_dir, bidsnamemap):
     """
         subject: Subject to process
@@ -106,13 +119,12 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
             # bidsname = "Z"
             # continue  # Exclude series from processing
             match = seriesdesc.lower()
-            # T1W and T2W need to be upper case
-            match.replace("t1w", "T1w")
-            match.replace("t2w", "T2w")
+
         else:
             print("Series " + seriesdesc + " matched " + bidsnamemap[seriesdesc.lower()])
             match = bidsnamemap[seriesdesc.lower()]
 
+        match = handle_scanner_exceptions(match)
         bidsname = match
 
         # Get scan resources

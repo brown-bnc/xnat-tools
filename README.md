@@ -24,6 +24,16 @@ The command performs thevfollowing steps:
 1. Export to a heudiconv friendly directory structure. We follow the structure sugegsted by [this ReproIn guide](https://github.com/ReproNim/reproin), enabling us to use their heuristic. Also, note that the given command exports to path /data/xnat/bids-export. We mount this path to our XNAT instance. This step is encapsulated in `src/dicom_export.py`
 2. We run Heudiconv using ReproIn heuristic. This step is encapsulated in `src/run_heudiconv.py`
 
+If you'd like to run those steps separatly, you can do 
+
+```
+poetry run xnat-dicom-export --session XNAT_DEV_E00009 --host http://bnc.brown.edu/xnat-dev --user <user> --pass <password> --bids_root_dir "~/data/bids-export"
+```
+
+```
+poetry run xnat-heudiconv --session XNAT_DEV_E00009 --host http://bnc.brown.edu/xnat-dev --user <user> --pass <password> --bids_root_dir "~/data/bids-export"
+```
+
 ## Testing in remote ( Developers)
 
 In remote

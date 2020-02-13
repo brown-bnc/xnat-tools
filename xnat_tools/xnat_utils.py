@@ -19,11 +19,11 @@ def get(connection, url, **kwargs):
 
 def download(connection, name, pathDict):
     if os.access(pathDict['absolutePath'], os.R_OK):
-        print("We have local OS access")
+        # print("We have local OS access")
         fileCopy(pathDict['absolutePath'], name)
         print('Copied %s.' % pathDict['absolutePath'])
     else:
-        print('No accesess to local os %s.' % pathDict['absolutePath'])
+        # print('No accesess to local os %s.' % pathDict['absolutePath'])
         with open(name, 'wb') as f:
             r = get(connection, pathDict['URI'], stream=True)
 
