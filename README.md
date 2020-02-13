@@ -7,7 +7,7 @@ This python package provides scripts that facilitates exporting data from XNAT t
 
 ### Installation:
 
-We first need to install the dcm2niix dependency
+We first need to install the dcm2niix . This is a dependency of Heudiconv, that doesn't get installed by Heudiconv itself
 
 ```
 brew install dcm2niix
@@ -16,10 +16,10 @@ brew install dcm2niix
 
 ### Running via poetry
 ```
-poetry run xnat-dicom-export  --session XNAT_DEV_E00009 --host http://bnc.brown.edu/xnat-dev --user admin --pass admin --bids_root_dir "/Users/mrestrep/data/bids-export"
+poetry run xnat2bids --session XNAT_DEV_E00009 --host http://bnc.brown.edu/xnat-dev --user <user> --pass <password> --bids_root_dir "~/data/bids-export"
 ```
 
- following these steps:
+The command performs thevfollowing steps:
 
 1. Export to a heudiconv friendly directory structure. We follow the structure sugegsted by [this ReproIn guide](https://github.com/ReproNim/reproin), enabling us to use their heuristic. Also, note that the given command exports to path /data/xnat/bids-export. We mount this path to our XNAT instance. This step is encapsulated in `src/dicom_export.py`
 2. We run Heudiconv using ReproIn heuristic. This step is encapsulated in `src/run_heudiconv.py`
@@ -61,8 +61,6 @@ docker run --rm -it --entrypoint /bin/bash \
            -v /Users/mrestrep/data/bids-export/:/data/xnat/bids-export \
            --name xnat2bids-heudiconv brownbnc/xnat2bids-heudiconv:v0.1.0 
 
-./xnat_command.sh XNAT_DEV_E00009 http://bnc.brown.edu/xnat-dev admin admin
-python run_heudiconv.py --session XNAT_DEV_E00009 --host http://bnc.brown.edu/xnat-dev --user admin --pass admin --bids_root_dir /data/xnat/bids-export
 ```
 
 ### Using singularity
@@ -72,7 +70,6 @@ singularity build xnat2bids-heudiconv-v0.1.0.simg docker://brownbnc/xnat2bids-he
 
 singularity shell -B /users/mrestrep/data/mrestrep/bids-export/:/data/xnat/bids-export xnat2bids-heudiconv-v0.1.0.simg
 
-./xnat_command.sh XNAT_DEV_E00009 http://bnc.brown.edu/xnat-dev admin admin
 ```
 
 
@@ -82,10 +79,8 @@ singularity shell -B /users/mrestrep/data/mrestrep/bids-export/:/data/xnat/bids-
 ```
 python dicom_export.py --host http://bnc.brown.edu/xnat-dev --user <user> --password <pass> --subject BIDSTEST --session XNAT_DEV_E00009 --project SANES_SADLUM --bids_root_dir "/data/xnat-dev/bids-export"
 ```
-#### Convert to BIDS
+#### Convert to BIDS using Heudiconv
 
-
-#### Leverage XNAT values 
 ```
 python run_heudiconv.py --host http://bnc.brown.edu/xnat-dev --user <user> --password <pass> --subject BIDSTEST --session XNAT_DEV_E00009 --project SANES_SADLUM --bids_root_dir "/data/xnat/bids-export"
 ```
