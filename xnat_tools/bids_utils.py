@@ -2,6 +2,7 @@ import json
 import os
 import collections
 import six
+import pydicom
 from six.moves import zip
 from xnat_tools.xnat_utils import get, download
 
@@ -11,8 +12,8 @@ def prepare_bids_prefixes(project, subject, session):
 
      # Paths to export source data in a BIDS friendly way
     study_prefix = "study-" + project.lower().split('_')[1]
-    subject_prefix = "sub-" + subject.lower().replace("_","-")
-    session_prefix = "ses-"+ session.lower().replace("_","-")
+    subject_prefix = "sub-" + subject.lower().replace("_","")
+    session_prefix = "ses-"+ session.lower().replace("_","")
 
     return pi_prefix, study_prefix, subject_prefix, session_prefix
 
@@ -35,8 +36,8 @@ def prepare_heudi_prefixes(project, subject, session):
 
      # Paths to export source data in a BIDS friendly way
     study_prefix = "study-" + project.lower().split('_')[1]
-    subject_prefix = subject.lower().replace("_","-")
-    session_prefix = session.lower().replace("_","-")
+    subject_prefix = subject.lower().replace("_","")
+    session_prefix = session.lower().replace("_","")
 
     return pi_prefix, study_prefix, subject_prefix, session_prefix
 
@@ -122,6 +123,18 @@ def detect_multiple_runs(seriesDescList):
 
     return seriesDescList
 
+def bidsify_dicom_headers(filename, protocol_name):
+
+    dataset = pydicom.dcmread(filename)
+
+    if 'ProtocolName' in dataset:
+        if dataset.data_element('ProtocolName') != protocol_name:
+            dataset.data_element('ProtocolName').value = protocol_name
+            dataset.data_element('StudyDescription').value = protocol_name
+            
+    dataset.save_as(filename)
+
+
 def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescList, build_dir, bids_session_dir, bidsnamemap):
     """
         subject: Subject to process
@@ -135,7 +148,7 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
     seriesDescList = detect_multiple_runs(seriesDescList)
 
     # Cheat and reverse scanid and seriesdesc lists so numbering is in the right order
-    for scanid, seriesdesc in zip(reversed(scanIDList), reversed(seriesDescList)):
+    for scanid, seriesdesc in zip(reversed(scanIDList[6:7]), reversed(seriesDescList[6:7])):
 
         print(f"Assigning BIDS name for scan {scanid}:{seriesdesc}")
         os.chdir(build_dir)
@@ -154,6 +167,7 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
 
         match = handle_scanner_exceptions(match)
         bidsname = match
+        
 
         print(f"****BIDSNAME*****: {bidsname}")
 
@@ -222,18 +236,17 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
         # Download DICOMs
         print("Downloading files for scan %s." % scanid)
         os.chdir(bids_scan_directory)
-
-        # Check secondary
-        # Download any one DICOM from the series and check its headers
-        # If the headers indicate it is a secondary capture, we will skip this series.
         dicomFileList = list(dicomFileDict.items())
-
         (name, pathDict) = dicomFileList[0]
         download(connection, name, pathDict)
+
+        bidsify_dicom_headers(name, bidsname)
 
         # Download remaining DICOMs
         for name, pathDict in dicomFileList[1:]:
             download(connection, name, pathDict) 
+            bidsify_dicom_headers(name, bidsname)
+
 
         os.chdir(build_dir)
         print('Done downloading for scan %s.' % scanid)
