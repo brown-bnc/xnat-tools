@@ -96,6 +96,32 @@ def handle_scanner_exceptions(match):
     # Handle the mprage rms
     match = match.replace(" rms", "-rms")
 
+    return match
+
+def detect_multiple_runs(seriesDescList):
+    
+    dups = {}
+
+    # Make series descriptions unique by appending _run- to non-unique ones
+    for i, val in enumerate(seriesDescList):
+        if val not in dups:
+            # Store index of first occurrence and occurrence value
+            dups[val] = [i, 1]
+        else:
+            # Special case for first occurrence
+            if dups[val][1] == 1:
+                run_idx = dups[val][1]
+                seriesDescList[dups[val][0]] += f"_run-{run_idx}"
+
+            # Increment occurrence value, index value doesn't matter anymore
+            dups[val][1] += 1
+
+            # Use stored occurrence value
+            run_idx = dups[val][1]
+            seriesDescList[i] += f"_run-{run_idx}"
+
+    return seriesDescList
+
 def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescList, build_dir, bids_session_dir, bidsnamemap):
     """
         subject: Subject to process
@@ -105,12 +131,14 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
         study_bids_dir: BIDS directory to copy simlinks to. Typically the RESOURCES/BIDS
     """
 
+    # Detect duplicate sequences, assume they are runs
+    seriesDescList = detect_multiple_runs(seriesDescList)
+
     # Cheat and reverse scanid and seriesdesc lists so numbering is in the right order
     for scanid, seriesdesc in zip(reversed(scanIDList), reversed(seriesDescList)):
 
-        print('Beginning process for scan %s.' % scanid)
+        print(f"Assigning BIDS name for scan {scanid}:{seriesdesc}")
         os.chdir(build_dir)
-        print('Assigning BIDS name for scan %s.' % scanid)
 
         #We use the bidsmap to correct miss-labeled series at the scanner.
         #otherwise we assume decription is correct and let heudiconv do the work
@@ -121,11 +149,13 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
             match = seriesdesc.lower()
 
         else:
-            print("Series " + seriesdesc + " matched " + bidsnamemap[seriesdesc.lower()])
-            match = bidsnamemap[seriesdesc.lower()]
+            print("Series " + seriesdesc + " matched " + bidsnamemap[seriesdesc])
+            match = bidsnamemap[seriesdesc]
 
         match = handle_scanner_exceptions(match)
         bidsname = match
+
+        print(f"****BIDSNAME*****: {bidsname}")
 
         # Get scan resources
         print("Get scan resources for scan %s." % scanid)
