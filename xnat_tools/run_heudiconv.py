@@ -100,8 +100,8 @@ def main(args):
     heudi_output_dir = prepare_heudiconv_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
     
 
-    stdout_file = open(str(Path(heudi_output_dir).parent) + "/heudiconv_stdout.log", 'a')
-    stderr_file = open(str(Path(heudi_output_dir).parent) + "/heudiconv_stderr.log", 'a') 
+    # stdout_file = open(str(Path(heudi_output_dir).parent) + "/heudiconv_stdout.log", 'a')
+    # stderr_file = open(str(Path(heudi_output_dir).parent) + "/heudiconv_stderr.log", 'a') 
 
     heudi_cmd = f"heudiconv -f reproin --bids \
     -o {heudi_output_dir} \
@@ -112,15 +112,12 @@ def main(args):
     
     print(f"Starting Heudiconv BIDS Convesion. STDOUT AND STDERR live under {heudi_output_dir}/heudiconv_stdout/err.log")
     print(f"Executing Heudiconv command: {heudi_cmd}")
-    process = subprocess.run(heudi_split_cmd, 
-                        stdout = stdout_file,
-                        stderr = stderr_file,
-                        universal_newlines = True)
+    process = subprocess.run(heudi_split_cmd)
 
     print("Done with Heudiconv BIDS Convesion.")
 
-    stdout_file.close()
-    stderr_file.close()
+    # stdout_file.close()
+    # stderr_file.close()
 
 
 def run():

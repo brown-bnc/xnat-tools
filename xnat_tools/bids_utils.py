@@ -128,11 +128,14 @@ def bidsify_dicom_headers(filename, protocol_name):
     dataset = pydicom.dcmread(filename)
 
     if 'ProtocolName' in dataset:
-        if dataset.data_element('ProtocolName') != protocol_name:
+        if dataset.data_element('ProtocolName').value != protocol_name:
+            print("Modifying DICOM Header for ProtocolName from")
+            print(f"{dataset.data_element('ProtocolName').value} to {protocol_name}")
             dataset.data_element('ProtocolName').value = protocol_name
-            dataset.data_element('StudyDescription').value = protocol_name
-            
-    dataset.save_as(filename)
+            print("Modifying DICOM Header for SeriesDescription from")
+            print(f"{dataset.data_element('SeriesDescription').value} to {protocol_name}")
+            dataset.data_element('SeriesDescription').value = protocol_name
+            dataset.save_as(filename)
 
 
 def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescList, build_dir, bids_session_dir, bidsnamemap):
@@ -148,7 +151,7 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
     seriesDescList = detect_multiple_runs(seriesDescList)
 
     # Cheat and reverse scanid and seriesdesc lists so numbering is in the right order
-    for scanid, seriesdesc in zip(reversed(scanIDList[6:7]), reversed(seriesDescList[6:7])):
+    for scanid, seriesdesc in zip(reversed(scanIDList), reversed(seriesDescList)):
 
         print(f"Assigning BIDS name for scan {scanid}:{seriesdesc}")
         os.chdir(build_dir)
