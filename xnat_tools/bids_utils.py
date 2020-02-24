@@ -96,12 +96,12 @@ def handle_scanner_exceptions(match):
     match = match.replace("t2w", "T2w")
 
     # Handle the aascout planes
-    match = match.replace("_mpr_sag", "-mpr-sag")
-    match = match.replace("_mpr_cor", "-mpr-cor")
-    match = match.replace("_mpr_tra", "-mpr-tra") 
+    match = match.replace("_MPR_sag", "MPRsag")
+    match = match.replace("_MPR_cor", "MPRcor")
+    match = match.replace("_MPR_tra", "MPRtra") 
 
     # Handle the mprage rms
-    match = match.replace(" rms", "-rms")
+    match = match.replace(" RMS", "RMS")
 
     return match
 
@@ -135,13 +135,16 @@ def bidsify_dicom_headers(filename, protocol_name):
 
     if 'ProtocolName' in dataset:
         if dataset.data_element('ProtocolName').value != protocol_name:
-            print("Modifying DICOM Header for ProtocolName from")
-            print(f"{dataset.data_element('ProtocolName').value} to {protocol_name}")
+            _logger.info("---------------------------------")
+            _logger.info("Modifying DICOM Header for ProtocolName from")
+            _logger.info(f"{dataset.data_element('ProtocolName').value} to {protocol_name}")
             dataset.data_element('ProtocolName').value = protocol_name
-            print("Modifying DICOM Header for SeriesDescription from")
-            print(f"{dataset.data_element('SeriesDescription').value} to {protocol_name}")
+            _logger.info("Modifying DICOM Header for SeriesDescription from")
+            _logger.info(f"{dataset.data_element('SeriesDescription').value} to {protocol_name}")
             dataset.data_element('SeriesDescription').value = protocol_name
             dataset.save_as(filename)
+            _logger.info("---------------------------------")
+
 
 
 def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescList, build_dir, bids_session_dir, bidsnamemap):
