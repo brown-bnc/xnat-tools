@@ -1,10 +1,13 @@
 import json
 import os
+import logging
 import collections
 import six
 import pydicom
 from six.moves import zip
 from xnat_tools.xnat_utils import get, download
+
+_logger = logging.getLogger(__name__)
 
 def prepare_bids_prefixes(project, subject, session):
     #get PI from project name
@@ -25,7 +28,7 @@ def prepare_bids_output_path(bids_root_dir, pi_prefix, study_prefix, subject_pre
 
     # Set up working directory
     if not os.access(bids_session_dir, os.R_OK):
-        print('Making output BIDS Session directory %s' % bids_study_dir)
+        _logger.info('Making output BIDS Session directory %s' % bids_study_dir)
         os.makedirs(bids_session_dir)
 
     return bids_session_dir
@@ -48,7 +51,7 @@ def prepare_heudiconv_output_path(bids_root_dir, pi_prefix, study_prefix, subjec
 
     # Set up working directory
     if not os.access(heudi_output_dir, os.R_OK):
-        print('Making output BIDS Session directory %s' % heudi_output_dir)
+        _logger.info('Making output BIDS Session directory %s' % heudi_output_dir)
         os.makedirs(heudi_output_dir)
 
     return heudi_output_dir
@@ -57,18 +60,20 @@ def populate_bidsmap(bidsmap_file, seriesDescList):
     # Read bids map from input config
     bidsmaplist = []
 
-    print("Read bidsmap file if one exists")
+    _logger.info("---------------------------------")
+    _logger.info("Read bidsmap file if one exists")
     
     if os.path.exists(bidsmap_file):
         with open(bidsmap_file) as json_file:
             bidsmaptoadd = json.load(json_file)
-            print("BIDS bidsmaptoadd: ",  bidsmaptoadd)
+            _logger.info("BIDS bidsmaptoadd: ",  bidsmaptoadd)
             for mapentry in bidsmaptoadd:
                 if mapentry not in bidsmaplist:
                     bidsmaplist.append(mapentry)
 
 
-    print("BIDS bidsmaplist: ", json.dumps(bidsmaplist))
+    _logger.info("User-provided BIDS-map for renaming sequences:" )
+    _logger.info({json.dumps(bidsmaplist)})
 
     # Collapse human-readable JSON to dict for processing
     bidsnamemap = {x['series_description'].lower(): x['bidsname'] for x in bidsmaplist if 'series_description' in x and 'bidsname' in x}
@@ -81,6 +86,7 @@ def populate_bidsmap(bidsmap_file, seriesDescList):
 
     # Remove multiples
     multiples = {seriesdesc: count for seriesdesc, count in six.viewitems(bidscount) if count > 1}
+    _logger.info("---------------------------------")
 
     return bidsnamemap
 
@@ -153,41 +159,40 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
     # Cheat and reverse scanid and seriesdesc lists so numbering is in the right order
     for scanid, seriesdesc in zip(reversed(scanIDList), reversed(seriesDescList)):
 
-        print(f"Assigning BIDS name for scan {scanid}:{seriesdesc}")
+        _logger.info("---------------------------------")
+
+        _logger.info(f"Assigning BIDS name for scan {scanid}: {seriesdesc}")
         os.chdir(build_dir)
 
         #We use the bidsmap to correct miss-labeled series at the scanner.
         #otherwise we assume decription is correct and let heudiconv do the work
-        if seriesdesc.lower() not in bidsnamemap:
-            print("Series " + seriesdesc + " not found in BIDSMAP")
+        if seriesdesc not in bidsnamemap:
+            _logger.debug("Series " + seriesdesc + " not found in BIDSMAP")
             # bidsname = "Z"
             # continue  # Exclude series from processing
-            match = seriesdesc.lower()
+            match = seriesdesc
 
         else:
-            print("Series " + seriesdesc + " matched " + bidsnamemap[seriesdesc])
+            _logger.debug("Series " + seriesdesc + " matched " + bidsnamemap[seriesdesc])
             match = bidsnamemap[seriesdesc]
 
         match = handle_scanner_exceptions(match)
         bidsname = match
         
 
-        print(f"****BIDSNAME*****: {bidsname}")
-
         # Get scan resources
-        print("Get scan resources for scan %s." % scanid)
         r = get(connection, host + "/data/experiments/%s/scans/%s/resources" % (session, scanid), params={"format": "json"})
         scanResources = r.json()["ResultSet"]["Result"]
-        print('Found resources %s.' % ', '.join(res["label"] for res in scanResources))
+        _logger.debug('Found resources %s.' % ', '.join(res["label"] for res in scanResources))
 
         dicomResourceList = [res for res in scanResources if res["label"] == "DICOM"]
 
         if len(dicomResourceList) == 0:
-            print("Scan %s has no DICOM resource." % scanid)
+            _logger.debug("Scan %s has no DICOM resource." % scanid)
             # scanInfo['hasDicom'] = False
             continue
         elif len(dicomResourceList) > 1:
-            print("Scan %s has more than one DICOM resource Skipping." % scanid)
+            _logger.debug("Scan %s has more than one DICOM resource Skipping." % scanid)
             # scanInfo['hasDicom'] = False
             continue
 
@@ -197,29 +202,27 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
 
         if dicomResource is not None and dicomResource["file_count"]:
             if int(dicomResource["file_count"]) == 0:
-                print("DICOM resource for scan %s has no files. Skipping." % scanid)
+                _logger.info("DICOM resource for scan %s has no files. Skipping." % scanid)
                 continue
         else:
-            print("DICOM resources for scan %s have a blank \"file_count\", so I cannot check to see if there are no files. I am not skipping the scan, but this may lead to errors later if there are no files." % scanid)
+            _logger.info("DICOM resources for scan %s have a blank \"file_count\", so I cannot check to see if there are no files. I am not skipping the scan, but this may lead to errors later if there are no files." % scanid)
 
         # BIDS sourcedatadirectory for this scan
-        print("bids_session_dir: ", bids_session_dir)
-        print("bidsname: ", bidsname)
+        _logger.info(f"bids_session_dir: {bids_session_dir}")
+        _logger.info(f"BIDSNAME: {bidsname}")
         bids_scan_directory = os.path.join(bids_session_dir, bidsname)
 
         if not os.path.isdir(bids_scan_directory):
-            print('Making scan DICOM directory %s.' % bids_scan_directory)
+            _logger.info('Making scan DICOM directory %s.' % bids_scan_directory)
             os.mkdir(bids_scan_directory)
         
         # For now exit if directory is not empty
         for f in os.listdir(bids_scan_directory):
-            print("Output Directory is not empty. Skipping.")
+            _logger.warning("Output Directory is not empty. Skipping.")
             continue
             # os.remove(os.path.join(bids_scan_directory, f))
 
-        # Deal with DICOMs
-        print('Get list of DICOM files for scan %s.' % scanid)
-
+        # Get DICOMs
         if usingDicom:
             filesURL = host + "/data/experiments/%s/scans/%s/resources/DICOM/files" % (session, scanid)
         
@@ -227,17 +230,13 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
         # Build a dict keyed off file name
         dicomFileDict = {dicom['Name']: {'URI': host + dicom['URI']} for dicom in r.json()["ResultSet"]["Result"]}
 
-        print("**********")
-        print(dicomFileDict)
-        print("**********")
-
         # Have to manually add absolutePath with a separate request
         r = get(connection, filesURL, params={"format": "json", "locator": "absolutePath"})
         for dicom in r.json()["ResultSet"]["Result"]:
             dicomFileDict[dicom['Name']]['absolutePath'] = dicom['absolutePath']
 
         # Download DICOMs
-        print("Downloading files for scan %s." % scanid)
+        _logger.info("Downloading files")
         os.chdir(bids_scan_directory)
         dicomFileList = list(dicomFileDict.items())
         (name, pathDict) = dicomFileList[0]
@@ -252,6 +251,7 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
 
 
         os.chdir(build_dir)
-        print('Done downloading for scan %s.' % scanid)
-    
+        _logger.info('Done.')
+        _logger.info("---------------------------------")
+
 

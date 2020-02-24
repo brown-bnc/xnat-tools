@@ -44,7 +44,7 @@ def download(connection, name, pathDict):
                 break
 
             f.write(block)
-    print('Downloaded remote file %s.' % name)
+    _logger.debug('Downloaded remote file %s.' % name)
 
 def get_project_and_subject_id(connection, host, session):
     """Get project ID and subject ID from session JSON

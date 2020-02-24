@@ -10,7 +10,7 @@ Original file lives here: https://bitbucket.org/nrg_customizations/nrg_pipeline_
 '''
 
 import argparse
-import logging
+import coloredlogs, logging
 
 import os
 import sys
@@ -20,7 +20,7 @@ import tempfile
 from xnat_tools.bids_utils import *
 from xnat_tools.xnat_utils import *
 
-
+coloredlogs.install()
 _logger = logging.getLogger(__name__)
 
 # def cleanServer(server):
@@ -158,22 +158,23 @@ def main(args):
         scanIDList = [scanIDList[i-1] for i in seqlist]
         seriesDescList = [seriesDescList[i-1] for i in seqlist]
 
-    _logger.info("------------------------------------------------")
+    _logger.info("---------------------------------")
     _logger.info("Processing Series: ")
     for s in seriesDescList:
         _logger.info(s)
-    _logger.info("------------------------------------------------")
+    _logger.info("---------------------------------")
 
 
 
-    # pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_bids_prefixes(project, subject, session)
+    pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_bids_prefixes(project, subject, session)
 
-    # bids_session_dir = prepare_bids_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
+    bids_session_dir = prepare_bids_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
     
-    # # Prepare files for heudiconv
-    # bidsnamemap = populate_bidsmap(bidsmap_file, seriesDescList)
-    # assign_bids_name(connection, host, subject, session, scanIDList, seriesDescList, build_dir, bids_session_dir, bidsnamemap)
+    # Prepare files for heudiconv
+    bidsnamemap = populate_bidsmap(bidsmap_file, seriesDescList)
+    assign_bids_name(connection, host, subject, session, scanIDList, seriesDescList, build_dir, bids_session_dir, bidsnamemap)
 
+    connection.close()
 
 def run():
     """Entry point for console_scripts
