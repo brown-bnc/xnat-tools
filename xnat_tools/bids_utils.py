@@ -148,7 +148,7 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
     """
 
     # Detect duplicate sequences, assume they are runs
-    seriesDescList = detect_multiple_runs(seriesDescList)
+    # seriesDescList = detect_multiple_runs(seriesDescList)
 
     # Cheat and reverse scanid and seriesdesc lists so numbering is in the right order
     for scanid, seriesdesc in zip(reversed(scanIDList), reversed(seriesDescList)):

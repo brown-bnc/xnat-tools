@@ -12,7 +12,6 @@ Original file lives here: https://bitbucket.org/nrg_customizations/nrg_pipeline_
 import argparse
 import logging
 
-
 import os
 import sys
 import tempfile
@@ -53,25 +52,18 @@ def parse_args(args):
         help="DEV host",
         required=True)
     parser.add_argument(
-        "--user",
+        "-u", "--user",
         help="CNDA username",
         required=True)
     parser.add_argument(
-        "--password",
-        help="Password",
-        required=True)
+        '-p', '--password',
+        type=XNATPass,
+        help='Specify password',
+        default=XNATPass.DEFAULT)
     parser.add_argument(
         "--session",
         help="Session ID",
         required=True)
-    parser.add_argument(
-        "--subject",
-        help="Subject Label",
-        required=False)
-    parser.add_argument(
-        "--project",
-        help="Project",
-        required=False)
     parser.add_argument(
         "--bids_root_dir",
         help="Root output directory for BIDS files",
@@ -81,32 +73,70 @@ def parse_args(args):
         help="Bidsmap JSON file to correct sequence names",
         required=False,
         default="")
+    parser.add_argument(
+        "--seqlist",
+        help="List of sequences from XNAT to run if don't want to process all seuqences",
+        required=False,
+        default=[],
+        nargs="*",  # 0 or more values expected => creates a list
+        type=int)
     # parser.add_argument("--overwrite", help="Overwrite NIFTI files if they exist")
     parser.add_argument(
-        '--version',
-        action='version',
-        version='%(prog)s 1')
+        '-v',
+        '--verbose',
+        dest="loglevel",
+        help="set loglevel to INFO",
+        action='store_const',
+        const=logging.INFO)
+    parser.add_argument(
+        '-vv',
+        '--very-verbose',
+        dest="loglevel",
+        help="set loglevel to DEBUG",
+        action='store_const',
+        const=logging.DEBUG)
 
     return parser.parse_args(args)
 
-    
+def setup_logging(loglevel, logfile):
+    """Setup basic logging
+
+    Args:
+      loglevel (int): minimum loglevel for emitting messages
+    """
+    if loglevel is None:
+        loglevel = logging.INFO
+    logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
+    logging.basicConfig(
+        level=loglevel, 
+        format=logformat, 
+        datefmt="%Y-%m-%d %H:%M:%S",
+        handlers=[
+            logging.FileHandler(logfile),
+            logging.StreamHandler(sys.stdout)
+        ]
+    )
+
+
 def main(args):
     """Main entry point allowing external calls
 
     Args:
       args ([str]): command line parameter list
     """
+    
     args = parse_args(args)
+
 
     host = args.host
     session = args.session
-    subject = args.subject
-    project = args.project
     bidsmap_file = args.bidsmap_file
     # overwrite = isTrue(args.overwrite)
-    # dicomdir = args.dicomdir
-    bids_root_dir = args.bids_root_dir
+    bids_root_dir = os.path.expanduser(args.bids_root_dir)
     build_dir = os.getcwd()
+    seqlist = args.seqlist
+    setup_logging(args.loglevel, bids_root_dir + "/" + session + ".log")
+
 
     # Set up working directory
     if not os.access(bids_root_dir, os.R_OK):
@@ -119,18 +149,30 @@ def main(args):
     connection.verify = False
     connection.auth = (args.user, args.password)
     
-    if project is None or subject is None:
-        project, subject = get_project_and_subject_id(connection, host, project, subject, session)
+    project, subject = get_project_and_subject_id(connection, host, session)
     
     scanIDList, seriesDescList = get_scan_ids(connection, host, session)
-    
-    pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_bids_prefixes(project, subject, session)
 
-    bids_session_dir = prepare_bids_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
     
-    # Prepare files for heudiconv
-    bidsnamemap = populate_bidsmap(bidsmap_file, seriesDescList)
-    assign_bids_name(connection, host, subject, session, scanIDList, seriesDescList, build_dir, bids_session_dir, bidsnamemap)
+    if seqlist != []:
+        scanIDList = [scanIDList[i-1] for i in seqlist]
+        seriesDescList = [seriesDescList[i-1] for i in seqlist]
+
+    _logger.info("------------------------------------------------")
+    _logger.info("Processing Series: ")
+    for s in seriesDescList:
+        _logger.info(s)
+    _logger.info("------------------------------------------------")
+
+
+
+    # pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_bids_prefixes(project, subject, session)
+
+    # bids_session_dir = prepare_bids_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
+    
+    # # Prepare files for heudiconv
+    # bidsnamemap = populate_bidsmap(bidsmap_file, seriesDescList)
+    # assign_bids_name(connection, host, subject, session, scanIDList, seriesDescList, build_dir, bids_session_dir, bidsnamemap)
 
 
 def run():
