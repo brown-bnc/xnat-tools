@@ -10,6 +10,7 @@ heudiconv = "^0.5.4"
 six = "^1.14"
 pydicom = "^1.4.1"
 coloredlogs = "^14.0"
+bids_validator = "^1.4.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
@@ -17,6 +18,7 @@ pytest = "^3.0"
 [tool.poetry.scripts]
 xnat-heudiconv = "xnat_tools.run_heudiconv:run"
 xnat-dicom-export = "xnat_tools.dicom_export:run"
+xnat-bids-validator = "xnat_tools.run_bids_validator:run"
 xnat2bids = "xnat_tools.xnat2bids:run"
 
 

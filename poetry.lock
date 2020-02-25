@@ -22,6 +22,14 @@ tests = ["coverage", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.i
 
 [[package]]
 category = "main"
+description = "Validator for the Brain Imaging Data Structure"
+name = "bids-validator"
+optional = false
+python-versions = "*"
+version = "1.4.2"
+
+[[package]]
+category = "main"
 description = "Python package for providing Mozilla's CA Bundle."
 name = "certifi"
 optional = false
@@ -552,7 +560,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools"]
 
 [metadata]
-content-hash = "52f507501224562c45e2d245a050578f6d7f6f3a701fc896e3cdecf51a3458f9"
+content-hash = "bc77ecbf6a4d561bf6e76fc6d881c5574afcac626b1950167b3247617eb02d03"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -563,6 +571,10 @@ atomicwrites = [
 attrs = [
     {file = "attrs-19.3.0-py2.py3-none-any.whl", hash = "sha256:08a96c641c3a74e44eb59afb61a24f2cb9f4d7188748e76ba4bb5edfa3cb7d1c"},
     {file = "attrs-19.3.0.tar.gz", hash = "sha256:f7b7ce16570fe9965acd6d30101a28f62fb4a7f9e926b3bbc9b61f8b04247e72"},
+]
+bids-validator = [
+    {file = "bids-validator-1.4.2.tar.gz", hash = "sha256:300f26d383d2d423690beb03463c5c871e473f656fedac728b9ae2252a825462"},
+    {file = "bids_validator-1.4.2-py2.py3-none-any.whl", hash = "sha256:8ff5feaff17503c977f71e279f2f63b2fdfffe8f7e279fc2fa2b51150d4ee009"},
 ]
 certifi = [
     {file = "certifi-2019.11.28-py2.py3-none-any.whl", hash = "sha256:017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3"},

@@ -5,9 +5,11 @@ import subprocess
 import sys
 import argparse
 import shlex
+from os import walk
 from pathlib import Path
 from xnat_tools.xnat_utils import *
 from xnat_tools.bids_utils import *
+from bids_validator import BIDSValidator
 
 
 def parse_args(args):
@@ -46,7 +48,9 @@ def parse_args(args):
 
     return parser.parse_args(args)
 
-  
+def validate(heudi_output_dir):
+    bids_result = BIDSValidator().is_bids(heudi_output_dir)
+    return bids_result
 
 def main(args):
     """Main entry point allowing external calls
@@ -81,20 +85,28 @@ def main(args):
 
     heudi_output_dir = prepare_heudiconv_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
 
-    heudi_cmd = f"heudiconv -f reproin --bids \
-    -o {heudi_output_dir} \
-    --dicom_dir_template {bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/sub-{{subject}}/ses-{{session}}/*/*.dcm \
-    --subjects {subject_prefix} --ses {session_prefix}"
 
-    heudi_split_cmd = shlex.split(heudi_cmd)
+    # from os import walk
+    # f = []
+    print("---------------------------------------------------")
+    print(f"Validating BIDS for directory {heudi_output_dir}.")
+
+    path = heudi_output_dir + "/sub-" + subject_prefix + "/ses-" +session_prefix
+    for (dirpath, dirnames, filenames) in walk(path):
+        for file in filenames:
+            bids_file = os.path.join(dirpath, file)
+            valid = validate(bids_file)
+            print(f"{valid}: {file}")
+
+
+    # break
     
-    print(f"Executing Heudiconv command: {heudi_cmd}")
-    process = subprocess.run(heudi_split_cmd)
 
-    print("Done with Heudiconv BIDS Convesion.")
+    print(path)
 
-    # stdout_file.close()
-    # stderr_file.close()
+    print("Done Validating BIDS.")
+    print("---------------------------------------------------")
+
 
 
 def run():

@@ -61,12 +61,14 @@ def populate_bidsmap(bidsmap_file, seriesDescList):
     bidsmaplist = []
 
     _logger.info("---------------------------------")
-    _logger.info("Read bidsmap file if one exists")
+    _logger.info(f"Read bidsmap file: {bidsmap_file}")
     
     if os.path.exists(bidsmap_file):
+        _logger.info("********")
+
         with open(bidsmap_file) as json_file:
             bidsmaptoadd = json.load(json_file)
-            _logger.info("BIDS bidsmaptoadd: ",  bidsmaptoadd)
+            _logger.info(f"BIDS bidsmaptoadd: {bidsmaptoadd}")
             for mapentry in bidsmaptoadd:
                 if mapentry not in bidsmaplist:
                     bidsmaplist.append(mapentry)
@@ -76,10 +78,10 @@ def populate_bidsmap(bidsmap_file, seriesDescList):
     _logger.info({json.dumps(bidsmaplist)})
 
     # Collapse human-readable JSON to dict for processing
-    bidsnamemap = {x['series_description'].lower(): x['bidsname'] for x in bidsmaplist if 'series_description' in x and 'bidsname' in x}
+    bidsnamemap = {x['series_description']: x['bidsname'] for x in bidsmaplist if 'series_description' in x and 'bidsname' in x}
 
     # Map all series descriptions to BIDS names (case insensitive)
-    resolved = [bidsnamemap[x.lower()] for x in seriesDescList if x.lower() in bidsnamemap]
+    resolved = [bidsnamemap[x] for x in seriesDescList if x in bidsnamemap]
 
     # Count occurrences
     bidscount = collections.Counter(resolved)
@@ -136,6 +138,7 @@ def bidsify_dicom_headers(filename, protocol_name):
     if 'ProtocolName' in dataset:
         if dataset.data_element('ProtocolName').value != protocol_name:
             _logger.info("---------------------------------")
+            _logger.info(f"File: {filename}")
             _logger.info("Modifying DICOM Header for ProtocolName from")
             _logger.info(f"{dataset.data_element('ProtocolName').value} to {protocol_name}")
             dataset.data_element('ProtocolName').value = protocol_name
@@ -170,13 +173,13 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
         #We use the bidsmap to correct miss-labeled series at the scanner.
         #otherwise we assume decription is correct and let heudiconv do the work
         if seriesdesc not in bidsnamemap:
-            _logger.debug("Series " + seriesdesc + " not found in BIDSMAP")
+            _logger.info(f"Series {seriesdesc}  not found in {bidsnamemap}")
             # bidsname = "Z"
             # continue  # Exclude series from processing
             match = seriesdesc
 
         else:
-            _logger.debug("Series " + seriesdesc + " matched " + bidsnamemap[seriesdesc])
+            _logger.info(f"Series {seriesdesc}  to be replaced with {bidsnamemap[seriesdesc]}")
             match = bidsnamemap[seriesdesc]
 
         match = handle_scanner_exceptions(match)

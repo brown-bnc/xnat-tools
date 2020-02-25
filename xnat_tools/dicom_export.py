@@ -48,17 +48,17 @@ def parse_args(args):
         description="Dump DICOMS to a BIDS firendly sourcedata directory")
     parser.add_argument(
         "--host",
-        default="http://bnc.brown.edu/xnat-dev",
-        help="DEV host",
+        default="",
+        help="Host",
         required=True)
     parser.add_argument(
         "-u", "--user",
-        help="CNDA username",
+        help="XNAT username",
         required=True)
     parser.add_argument(
         '-p', '--password',
         type=XNATPass,
-        help='Specify password',
+        help='XNAT password',
         default=XNATPass.DEFAULT)
     parser.add_argument(
         "--session",
