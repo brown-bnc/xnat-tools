@@ -22,14 +22,6 @@ tests = ["coverage", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.i
 
 [[package]]
 category = "main"
-description = "Validator for the Brain Imaging Data Structure"
-name = "bids-validator"
-optional = false
-python-versions = "*"
-version = "1.4.2"
-
-[[package]]
-category = "main"
 description = "Python package for providing Mozilla's CA Bundle."
 name = "certifi"
 optional = false
@@ -81,10 +73,10 @@ description = "Stack DICOM images into volumes and convert to Nifti"
 name = "dcmstack"
 optional = false
 python-versions = "*"
-version = "0.7.0"
+version = "0.8.0"
 
 [package.dependencies]
-nibabel = ">=2.0.0"
+nibabel = ">=2.1.0"
 pydicom = ">=0.9.7"
 
 [package.extras]
@@ -160,7 +152,7 @@ description = "Internationalized Domain Names in Applications (IDNA)"
 name = "idna"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "2.8"
+version = "2.9"
 
 [[package]]
 category = "dev"
@@ -279,7 +271,7 @@ description = "Neuroimaging in Python: Pipelines and Interfaces"
 name = "nipype"
 optional = false
 python-versions = ">= 3.5"
-version = "1.4.1"
+version = "1.4.2"
 
 [package.dependencies]
 click = ">=6.6.0"
@@ -302,9 +294,9 @@ python = ">=3.7"
 version = ">=1.15.3"
 
 [package.extras]
-all = ["xvfbwrapper", "pytest-env", "pytest-cov", "nilearn (<0.5.0)", "ipython", "duecredit", "codecov", "sphinxcontrib-apidoc", "sphinx (>=2.1.2)", "datalad", "mock", "nbsphinx", "coverage (<5)", "nitime", "pytest-timeout", "paramiko", "sphinxcontrib-napoleon", "pytest", "matplotlib", "dipy", "sphinx-argparse", "psutil (>=5.0)", "black", "pybids (>=0.7.0)", "nipy"]
+all = ["ipython", "psutil (>=5.0)", "black", "paramiko", "sphinx-argparse", "sphinxcontrib-napoleon", "coverage (<5)", "codecov", "mock", "sphinx (>=2.1.2)", "pytest-cov", "xvfbwrapper", "dipy", "duecredit", "pytest-env", "sphinxcontrib-apidoc", "pybids (>=0.7.0)", "datalad", "pytest-timeout", "matplotlib", "nbsphinx", "nitime", "nilearn (<0.5.0)", "pytest", "nipy"]
 data = ["datalad"]
-dev = ["mock", "sphinx-argparse", "nbsphinx", "pytest", "codecov", "sphinxcontrib-apidoc", "black", "coverage (<5)", "pytest-env", "pytest-timeout", "pytest-cov", "sphinxcontrib-napoleon", "ipython", "sphinx (>=2.1.2)", "matplotlib", "dipy"]
+dev = ["ipython", "mock", "matplotlib", "sphinx (>=2.1.2)", "pytest-cov", "pytest-env", "dipy", "sphinxcontrib-apidoc", "nbsphinx", "black", "pytest-timeout", "sphinx-argparse", "sphinxcontrib-napoleon", "pytest", "codecov", "coverage (<5)"]
 doc = ["dipy", "ipython", "matplotlib", "nbsphinx", "sphinx-argparse", "sphinx (>=2.1.2)", "sphinxcontrib-apidoc", "sphinxcontrib-napoleon"]
 duecredit = ["duecredit"]
 nipy = ["nitime", "nilearn (<0.5.0)", "dipy", "nipy", "matplotlib"]
@@ -391,7 +383,7 @@ description = "Pure python package for DICOM medical file reading and writing"
 name = "pydicom"
 optional = false
 python-versions = "*"
-version = "1.4.1"
+version = "1.4.2"
 
 [[package]]
 category = "main"
@@ -483,16 +475,16 @@ description = "Python HTTP for Humans."
 name = "requests"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "2.22.0"
+version = "2.23.0"
 
 [package.dependencies]
 certifi = ">=2017.4.17"
-chardet = ">=3.0.2,<3.1.0"
-idna = ">=2.5,<2.9"
+chardet = ">=3.0.2,<4"
+idna = ">=2.5,<3"
 urllib3 = ">=1.21.1,<1.25.0 || >1.25.0,<1.25.1 || >1.25.1,<1.26"
 
 [package.extras]
-security = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)"]
+security = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)"]
 socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7)", "win-inet-pton"]
 
 [[package]]
@@ -527,11 +519,8 @@ category = "main"
 description = "Explicitly typed attributes for Python"
 name = "traits"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "5.2.0"
-
-[package.dependencies]
-six = "*"
+python-versions = ">=3.5"
+version = "6.0.0"
 
 [[package]]
 category = "main"
@@ -553,14 +542,14 @@ marker = "python_version < \"3.8\""
 name = "zipp"
 optional = false
 python-versions = ">=3.6"
-version = "2.1.0"
+version = "3.0.0"
 
 [package.extras]
 docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
-testing = ["jaraco.itertools"]
+testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "bc77ecbf6a4d561bf6e76fc6d881c5574afcac626b1950167b3247617eb02d03"
+content-hash = "369811107eb8677f32434e466d0080731f333a9827458801280ab288a8c2e4e0"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -571,10 +560,6 @@ atomicwrites = [
 attrs = [
     {file = "attrs-19.3.0-py2.py3-none-any.whl", hash = "sha256:08a96c641c3a74e44eb59afb61a24f2cb9f4d7188748e76ba4bb5edfa3cb7d1c"},
     {file = "attrs-19.3.0.tar.gz", hash = "sha256:f7b7ce16570fe9965acd6d30101a28f62fb4a7f9e926b3bbc9b61f8b04247e72"},
-]
-bids-validator = [
-    {file = "bids-validator-1.4.2.tar.gz", hash = "sha256:300f26d383d2d423690beb03463c5c871e473f656fedac728b9ae2252a825462"},
-    {file = "bids_validator-1.4.2-py2.py3-none-any.whl", hash = "sha256:8ff5feaff17503c977f71e279f2f63b2fdfffe8f7e279fc2fa2b51150d4ee009"},
 ]
 certifi = [
     {file = "certifi-2019.11.28-py2.py3-none-any.whl", hash = "sha256:017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3"},
@@ -597,7 +582,7 @@ coloredlogs = [
     {file = "coloredlogs-14.0.tar.gz", hash = "sha256:a1fab193d2053aa6c0a97608c4342d031f1f93a3d1218432c59322441d31a505"},
 ]
 dcmstack = [
-    {file = "dcmstack-0.7.0.tar.gz", hash = "sha256:b48cea3989195684116ffe8e4603acb9a5a11334460671dca06ecb3787947735"},
+    {file = "dcmstack-0.8.0.tar.gz", hash = "sha256:12ea9851c18d5196104e57d412f7d27f6f3942ecdce3db488cba95fc26abff04"},
 ]
 decorator = [
     {file = "decorator-4.4.1-py2.py3-none-any.whl", hash = "sha256:5d19b92a3c8f7f101c8dd86afd86b0f061a8ce4540ab8cd401fa2542756bce6d"},
@@ -619,8 +604,8 @@ humanfriendly = [
     {file = "humanfriendly-7.1.1.tar.gz", hash = "sha256:5e5c2b82fb58dcea413b48ab2a7381baa5e246d47fe94241d7d83724c11c0565"},
 ]
 idna = [
-    {file = "idna-2.8-py2.py3-none-any.whl", hash = "sha256:ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c"},
-    {file = "idna-2.8.tar.gz", hash = "sha256:c357b3f628cf53ae2c4c05627ecc484553142ca23264e593d327bcde5e9c3407"},
+    {file = "idna-2.9-py2.py3-none-any.whl", hash = "sha256:a068a21ceac8a4d63dbfd964670474107f541babbd2250d61922f029858365fa"},
+    {file = "idna-2.9.tar.gz", hash = "sha256:7588d1c14ae4c77d74036e8c22ff447b26d0fde8f007354fd48a7814db15b7cb"},
 ]
 importlib-metadata = [
     {file = "importlib_metadata-1.5.0-py2.py3-none-any.whl", hash = "sha256:b97607a1a18a5100839aec1dc26a1ea17ee0d93b20b0f008d80a5a050afb200b"},
@@ -676,8 +661,8 @@ nibabel = [
     {file = "nibabel-3.0.1.tar.gz", hash = "sha256:d38c657eca6ae3d246db9019549be5448b7a0a6683240c96bff2cebf91b7d422"},
 ]
 nipype = [
-    {file = "nipype-1.4.1-py3-none-any.whl", hash = "sha256:f5e64d728a7da9384a45f8265ec3407a6f431ea3994533a20ff84562cf82bc5d"},
-    {file = "nipype-1.4.1.tar.gz", hash = "sha256:eee78e2c4579a4f7630fee3a0a852fda08ac57269db9efc0e2a7cf9535814134"},
+    {file = "nipype-1.4.2-py3-none-any.whl", hash = "sha256:f3466496093d622436a2666de98562baf6b186b3eda12712f9cfb20c1f126ffd"},
+    {file = "nipype-1.4.2.tar.gz", hash = "sha256:069dcbb0217f13af6ee5a7f1e58424b9061290a3e10d7027d73bf44e26f820db"},
 ]
 numpy = [
     {file = "numpy-1.18.1-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:20b26aaa5b3da029942cdcce719b363dbe58696ad182aff0e5dcb1687ec946dc"},
@@ -722,8 +707,8 @@ py = [
     {file = "py-1.8.1.tar.gz", hash = "sha256:5e27081401262157467ad6e7f851b7aa402c5852dbcb3dae06768434de5752aa"},
 ]
 pydicom = [
-    {file = "pydicom-1.4.1-py2.py3-none-any.whl", hash = "sha256:1490b78152f275daa3058ae661a5dc720d8e99d17ab7dd62862beb5e87a200e2"},
-    {file = "pydicom-1.4.1.tar.gz", hash = "sha256:881fe64316f1dbc137afec73df621a2ffa8b288b3ceb3cc639e75603cd38244e"},
+    {file = "pydicom-1.4.2-py2.py3-none-any.whl", hash = "sha256:f315ba2296346f4f9913c269618201e170b9326362e2ada6041ca91b7cb2117b"},
+    {file = "pydicom-1.4.2.tar.gz", hash = "sha256:9488495a9f3e202d1219f7cb165aee0de31efd512d938c0226d34147ce860391"},
 ]
 pydot = [
     {file = "pydot-1.4.1-py2.py3-none-any.whl", hash = "sha256:67be714300c78fda5fd52f79ec994039e3f76f074948c67b5ff539b433ad354f"},
@@ -754,8 +739,8 @@ rdflib = [
     {file = "rdflib-4.2.2.tar.gz", hash = "sha256:da1df14552555c5c7715d8ce71c08f404c988c58a1ecd38552d0da4fc261280d"},
 ]
 requests = [
-    {file = "requests-2.22.0-py2.py3-none-any.whl", hash = "sha256:9cf5292fcd0f598c671cfc1e0d7d1a7f13bb8085e9a590f48c010551dc6c4b31"},
-    {file = "requests-2.22.0.tar.gz", hash = "sha256:11e007a8a2aa0323f5a921e9e6a2d7e4e67d9877e85773fba9ba6419025cbeb4"},
+    {file = "requests-2.23.0-py2.py3-none-any.whl", hash = "sha256:43999036bfa82904b6af1d99e4882b560e5e2c68e5c4b0aa03b655f3d7d73fee"},
+    {file = "requests-2.23.0.tar.gz", hash = "sha256:b3f43d496c6daba4493e7c431722aeb7dbc6288f52a6e04e7b6023b0247817e6"},
 ]
 scipy = [
     {file = "scipy-1.4.1-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:c5cac0c0387272ee0e789e94a570ac51deb01c796b37fb2aad1fb13f85e2f97d"},
@@ -815,13 +800,13 @@ six = [
     {file = "six-1.14.0.tar.gz", hash = "sha256:236bdbdce46e6e6a3d61a337c0f8b763ca1e8717c03b369e87a7ec7ce1319c0a"},
 ]
 traits = [
-    {file = "traits-5.2.0.tar.gz", hash = "sha256:8194696df87ec93815204f29e119dd88ce9a0def2801ae9020431442c1dde1ac"},
+    {file = "traits-6.0.0.tar.gz", hash = "sha256:dbcd70166feca434130a1193284d5819ca72ffbc8dbce8deeecc0cebb41a3bfb"},
 ]
 urllib3 = [
     {file = "urllib3-1.25.8-py2.py3-none-any.whl", hash = "sha256:2f3db8b19923a873b3e5256dc9c2dedfa883e33d87c690d9c7913e1f40673cdc"},
     {file = "urllib3-1.25.8.tar.gz", hash = "sha256:87716c2d2a7121198ebcb7ce7cccf6ce5e9ba539041cfbaeecfb641dc0bf6acc"},
 ]
 zipp = [
-    {file = "zipp-2.1.0-py3-none-any.whl", hash = "sha256:ccc94ed0909b58ffe34430ea5451f07bc0c76467d7081619a454bf5c98b89e28"},
-    {file = "zipp-2.1.0.tar.gz", hash = "sha256:feae2f18633c32fc71f2de629bfb3bd3c9325cd4419642b1f1da42ee488d9b98"},
+    {file = "zipp-3.0.0-py3-none-any.whl", hash = "sha256:12248a63bbdf7548f89cb4c7cda4681e537031eda29c02ea29674bc6854460c2"},
+    {file = "zipp-3.0.0.tar.gz", hash = "sha256:7c0f8e91abc0dc07a5068f315c52cb30c66bfbc581e5b50704c8a2f6ebae794a"},
 ]
