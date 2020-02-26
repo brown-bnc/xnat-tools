@@ -50,19 +50,19 @@ def get_project_and_subject_id(connection, host, session):
     """Get project ID and subject ID from session JSON
        If calling within XNAT, only session is passed"""
     
-    _logger.info("------------------------------------------------")
-    _logger.info("Get project and subject information")
+    print("------------------------------------------------")
+    print("Get project and subject information")
     r = get(connection, host + "/data/experiments/%s" % session, params={"format": "json", "handler": "values", "columns": "project,subject_ID"})
     sessionValuesJson = r.json()["ResultSet"]["Result"][0]
     project = sessionValuesJson["project"]
     subjectID = sessionValuesJson["subject_ID"]
-    _logger.info("Project: " + project)
-    _logger.info("Subject ID: " + subjectID)
+    print("Project: " + project)
+    print("Subject ID: " + subjectID)
 
     r = get(connection, host + "/data/subjects/%s" % subjectID, params={"format": "json", "handler": "values", "columns": "label"})
     subject = r.json()["ResultSet"]["Result"][0]["label"]
-    _logger.info("Subject label: " + subject)
-    _logger.info("------------------------------------------------")
+    print("Subject label: " + subject)
+    print("------------------------------------------------")
 
     return project, subject
 

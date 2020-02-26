@@ -221,12 +221,9 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
         if not os.path.isdir(bids_scan_directory):
             _logger.info('Making scan DICOM directory %s.' % bids_scan_directory)
             os.mkdir(bids_scan_directory)
-        
-        # For now exit if directory is not empty
-        for f in os.listdir(bids_scan_directory):
-            _logger.warning("Output Directory is not empty. Skipping.")
-            continue
-            # os.remove(os.path.join(bids_scan_directory, f))
+        else: 
+            _logger.warning(f"{bids_scan_directory} already exists. See documentation to understad how xnat_tools handles repeaded sequences.")
+    
 
         # Get DICOMs
         if usingDicom:

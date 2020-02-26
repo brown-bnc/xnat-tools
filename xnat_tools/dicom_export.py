@@ -20,17 +20,7 @@ import tempfile
 from xnat_tools.bids_utils import *
 from xnat_tools.xnat_utils import *
 
-coloredlogs.install()
 _logger = logging.getLogger(__name__)
-
-# def cleanServer(server):
-#     server.strip()
-#     if server[-1] == '/':
-#         server = server[:-1]
-#     if server.find('http') == -1:
-#         server = 'https://' + server
-#     return server
-
 
 def isTrue(arg):
     return arg is not None and (arg == 'Y' or arg == '1' or arg == 'True')
@@ -45,7 +35,7 @@ def parse_args(args):
       :obj:`argparse.Namespace`: command line parameters namespace
     """
     parser = argparse.ArgumentParser(
-        description="Dump DICOMS to a BIDS firendly sourcedata directory")
+        description="Dump XNAT Session into a BIDS friendly directory")
     parser.add_argument(
         "--host",
         default="",
@@ -80,7 +70,6 @@ def parse_args(args):
         default=[],
         nargs="*",  # 0 or more values expected => creates a list
         type=int)
-    # parser.add_argument("--overwrite", help="Overwrite NIFTI files if they exist")
     parser.add_argument(
         '-v',
         '--verbose',
@@ -96,7 +85,8 @@ def parse_args(args):
         action='store_const',
         const=logging.DEBUG)
 
-    return parser.parse_args(args)
+    args, _ = parser.parse_known_args(args)
+    return args
 
 def setup_logging(loglevel, logfile):
     """Setup basic logging
@@ -122,27 +112,19 @@ def main(args):
     """Main entry point allowing external calls
 
     Args:
-      args ([str]): command line parameter list
+      args ([namespase]): command line parameter list
     """
-    
-    args = parse_args(args)
-
-
     host = args.host
     session = args.session
     bidsmap_file = args.bidsmap_file
-    # overwrite = isTrue(args.overwrite)
     bids_root_dir = os.path.expanduser(args.bids_root_dir)
+
     build_dir = os.getcwd()
     seqlist = args.seqlist
-    setup_logging(args.loglevel, bids_root_dir + "/" + session + ".log")
-
 
     # Set up working directory
     if not os.access(bids_root_dir, os.R_OK):
         raise ValueError(f"BIDS Root directory must exist: {bids_root_dir}")
-        # print('Making BIDS directory %s' % bids_root_dir)
-        # os.mkdir(bids_root_dir)
 
     # Set up session
     connection = requests.Session()
@@ -151,9 +133,20 @@ def main(args):
     
     project, subject = get_project_and_subject_id(connection, host, session)
     
+    pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_bids_prefixes(project, subject, session)
+
+    # Set up logging
+    logs_dir = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/logs"
+    if not os.path.exists(logs_dir):
+        os.makedirs(logs_dir)
+    
+    setup_logging(args.loglevel, logs_dir + "/xnat_export.log")
+    coloredlogs.install()
+
+    bids_session_dir = prepare_bids_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
+    
     scanIDList, seriesDescList = get_scan_ids(connection, host, session)
 
-    
     if seqlist != []:
         scanIDList = [scanIDList[i-1] for i in seqlist]
         seriesDescList = [seriesDescList[i-1] for i in seqlist]
@@ -165,21 +158,18 @@ def main(args):
     _logger.info("---------------------------------")
 
 
-
-    pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_bids_prefixes(project, subject, session)
-
-    bids_session_dir = prepare_bids_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
-    
     # Prepare files for heudiconv
     bidsnamemap = populate_bidsmap(bidsmap_file, seriesDescList)
     assign_bids_name(connection, host, subject, session, scanIDList, seriesDescList, build_dir, bids_session_dir, bidsnamemap)
 
+    connection.delete(f"{host}/data/JSESSION")
     connection.close()
 
 def run():
-    """Entry point for console_scripts
+    """Entry point for console scripts
     """
-    main(sys.argv[1:])
+    args = parse_args(sys.argv[1:])
+    main(args)
 
 
 if __name__ == "__main__":

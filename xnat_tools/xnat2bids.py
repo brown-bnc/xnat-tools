@@ -49,7 +49,6 @@ def parse_args(args):
         default=[],
         nargs="*",  # 0 or more values expected => creates a list
         type=int)
-    # parser.add_argument("--overwrite", help="Overwrite NIFTI files if they exist")
     parser.add_argument(
         '-v',
         '--verbose',
@@ -64,6 +63,11 @@ def parse_args(args):
         help="set loglevel to DEBUG",
         action='store_const',
         const=logging.DEBUG)
+    parser.add_argument(
+        "--cleanup",
+        help="Remove/mode files and folders outside the bids directory",
+        action='store_true',
+        default=False)
     return parser.parse_args(args)
 
 
@@ -71,9 +75,10 @@ def parse_args(args):
 def run():
     """Entry point for console_scripts
     """
-    dicom_export.main(sys.argv[1:])
-    run_heudiconv.main(sys.argv[1:])
-
+    args = dicom_export.parse_args(sys.argv[1:])
+    dicom_export.main(args)
+    args = run_heudiconv.parse_args(sys.argv[1:])
+    run_heudiconv.main(args)
 
 if __name__ == "__main__":
     run()
