@@ -3,7 +3,7 @@ name: Docker Image CI
 on:
   push:
   release:
-    types: [published,created,edited,prereleased]
+    types: [published]
 
 jobs:
   build:
