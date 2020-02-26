@@ -10,8 +10,7 @@ Original file lives here: https://bitbucket.org/nrg_customizations/nrg_pipeline_
 '''
 
 import argparse
-import logging
-
+import coloredlogs, logging
 
 import os
 import sys
@@ -21,17 +20,7 @@ import tempfile
 from xnat_tools.bids_utils import *
 from xnat_tools.xnat_utils import *
 
-
 _logger = logging.getLogger(__name__)
-
-# def cleanServer(server):
-#     server.strip()
-#     if server[-1] == '/':
-#         server = server[:-1]
-#     if server.find('http') == -1:
-#         server = 'https://' + server
-#     return server
-
 
 def isTrue(arg):
     return arg is not None and (arg == 'Y' or arg == '1' or arg == 'True')
@@ -46,32 +35,24 @@ def parse_args(args):
       :obj:`argparse.Namespace`: command line parameters namespace
     """
     parser = argparse.ArgumentParser(
-        description="Dump DICOMS to a BIDS firendly sourcedata directory")
+        description="Dump XNAT Session into a BIDS friendly directory")
     parser.add_argument(
         "--host",
-        default="http://bnc.brown.edu/xnat-dev",
-        help="DEV host",
+        default="http://bnc.brown.edu/xnat",
+        help="Host")
+    parser.add_argument(
+        "-u", "--user",
+        help="XNAT username",
         required=True)
     parser.add_argument(
-        "--user",
-        help="CNDA username",
-        required=True)
-    parser.add_argument(
-        "--password",
-        help="Password",
-        required=True)
+        '-p', '--password',
+        type=XNATPass,
+        help='XNAT password',
+        default=XNATPass.DEFAULT)
     parser.add_argument(
         "--session",
         help="Session ID",
         required=True)
-    parser.add_argument(
-        "--subject",
-        help="Subject Label",
-        required=False)
-    parser.add_argument(
-        "--project",
-        help="Project",
-        required=False)
     parser.add_argument(
         "--bids_root_dir",
         help="Root output directory for BIDS files",
@@ -81,62 +62,113 @@ def parse_args(args):
         help="Bidsmap JSON file to correct sequence names",
         required=False,
         default="")
-    # parser.add_argument("--overwrite", help="Overwrite NIFTI files if they exist")
     parser.add_argument(
-        '--version',
-        action='version',
-        version='%(prog)s 1')
+        "--seqlist",
+        help="List of sequences from XNAT to run if don't want to process all seuqences",
+        required=False,
+        default=[],
+        nargs="*",  # 0 or more values expected => creates a list
+        type=int)
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        dest="loglevel",
+        help="set loglevel to INFO",
+        action='store_const',
+        const=logging.INFO)
+    parser.add_argument(
+        '-vv',
+        '--very-verbose',
+        dest="loglevel",
+        help="set loglevel to DEBUG",
+        action='store_const',
+        const=logging.DEBUG)
 
-    return parser.parse_args(args)
+    args, _ = parser.parse_known_args(args)
+    return args
 
-    
+def setup_logging(loglevel, logfile):
+    """Setup basic logging
+
+    Args:
+      loglevel (int): minimum loglevel for emitting messages
+    """
+    if loglevel is None:
+        loglevel = logging.INFO
+    logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
+    logging.basicConfig(
+        level=loglevel, 
+        format=logformat, 
+        datefmt="%Y-%m-%d %H:%M:%S",
+        handlers=[
+            logging.FileHandler(logfile),
+            logging.StreamHandler(sys.stdout)
+        ]
+    )
+
+
 def main(args):
     """Main entry point allowing external calls
 
     Args:
-      args ([str]): command line parameter list
+      args ([namespase]): command line parameter list
     """
-    args = parse_args(args)
-
     host = args.host
     session = args.session
-    subject = args.subject
-    project = args.project
     bidsmap_file = args.bidsmap_file
-    # overwrite = isTrue(args.overwrite)
-    # dicomdir = args.dicomdir
-    bids_root_dir = args.bids_root_dir
+    bids_root_dir = os.path.expanduser(args.bids_root_dir)
+
     build_dir = os.getcwd()
+    seqlist = args.seqlist
 
     # Set up working directory
     if not os.access(bids_root_dir, os.R_OK):
         raise ValueError(f"BIDS Root directory must exist: {bids_root_dir}")
-        # print('Making BIDS directory %s' % bids_root_dir)
-        # os.mkdir(bids_root_dir)
 
     # Set up session
     connection = requests.Session()
     connection.verify = False
     connection.auth = (args.user, args.password)
     
-    if project is None or subject is None:
-        project, subject = get_project_and_subject_id(connection, host, project, subject, session)
-    
-    scanIDList, seriesDescList = get_scan_ids(connection, host, session)
+    project, subject = get_project_and_subject_id(connection, host, session)
     
     pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_bids_prefixes(project, subject, session)
 
+    # Set up logging
+    logs_dir = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/logs"
+    if not os.path.exists(logs_dir):
+        os.makedirs(logs_dir)
+    
+    setup_logging(args.loglevel, logs_dir + "/xnat_export.log")
+    coloredlogs.install()
+
     bids_session_dir = prepare_bids_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
     
+    scanIDList, seriesDescList = get_scan_ids(connection, host, session)
+
+    if seqlist != []:
+        scanIDList = [scanIDList[i-1] for i in seqlist]
+        seriesDescList = [seriesDescList[i-1] for i in seqlist]
+
+    _logger.info("---------------------------------")
+    _logger.info("Processing Series: ")
+    for s in seriesDescList:
+        _logger.info(s)
+    _logger.info("---------------------------------")
+
+
     # Prepare files for heudiconv
     bidsnamemap = populate_bidsmap(bidsmap_file, seriesDescList)
     assign_bids_name(connection, host, subject, session, scanIDList, seriesDescList, build_dir, bids_session_dir, bidsnamemap)
 
+    connection.delete(f"{host}/data/JSESSION")
+    connection.close()
 
 def run():
-    """Entry point for console_scripts
+    """Entry point for console scripts
     """
-    main(sys.argv[1:])
+    args = parse_args(sys.argv[1:])
+    main(args)
 
 
 if __name__ == "__main__":
