@@ -64,14 +64,14 @@ def populate_bidsmap(bidsmap_file, seriesDescList):
     _logger.info(f"Read bidsmap file: {bidsmap_file}")
     
     if os.path.exists(bidsmap_file):
-        _logger.info("********")
-
         with open(bidsmap_file) as json_file:
             bidsmaptoadd = json.load(json_file)
-            _logger.info(f"BIDS bidsmaptoadd: {bidsmaptoadd}")
+            _logger.debug(f"BIDS bidsmaptoadd: {bidsmaptoadd}")
             for mapentry in bidsmaptoadd:
                 if mapentry not in bidsmaplist:
                     bidsmaplist.append(mapentry)
+    else:
+        _logger.info("BIDSMAP file does not exist or wasn't passed")
 
 
     _logger.info("User-provided BIDS-map for renaming sequences:" )
