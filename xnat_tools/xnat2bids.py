@@ -1,8 +1,9 @@
 import sys
 import argparse
+import logging
 import xnat_tools.dicom_export as dicom_export
 import xnat_tools.run_heudiconv as run_heudiconv
-
+from xnat_tools.xnat_utils import XNATPass
 
 def parse_args(args):
     """Parse command line parameters
@@ -74,9 +75,8 @@ def parse_args(args):
 def run():
     """Entry point for console_scripts
     """
-    args = dicom_export.parse_args(sys.argv[1:])
+    args = parse_args(sys.argv[1:])
     dicom_export.main(args)
-    args = run_heudiconv.parse_args(sys.argv[1:])
     run_heudiconv.main(args)
 
 if __name__ == "__main__":

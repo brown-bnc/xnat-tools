@@ -5,13 +5,42 @@ XNAT tools maintained by the Behavioral Neuroimaging Center for the Brown Univer
 ## XNAT2BIDS
 This python package provides scripts that facilitates exporting data from XNAT to BIDS format.
 
-### Installation:
+### Installation 
+
+#### Using Docker
+
+```
+docker pull docker pull brownbnc/xnat_tools:<version>
+```
+
+*Version:*
+* `latest`: Is the build of master
+* `vX.X.X`: Latest tagged stable release
+
+You can confirm the tags [here](https://hub.docker.com/repository/docker/brownbnc/xnat_tools/tags?page=1)
+
+#### Using pipx
+
+If you are using this package in a stand-alone fashion, and you don't want to use Docker, we recommend using [pipx](https://github.com/pipxproject/pipx). Please check their README for installation instructions. Once `pipx` is installed you can run
+
+```
+pipx install git+https://github.com/brown-bnc/xnat-tools/archive/v0.1.0-beta.zip
+```
+
+```
+pipx install git+https://github.com/brown-bnc/xnat-tools.git
+```
+
+### Prerequisites:
 
 We first need to install the dcm2niix . This is a dependency of Heudiconv, that doesn't get installed by Heudiconv itself
 
 ```
 brew install dcm2niix
 ```
+
+
+
 
 
 ### Running via poetry
