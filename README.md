@@ -1,13 +1,15 @@
 # XNAT Tools
 
-XNAT tools maintained by the Behavioral Neuroimaging Center for the Brown University MRI users
+XNAT tools maintained by the Behavioral Neuroimaging Center for the Brown University MRI users. In this README we summarize
 
-## XNAT2BIDS
-This python package provides scripts that facilitates exporting data from XNAT to BIDS format.
+1. [Installation](#Installatio)
+2. [XNAT2BIDS](#XNAT2BIDS)
 
-### Installation 
+Additional instructions for the Brown University Community is available on the [BNC User Manual](docs.ccv.brown.edu/)
 
-#### Using Docker
+## Installation 
+
+### Using Docker
 
 ```
 docker pull docker pull brownbnc/xnat_tools:<version>
@@ -19,17 +21,8 @@ docker pull docker pull brownbnc/xnat_tools:<version>
 
 You can confirm the tags [here](https://hub.docker.com/repository/docker/brownbnc/xnat_tools/tags?page=1)
 
-#### Using pipx
 
-If you are using this package in a stand-alone fashion, and you don't want to use Docker, we recommend using [pipx](https://github.com/pipxproject/pipx). Please check their README for installation instructions. Once `pipx` is installed you can run
-
-```
-pipx install git+https://github.com/brown-bnc/xnat-tools/archive/v0.1.0-beta.zip
-```
-
-```
-pipx install git+https://github.com/brown-bnc/xnat-tools.git
-```
+### Python
 
 ### Prerequisites:
 
@@ -39,96 +32,107 @@ We first need to install the dcm2niix . This is a dependency of Heudiconv, that 
 brew install dcm2niix
 ```
 
+### Poetry
 
+This package is developed using [Poetry](https://python-poetry.org). If you are familiar with Poetry, you can add it to your project via 
 
-
-
-### Running via poetry
 ```
-poetry run xnat2bids --session XNAT_DEV_E00009 --host http://bnc.brown.edu/xnat-dev --user <user> --pass <password> --bids_root_dir "~/data/bids-export"
+poetry add git+https://github.com/brown-bnc/xnat-tools.git
 ```
 
-The command performs thevfollowing steps:
+or for a tagged release
 
-1. Export to a heudiconv friendly directory structure. We follow the structure sugegsted by [this ReproIn guide](https://github.com/ReproNim/reproin), enabling us to use their heuristic. Also, note that the given command exports to path /data/xnat/bids-export. We mount this path to our XNAT instance. This step is encapsulated in `src/dicom_export.py`
-2. We run Heudiconv using ReproIn heuristic. This step is encapsulated in `src/run_heudiconv.py`
+```
+poetry add git+https://github.com/brown-bnc/xnat-tools.git@v0.1.0-beta
+```
+
+You can also install xnat_tools using the python package manager of your choice. For instance:
+
+#### PIP
+
+* A Tagged Release
+
+```
+pip install git+https://github.com/brown-bnc/xnat-tools.git@v0.1.0-beta
+```
+
+* Development (Master branch)
+
+```
+pip install git+https://github.com/brown-bnc/xnat-tools.git
+```
+
+#### PIPX
+If you are using this package in a stand-alone fashion, and you don't want to use Docker, we recommend using pipx. Please check their  [installation instructions](https://github.com/pipxproject/pipx). 
+
+Once pipx is installed you install as follows:
+
+A Tagged Release
+
+```
+pipx install git+https://github.com/brown-bnc/xnat-tools.git@v0.1.0-beta
+```
+
+Development (Master branch)
+
+```
+pipx install git+https://github.com/brown-bnc/xnat-tools.git
+```
+
+## XNAT2BIDS
+
+In order to export data from XNAT and convert it in one step you can use the `xnat2bids` script part of this package.
+
+After installation, the console script `xnat2bids` is available in your system. You can invoke it from the terminal as follows:
+
+```
+xnat_user=<user>
+session=<xnat_accession_number>
+bids_root_dir="~/data/bids-export"
+
+xnat2bids --user ${xnat_user}  --session ${session} \
+--bids_root_dir ${bids_root_dir}
+```
+
+### Understanding the inputs
+
+Familiarize yourself with the inputs to xnat2bids
+For a full list of the inputs, you can run:
+
+```
+ xnat2bids --help
+```
+
+Some key optional inputs to be aware of:
+
+* `--bidsmap_file`: `xnat2bids` can take a json file with a dictionary of sequence names to correct/change. For instance you can pass `--bidsmap_file ./my_bidsmap.json`. The bidsmaps directory in this repository has examples of bidsmaps file
+* `--seqlist`: If you only want to export some sequences from XNAT, you can pass the list (use order in your XNAT). e.g., `--seqlist 1 2 3 4 5 7 8 9`
+* `--cleanup`: At the end on the process, the source data is avaialable in two directories `root_dir/xnat-export` and `root_dir/bids/sourcedata`. Passing the `--cleanup` flag removes `root_dir/xnat-export`
+
+
+### Understanding the process
+
+`xnat2bids` performs two main steps:
+
+1. Export to a [Heudiconv](https://github.com/nipy/heudiconv) friendly directory structure. We follow the structure suggested by [the ReproIn guide](https://github.com/ReproNim/reproin), enabling us to use their [heuristic file](https://github.com/nipy/heudiconv/blob/master/heudiconv/heuristics/reproin.py).This step is encapsulated in `xnat_tools/dicom_export.py`
+
+2. We run Heudiconv using ReproIn heuristic. This step is encapsulated in `xnat_tools/run_heudiconv.py`
 
 If you'd like to run those steps separatly, you can do 
 
 ```
-poetry run xnat-dicom-export --session XNAT_DEV_E00009 --host http://bnc.brown.edu/xnat-dev --user <user> --pass <password> --bids_root_dir "~/data/bids-export"
+xnat-dicom-export --user ${xnat_user}  \
+--session ${session}                   \
+--bids_root_dir ${bids_root_dir}
 ```
 
-```
-poetry run xnat-heudiconv --session XNAT_DEV_E00009 --host http://bnc.brown.edu/xnat-dev --user <user> --pass <password> --bids_root_dir "~/data/bids-export"
-```
-
-## Testing in remote ( Developers)
-
-In remote
-
-### Checkout source
-```
-cd maintain/src
-git clone https://github.com/brown-bnc/xnat-docker-plugins.git
-```
-
-### Pull docker 
+Followed by:
 
 ```
-docker pull brownbnc/xnat2bids-heudiconv:v0.1.0
-```
-
-### Run with source and needed volumes
-```
-docker run --rm -it --entrypoint /bin/bash  \
-           -v /maintain/src/xnat-docker-plugins/xnat2bids-heudiconv/:/opt/src/bids/ \
-           -v /mnt/brownresearch/xnat-dev/bids-export/:/data/xnat/bids-export \
-           --name xnat2bids-heudiconv brownbnc/xnat2bids-heudiconv:v0.1.0 
-
-```
-### Run without local source
-```
-docker run --rm -it --entrypoint /bin/bash \
-           -v /mnt/brownresearch/xnat-dev/bids-export/:/data/xnat/bids-export \
-           --name xnat2bids-heudiconv brownbnc/xnat2bids-heudiconv:v0.1.0 
-
-```
-
-```
-docker run --rm -it --entrypoint /bin/bash \
-           -v /Users/mrestrep/data/bids-export/:/data/xnat/bids-export \
-           --name xnat2bids-heudiconv brownbnc/xnat2bids-heudiconv:v0.1.0 
-
-```
-
-### Using singularity
-
-```
-singularity build xnat2bids-heudiconv-v0.1.0.simg docker://brownbnc/xnat2bids-heudiconv:v0.1.0
-
-singularity shell -B /users/mrestrep/data/mrestrep/bids-export/:/data/xnat/bids-export xnat2bids-heudiconv-v0.1.0.simg
-
+xnat-heudiconv --user ${xnat_user}  \
+--session ${session}                \
+--bids_root_dir ${bids_root_dir}
 ```
 
 
-### Run scripts
 
-#### Export dicoms
-```
-python dicom_export.py --host http://bnc.brown.edu/xnat-dev --user <user> --password <pass> --subject BIDSTEST --session XNAT_DEV_E00009 --project SANES_SADLUM --bids_root_dir "/data/xnat-dev/bids-export"
-```
-#### Convert to BIDS using Heudiconv
-
-```
-python run_heudiconv.py --host http://bnc.brown.edu/xnat-dev --user <user> --password <pass> --subject BIDSTEST --session XNAT_DEV_E00009 --project SANES_SADLUM --bids_root_dir "/data/xnat/bids-export"
-```
-
-##### Direct call to Heudiconv from inside container
-If need to test Heudiconv directly we can do:
-
-<!-- heudiconv -f reproin --bids -o /data/xnat-dev/bids-export/sanes/study-sadlum/rawdata/sub-bidstest/ses-xnat_dev_e00009 --files /data/xnat-dev/bids-export/sanes/study-sadlum/sourcedata/sub-bidstest/ses-xnat_dev_e00009 -c none -->
-
-```
-heudiconv -f reproin --bids -o /data/xnat/bids-export/sanes/study-sadlum/rawdata/ --dicom_dir_template /data/xnat/bids-export/sanes/study-sadlum/sourcedata/sub-{subject}/ses-{session}/*/*.dcm --subjects bidstest --ses xnat_dev_e00009
-```
