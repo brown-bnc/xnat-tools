@@ -24,7 +24,7 @@ def parse_args(args):
         description="Run Heudiconv on DICOMS form XNAT dump using Reproin Heuristic")
     parser.add_argument(
         "--host",
-        default="http://bnc.brown.edu/xnat",
+        default="https://bnc.brown.edu/xnat",
         help="Host")
     parser.add_argument(
         "-u", "--user",

@@ -18,7 +18,7 @@ def parse_args(args):
         description="BIDSify an XNAT session")
     parser.add_argument(
         "--host",
-        default="http://bnc.brown.edu/xnat",
+        default="https://bnc.brown.edu/xnat",
         help="Host")
     parser.add_argument(
         "-u", "--user",
