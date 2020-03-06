@@ -70,6 +70,13 @@ def parse_args(args):
         nargs="*",  # 0 or more values expected => creates a list
         type=int)
     parser.add_argument(
+        "--skiplist",
+        help="List of sequences from XNAT to SKIP. Accepts a list --skiplist 1 2 3",
+        required=False,
+        default=[],
+        nargs="*",  # 0 or more values expected => creates a list
+        type=int)
+    parser.add_argument(
         '-v',
         '--verbose',
         dest="loglevel",
@@ -120,6 +127,7 @@ def main(args):
 
     build_dir = os.getcwd()
     seqlist = args.seqlist
+    skiplist = args.skiplist
 
     # Set up working directory
     if not os.access(bids_root_dir, os.R_OK):
@@ -149,6 +157,10 @@ def main(args):
     if seqlist != []:
         scanIDList = [scanIDList[i-1] for i in seqlist]
         seriesDescList = [seriesDescList[i-1] for i in seqlist]
+
+    if skiplist != []:
+        scanIDList = [scanIDList[i-1] for i in scanIDList if i not in skiplist ]
+        seriesDescList = [seriesDescList[i-1] for i in scanIDList if i not in skiplist]
 
     _logger.info("---------------------------------")
     _logger.info("Processing Series: ")

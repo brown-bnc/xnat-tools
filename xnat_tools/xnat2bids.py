@@ -44,7 +44,14 @@ def parse_args(args):
         default="")
     parser.add_argument(
         "--seqlist",
-        help="List of sequences from XNAT to run if don't want to process all seuqences",
+        help="List of sequences from XNAT to run if don't want to process all seuqences. Accepts a list --seqlist 1 2 3",
+        required=False,
+        default=[],
+        nargs="*",  # 0 or more values expected => creates a list
+        type=int)
+    parser.add_argument(
+        "--skiplist",
+        help="List of sequences from XNAT to SKIP. Accepts a list --skiplist 1 2 3",
         required=False,
         default=[],
         nargs="*",  # 0 or more values expected => creates a list
