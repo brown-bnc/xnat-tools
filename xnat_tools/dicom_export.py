@@ -159,8 +159,8 @@ def main(args):
         seriesDescList = [seriesDescList[i-1] for i in seqlist]
 
     if skiplist != []:
-        scanIDList = [scanIDList[i-1] for i in scanIDList if i not in skiplist ]
-        seriesDescList = [seriesDescList[i-1] for i in scanIDList if i not in skiplist]
+        scanIDList = [scanIDList[i] for i, idx in enumerate(scanIDList) if int(idx) not in skiplist ]
+        seriesDescList = [seriesDescList[i-1] for i,idx in enumerate(scanIDList) if int(idx) not in skiplist]
 
     _logger.info("---------------------------------")
     _logger.info("Processing Series: ")
