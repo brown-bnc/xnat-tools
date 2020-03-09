@@ -112,6 +112,8 @@ def setup_logging(loglevel, logfile):
             logging.StreamHandler(sys.stdout)
         ]
     )
+    coloredlogs.install(level=loglevel, logger=_logger)
+    
 
 
 def main(args):
@@ -144,15 +146,22 @@ def main(args):
 
     # Set up logging
     logs_dir = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/logs"
+    
     if not os.path.exists(logs_dir):
         os.makedirs(logs_dir)
-    
+
     setup_logging(args.loglevel, logs_dir + "/xnat_export.log")
-    coloredlogs.install()
 
     bids_session_dir = prepare_bids_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
     
     scanIDList, seriesDescList = get_scan_ids(connection, host, session)
+
+    _logger.debug("---------------------------------")
+    _logger.debug("scanIDList and seriesDescList : ")
+    _logger.debug(scanIDList)
+    _logger.debug(seriesDescList)
+    _logger.debug("---------------------------------")
+
 
     if seqlist != []:
         scanIDList = [scanIDList[i-1] for i in seqlist]
