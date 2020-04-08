@@ -54,6 +54,11 @@ def parse_args(args):
         help="Session ID",
         required=True)
     parser.add_argument(
+        "--session_suffix",
+        help="Suffix of the session for BIDS e.g, 01. This will produce a sesstion label of sess-01",
+        required=True,
+        type=str)
+    parser.add_argument(
         "--bids_root_dir",
         help="Root output directory for BIDS files",
         required=True)
@@ -124,6 +129,7 @@ def main(args):
     """
     host = args.host
     session = args.session
+    session_suffix = args.session_suffix
     bidsmap_file = args.bidsmap_file
     bids_root_dir = os.path.expanduser(args.bids_root_dir)
 
@@ -142,7 +148,7 @@ def main(args):
     
     project, subject = get_project_and_subject_id(connection, host, session)
     
-    pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_bids_prefixes(project, subject, session)
+    pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_bids_prefixes(project, subject, session_suffix)
 
     # Set up logging
     logs_dir = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/logs"
