@@ -9,6 +9,34 @@ from xnat_tools.xnat_utils import get, download
 
 _logger = logging.getLogger(__name__)
 
+def insert_intended_for_fmap(bids_dir, sub_list):
+
+    for subj in sub_list:
+
+        _logger.info('Processing participant  %s' % heudi_output_dir)
+        print subj
+
+        #makes list of the json files to edit
+        fmap_path=f"{bids_dir}/sub-{subj}/fmap"
+        func_path=f"{bids_dir}/sub-{subj}/func"
+        fmap_files=[os.path.join(fmap_path, f) for f in os.listdir(fmap_path)]
+        json_files = [f for f in fmap_files if f.endswith('.json')]
+        #makes list of the func files to add into the intended for field
+        func_files = [f"func/{file}" for file in os.listdir(func_path)]
+        nii_files = [i for i in func_files if i.endswith('.nii.gz')]
+
+        #Open the json files ('r' for read only) as a dictionary add the Intended for key 
+        #and add the func files to the key value
+        #The f.close is a duplication. f can only be used inside the with "loop"# we open the file again to write only and dump the dictionary to the files
+        for file in json_files:
+            with open(file,'r') as f:
+                data=json.load(f)
+                data["IntendedFor"]=nii_files
+                f.close
+            with open(file,'w') as f:
+                json.dump(data,f,indent=4,sort_keys=True)
+                f.close
+
 def prepare_bids_prefixes(project, subject, session):
     #get PI from project name
     pi_prefix = project.lower().split('_')[0] 
