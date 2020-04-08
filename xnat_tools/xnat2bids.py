@@ -34,6 +34,11 @@ def parse_args(args):
         help="Session ID",
         required=True)
     parser.add_argument(
+        "--session_suffix",
+        help="Suffix of the session for BIDS e.g, 01. This will produce a sesstion label of sess-01",
+        required=True,
+        type=str)
+    parser.add_argument(
         "--bids_root_dir",
         help="Root output directory for BIDS files",
         required=True)

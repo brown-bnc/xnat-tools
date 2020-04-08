@@ -15,6 +15,7 @@ def test_xnat2bids():
     xnat_user = "testuser"
     xnat_password  = os.getenv('XNAT_PASSWORD')
     session = "XNAT2_E00007"
+    session_suffix = "01"
     bids_root_dir = "./tests/xnat2bids"
 
     if os.path.exists(bids_root_dir):
@@ -22,7 +23,8 @@ def test_xnat2bids():
     
     os.mkdir(bids_root_dir)
 
-    xnat2bids_cmd = f"xnat2bids --user {xnat_user} --password {xnat_password} --session {session} \
+    xnat2bids_cmd = f"xnat2bids --user {xnat_user} --password {xnat_password} \
+                      --session {session} --session_suffix {session_suffix} \
                       --bids_root_dir {bids_root_dir} --seqlist 1 2 3 6 --skiplist 2 3"
 
 
@@ -30,9 +32,9 @@ def test_xnat2bids():
     
     subprocess.run(xnat2bids_split_cmd)
 
-    bids_bold_run_path = "tests/xnat2bids/ashenhav/study-1222/bids/sub-test/ses-xnat2e00007/func"
+    bids_bold_run_path = f"tests/xnat2bids/ashenhav/study-1222/bids/sub-test/ses-{session_suffix}/func"
 
-    bids_bold_file = "sub-test_ses-xnat2e00007_task-RDMmotion_run-01_echo-1_bold"
+    bids_bold_file = f"sub-test_ses-{session_suffix}_task-RDMmotion_run-01_echo-1_bold"
 
     assert os.path.exists(bids_bold_run_path + "/" + bids_bold_file + ".json")
     assert os.path.exists(bids_bold_run_path + "/" + bids_bold_file + ".nii.gz")
