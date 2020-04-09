@@ -34,15 +34,15 @@ def parse_args(args):
         help="Root for BIDS for current experiment. The sub-* subfolders are expected under this directory",
         required=True)
     parser.add_argument(
-        "--sublist",
-        help="List of participants to post process. If empty, all participants are processed. Accepts a list --sublist 1 2 3",
+        "--subjlist",
+        help="List of participants to post process. If empty, all participants are processed. Accepts a list --subjlist 1 2 3",
         required=False,
         default=[],
         nargs="*",  # 0 or more values expected => creates a list
         type=str)
     parser.add_argument(
-        "--skipsubs",
-        help="List of participants to SKIP. Accepts a list --skipsubs 1 2 3",
+        "--skipsubj",
+        help="List of participants to SKIP. Accepts a list --skipsubj 1 2 3",
         required=False,
         default=[],
         nargs="*",  # 0 or more values expected => creates a list
@@ -96,30 +96,29 @@ def main(args):
     setup_logging(args.loglevel)
 
     bids_experiment_dir = os.path.expanduser(args.bids_experiment_dir)
-    sublist = args.sublist
-    skipsubs = args.skipsubs
+    subjlist = args.subjlist
+    skipsubj = args.skipsubj
 
     # Set up working directory
     if not os.access(bids_experiment_dir, os.R_OK):
         raise ValueError('BIDS Experiment directory must exist')
 
 
-    if sublist == []:
+    if subjlist == []:
         files = os.listdir(bids_experiment_dir)
-        sublist = [x for x in files if x.startswith('sub-')]
-    sublist = [x.strip('sub-') for x in sublist]
-    skipsubs = [x.strip('sub-') for x in skipsubs]
+        subjlist = [x for x in files if x.startswith('sub-')]
+        
+    subjlist = [x.strip('sub-') for x in subjlist]
+    skipsubj = [x.strip('sub-') for x in skipsubj]
 
-    if skipsubs != []:
-        sublist = [x for x in sublist if x not in skipsubs ]
+    if skipsubj != []:
+        subjlist = [x for x in subjlist if x not in skipsubj ]
 
     _logger.info("---------------------------------")
-    _logger.info("Processing Series: ")
-    for s in seriesDescList:
-        _logger.info(s)
+    _logger.info(f"Processing Subjects {subjlist}: ")
     _logger.info("---------------------------------")
 
-    insert_intended_for_fmap(bids_experiment_dir, sub_list):
+    insert_intended_for_fmap(bids_experiment_dir, subjlist)
 
 
 def run():
