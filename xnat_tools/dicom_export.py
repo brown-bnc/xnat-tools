@@ -22,9 +22,6 @@ from xnat_tools.xnat_utils import *
 
 _logger = logging.getLogger(__name__)
 
-def isTrue(arg):
-    return arg is not None and (arg == 'Y' or arg == '1' or arg == 'True')
-
 def parse_args(args):
     """Parse command line parameters
 

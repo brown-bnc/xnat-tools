@@ -4,10 +4,53 @@ import logging
 import collections
 import six
 import pydicom
+import stat
 from six.moves import zip
 from xnat_tools.xnat_utils import get, download
 
 _logger = logging.getLogger(__name__)
+
+def insert_intended_for_fmap(bids_dir, sub_list):
+
+    for subj in sub_list:
+
+        #makes list of the json files to edit
+        subj_path = f"{bids_dir}/sub-{subj}"
+        _logger.info(f"Processing participant {subj} at path {subj_path}")
+
+
+        subj_sub_dirs = os.listdir(subj_path)
+        sess_list = [x for x in subj_sub_dirs if x.startswith('ses-')]
+        _logger.info(f"List of sessions sub-directories {sess_list}")
+
+        for sess in sess_list:
+
+            fmap_path=f"{bids_dir}/sub-{subj}/{sess}/fmap"
+            func_path=f"{bids_dir}/sub-{subj}/{sess}/func"
+            fmap_files=[os.path.join(fmap_path, f) for f in os.listdir(fmap_path)]
+            json_files = [f for f in fmap_files if f.endswith('.json')]
+            _logger.info(f"List of JSON files to amend {json_files}")
+
+            #makes list of the func files to add into the intended for field
+            func_files = [f"func/{file}" for file in os.listdir(func_path)]
+            nii_files = [i for i in func_files if i.endswith('.nii.gz')]
+            _logger.info(f"List of NII files")
+
+            #Open the json files ('r' for read only) as a dictionary add the Intended for key 
+            #and add the func files to the key value
+            #The f.close is a duplication. f can only be used inside the with "loop"# we open the file again to write only and dump the dictionary to the files
+            for file in json_files:
+                os.chmod(file,  0o664)
+                with open(file,'r') as f:
+                    _logger.info(f"Processing file {f}")
+                    data=json.load(f)
+                    data["IntendedFor"]=nii_files
+                    f.close
+                with open(file,'w') as f:
+                    json.dump(data,f,indent=4,sort_keys=True)
+                    f.close
+                    _logger.info(f"Done with re-write")
+
 
 def prepare_bids_prefixes(project, subject, session):
     #get PI from project name

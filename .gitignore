@@ -3,6 +3,9 @@
 .DS_Store
 */.DS_Store
 
+# tests results
+tests/xnat2bids/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
