@@ -7,10 +7,6 @@ import json
 from dotenv import load_dotenv
 load_dotenv()
 
-def test_version():
-    assert __version__ == '0.1.1'
-
-
 def test_xnat2bids():
     """Integration test for xnat2bids executable"""
     xnat_user = "testuser"
