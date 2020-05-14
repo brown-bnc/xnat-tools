@@ -72,16 +72,11 @@ def get_scan_ids(connection, host, session):
     _logger.info("------------------------------------------------")
     _logger.info(f"Get scans.")
     r = get(connection, host + "/data/experiments/%s/scans" % session, params={"format": "json"})
-    scanRequestResultList = r.json()["ResultSet"]["Result"]
+    scanRequestResultList = sorted(r.json()["ResultSet"]["Result"], key=lambda x: int(x['ID']))
     scanIDList = [scan['ID'] for scan in scanRequestResultList]
     seriesDescList = [scan['series_description'] for scan in scanRequestResultList]  # { id: sd for (scan['ID'], scan['series_description']) in scanRequestResultList }
     _logger.debug('Found scans %s.' % ', '.join(scanIDList))
     _logger.debug('Series descriptions %s' % ', '.join(seriesDescList))
-
-    # Fall back on scan type if series description field is empty
-    if set(seriesDescList) == set(['']):
-        seriesDescList = [scan['type'] for scan in scanRequestResultList]
-        _logger.debug('Fell back to scan types %s' % ', '.join(seriesDescList))
     _logger.info("------------------------------------------------")
 
     return scanIDList, seriesDescList
