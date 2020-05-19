@@ -3,7 +3,7 @@ Filename: /dicom2bids.py
 Path: xnat-dicom2bids-session
 Created Date: Monday, August 26th 2019, 10:12:40 am
 Maintainer: Isabel Restrepo
-Descriptyion: Export a XNAT session into BIDS directory format
+Description: Export a XNAT session into BIDS directory format
 
 
 Original file lives here: https://bitbucket.org/nrg_customizations/nrg_pipeline_dicomtobids/src/default/scripts/catalog/DicomToBIDS/scripts/dcm2bids_wholeSession.py
