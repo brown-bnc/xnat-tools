@@ -7,6 +7,7 @@ import pydicom
 import stat
 from six.moves import zip
 from xnat_tools.xnat_utils import get, download
+from collections import defaultdict
 
 _logger = logging.getLogger(__name__)
 
@@ -202,6 +203,8 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
         study_bids_dir: BIDS directory to copy simlinks to. Typically the RESOURCES/BIDS
     """
 
+    run_number_cache = defaultdict(int)
+
     # Detect duplicate sequences, assume they are runs
     # seriesDescList = detect_multiple_runs(seriesDescList)
 
@@ -226,6 +229,11 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
             match = bidsnamemap[seriesdesc]
 
         match = handle_scanner_exceptions(match)
+
+        if 'run+' in match:
+            run_number_cache[match] += 1
+            _logger.info(f"Replacing 'run+' with run number {run_number_cache[match]}")
+            match = match.replace('run+', f"run-{run_number_cache[match]:02}")
         bidsname = match
         
 
