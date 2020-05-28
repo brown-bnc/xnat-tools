@@ -7,7 +7,7 @@ XNAT tools maintained by the Behavioral Neuroimaging Center for the Brown Univer
 
 Additional instructions for the Brown University Community is available on the [BNC User Manual](docs.ccv.brown.edu/)
 
-## Installation 
+## Installation
 
 ### Using Docker
 
@@ -15,12 +15,12 @@ Additional instructions for the Brown University Community is available on the [
 docker pull docker pull brownbnc/xnat_tools:<version>
 ```
 
-*Version:*
-* `latest`: Is the build of master
-* `vX.X.X`: Latest tagged stable release
+_Version:_
+
+- `latest`: Is the build of master
+- `vX.X.X`: Latest tagged stable release
 
 You can confirm the tags [here](https://hub.docker.com/repository/docker/brownbnc/xnat_tools/tags?page=1)
-
 
 ### Python
 
@@ -34,7 +34,7 @@ brew install dcm2niix
 
 ### Poetry
 
-This package is developed using [Poetry](https://python-poetry.org). If you are familiar with Poetry, you can add it to your project via 
+This package is developed using [Poetry](https://python-poetry.org). If you are familiar with Poetry, you can add it to your project via
 
 ```
 poetry add git+https://github.com/brown-bnc/xnat-tools.git
@@ -50,20 +50,21 @@ You can also install xnat_tools using the python package manager of your choice.
 
 #### PIP
 
-* A Tagged Release
+- A Tagged Release
 
 ```
 pip install git+https://github.com/brown-bnc/xnat-tools.git@v0.1.0-beta
 ```
 
-* Development (Master branch)
+- Development (Master branch)
 
 ```
 pip install git+https://github.com/brown-bnc/xnat-tools.git
 ```
 
 #### PIPX
-If you are using this package in a stand-alone fashion, and you don't want to use Docker, we recommend using pipx. Please check their  [installation instructions](https://github.com/pipxproject/pipx). 
+
+If you are using this package in a stand-alone fashion, and you don't want to use Docker, we recommend using pipx. Please check their [installation instructions](https://github.com/pipxproject/pipx).
 
 Once pipx is installed you install as follows:
 
@@ -105,10 +106,9 @@ For a full list of the inputs, you can run:
 
 Some key optional inputs to be aware of:
 
-* `--bidsmap_file`: `xnat2bids` can take a json file with a dictionary of sequence names to correct/change. For instance you can pass `--bidsmap_file ./my_bidsmap.json`. The bidsmaps directory in this repository has examples of bidsmaps file
-* `--seqlist`: If you only want to export some sequences from XNAT, you can pass the list (use order in your XNAT). e.g., `--seqlist 1 2 3 4 5 7 8 9`
-* `--cleanup`: At the end on the process, the source data is avaialable in two directories `root_dir/xnat-export` and `root_dir/bids/sourcedata`. Passing the `--cleanup` flag removes `root_dir/xnat-export`
-
+- `--bidsmap_file`: `xnat2bids` can take a json file with a dictionary of sequence names to correct/change. For instance you can pass `--bidsmap_file ./my_bidsmap.json`. The bidsmaps directory in this repository has examples of bidsmaps file
+- `--seqlist`: If you only want to export some sequences from XNAT, you can pass the list (use order in your XNAT). e.g., `--seqlist 1 2 3 4 5 7 8 9`
+- `--cleanup`: At the end on the process, the source data is avaialable in two directories `root_dir/xnat-export` and `root_dir/bids/sourcedata`. Passing the `--cleanup` flag removes `root_dir/xnat-export`
 
 ### Understanding the process
 
@@ -118,7 +118,7 @@ Some key optional inputs to be aware of:
 
 2. We run Heudiconv using ReproIn heuristic. This step is encapsulated in `xnat_tools/run_heudiconv.py`
 
-If you'd like to run those steps separatly, you can do 
+If you'd like to run those steps separatly, you can do
 
 ```
 xnat-dicom-export --user ${xnat_user}  \
@@ -134,5 +134,19 @@ xnat-heudiconv --user ${xnat_user}  \
 --bids_root_dir ${bids_root_dir}
 ```
 
+## Testing
 
+To run tests with Peotry, run:
 
+```
+poetry run pytest -s test
+```
+
+You will need to have a local `.env` file where you set some environment variables, e.i `XNAT_PASS`
+
+At the moment the tests can not run bids validation to do so, you can comment out the line that cleans the output directory and run the validator manually using docker.
+
+```
+bids_directory=${PWD}/tests/xnat2bids/ashenhav/study-1222/bids/
+docker run -ti --rm -v ${bids_directory}:/data:ro bids/validator /data
+```
