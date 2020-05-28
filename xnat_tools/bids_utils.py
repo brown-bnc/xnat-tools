@@ -12,6 +12,7 @@ from collections import defaultdict
 _logger = logging.getLogger(__name__)
 
 def insert_intended_for_fmap(bids_dir, sub_list):
+    """Insert the IntendedFor field to JSON sidecart for fieldmap data"""
 
     for subj in sub_list:
 
@@ -33,7 +34,7 @@ def insert_intended_for_fmap(bids_dir, sub_list):
             _logger.info(f"List of JSON files to amend {json_files}")
 
             #makes list of the func files to add into the intended for field
-            func_files = [f"func/{file}" for file in os.listdir(func_path)]
+            func_files = [f"{sess}/func/{file}" for file in os.listdir(func_path)]
             nii_files = [i for i in func_files if i.endswith('.nii.gz')]
             _logger.info(f"List of NII files")
 
