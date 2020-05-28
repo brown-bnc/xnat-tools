@@ -113,4 +113,3 @@ venv.bak/
 
 # tmp directory
 tmp/
-poetry.lock
