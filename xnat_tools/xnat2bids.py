@@ -1,6 +1,7 @@
 import sys
 import argparse
 import logging
+from datetime import datetime   
 import xnat_tools.dicom_export as dicom_export
 import xnat_tools.run_heudiconv as run_heudiconv
 from xnat_tools.xnat_utils import XNATPass
@@ -61,6 +62,13 @@ def parse_args(args):
         default=[],
         nargs="*",  # 0 or more values expected => creates a list
         type=int)
+    parser.add_argument(
+        "log_id",
+        help="ID or suffix to append to logfile, If empty, date is appended"
+        required=False
+        default=datetime.now().strftime("%m-%d-%Y-%H-%M-%S")
+        type=str
+    )
     parser.add_argument(
         '-v',
         '--verbose',

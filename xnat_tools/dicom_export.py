@@ -79,6 +79,13 @@ def parse_args(args):
         nargs="*",  # 0 or more values expected => creates a list
         type=int)
     parser.add_argument(
+        "log_id",
+        help="ID or suffix to append to logfile, If empty, date is appended"
+        required=False
+        default=datetime.now().strftime("%m-%d-%Y-%H-%M-%S")
+        type=str
+    )
+    parser.add_argument(
         '-v',
         '--verbose',
         dest="loglevel",
@@ -153,7 +160,7 @@ def main(args):
     if not os.path.exists(logs_dir):
         os.makedirs(logs_dir)
 
-    setup_logging(args.loglevel, logs_dir + "/xnat_export.log")
+    setup_logging(args.loglevel, f"{logs_dir}/export-{log_id}.log")
 
     bids_session_dir = prepare_bids_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
     
