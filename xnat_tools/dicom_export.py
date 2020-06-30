@@ -99,6 +99,11 @@ def parse_args(args):
         help="set loglevel to DEBUG",
         action='store_const',
         const=logging.DEBUG)
+    parser.add_argument(
+        "--overwrite",
+        help="Remove directories where prior results for session/participant may exist",
+        action='store_true',
+        default=False)
 
     args, _ = parser.parse_known_args(args)
     return args

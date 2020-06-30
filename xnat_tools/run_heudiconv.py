@@ -55,6 +55,11 @@ def parse_args(args):
         default=datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
         type=str
     )
+    parser.add_argument(
+        "--overwrite",
+        help="Remove directories where prior results for session/participant may exist",
+        action='store_true',
+        default=False)
 
     args, _ = parser.parse_known_args(args)
     return args
@@ -74,6 +79,7 @@ def main(args):
     build_dir = os.getcwd()
     cleanup = args.cleanup
     log_id = args.log_id
+    overwrite = args.overwrite
 
     # Set up working directory
     if not os.access(bids_root_dir, os.R_OK):
@@ -132,6 +138,7 @@ def main(args):
     if cleanup:
         print("Removing XNAT export.")
         shutil.rmtree(f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export")
+
         print("Moving XNAT export log to derivatives folder")
 
         # check if directory exists or not yet

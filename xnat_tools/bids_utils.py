@@ -5,6 +5,8 @@ import collections
 import six
 import pydicom
 import stat
+import shutil
+
 from six.moves import zip
 from xnat_tools.xnat_utils import get, download
 from collections import defaultdict
@@ -65,18 +67,22 @@ def prepare_bids_prefixes(project, subject, session):
 
     return pi_prefix, study_prefix, subject_prefix, session_prefix
 
-def prepare_bids_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix):
+def prepare_export_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix, overwrite=False):
 
-    bids_study_dir = os.path.join(bids_root_dir, pi_prefix, study_prefix)
-    bids_subject_dir = os.path.join(bids_study_dir, "xnat-export", subject_prefix)
-    bids_session_dir = os.path.join(bids_subject_dir, session_prefix)
+    study_dir = os.path.join(bids_root_dir, pi_prefix, study_prefix)
+    subject_dir = os.path.join(study_dir, "xnat-export", subject_prefix)
+    session_dir = os.path.join(subject_dir, session_prefix)
 
     # Set up working directory
-    if not os.access(bids_session_dir, os.R_OK):
-        _logger.info('Making output BIDS Session directory %s' % bids_study_dir)
-        os.makedirs(bids_session_dir)
+    if overwrite and os.path.exists(session_dir):
+        _logger.info('Removing existing xnat-export session directory %s' % session_dir)
+        shutil.rmtree(session_dir, ignore_errors=True)
 
-    return bids_session_dir
+    if not os.access(session_dir, os.R_OK):
+        _logger.info('Making output xnat-export session directory %s' % session_dir)
+        os.makedirs(session_dir)
+
+    return session_dir
 
 def prepare_heudi_prefixes(project, subject, session):
     #get PI from project name
@@ -89,12 +95,21 @@ def prepare_heudi_prefixes(project, subject, session):
 
     return pi_prefix, study_prefix, subject_prefix, session_prefix
 
-def prepare_heudiconv_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix):
+def prepare_heudiconv_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix, overwrite=False):
 
     heudi_study_dir = os.path.join(bids_root_dir, pi_prefix, study_prefix)
     heudi_output_dir = os.path.join(heudi_study_dir, "bids")
+    subject_dir = os.path.join(heudi_output_dir, subject_prefix)
+    session_dir = os.path.join(subject_dir, session_prefix)
 
     # Set up working directory
+    if overwrite and os.path.exists(session_dir):
+        _logger.info('Removing existing heudi session directory %s' % session_dir)
+        shutil.rmtree(session_dir)
+        sbj = subject_prefix.split("-")[1]
+        heudi_hidden_dir = os.path.join(heudi_output_dir,".heudiconv", sbj, session_dir)
+        shutil.rmtree(heudi_hidden_dir)
+
     if not os.access(heudi_output_dir, os.R_OK):
         _logger.info('Making output BIDS Session directory %s' % heudi_output_dir)
         os.makedirs(heudi_output_dir)
