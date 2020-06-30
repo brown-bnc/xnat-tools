@@ -206,11 +206,7 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
 
     run_number_cache = defaultdict(int)
 
-    # Detect duplicate sequences, assume they are runs
-    # seriesDescList = detect_multiple_runs(seriesDescList)
-
-    # Cheat and reverse scanid and seriesdesc lists so numbering is in the right order
-    for scanid, seriesdesc in zip(reversed(scanIDList), reversed(seriesDescList)):
+    for scanid, seriesdesc in zip(scanIDList, seriesDescList):
 
         _logger.info("---------------------------------")
 
@@ -221,15 +217,16 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
         #otherwise we assume decription is correct and let heudiconv do the work
         if seriesdesc not in bidsnamemap:
             _logger.info(f"Series {seriesdesc}  not found in {bidsnamemap}")
-            # bidsname = "Z"
-            # continue  # Exclude series from processing
             match = seriesdesc
 
         else:
             _logger.info(f"Series {seriesdesc}  to be replaced with {bidsnamemap[seriesdesc]}")
             match = bidsnamemap[seriesdesc]
+        
+        _logger.debug(f"bidsname after searching bidsmap: {match}")
 
         match = handle_scanner_exceptions(match)
+        _logger.debug(f"bidsname after scanner fixes: {match}")
 
         if 'run+' in match:
             run_number_cache[match] += 1
@@ -247,11 +244,9 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
 
         if len(dicomResourceList) == 0:
             _logger.debug("Scan %s has no DICOM resource." % scanid)
-            # scanInfo['hasDicom'] = False
             continue
         elif len(dicomResourceList) > 1:
             _logger.debug("Scan %s has more than one DICOM resource Skipping." % scanid)
-            # scanInfo['hasDicom'] = False
             continue
 
         dicomResource = dicomResourceList[0] if len(dicomResourceList) > 0 else None

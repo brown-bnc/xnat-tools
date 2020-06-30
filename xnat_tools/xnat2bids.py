@@ -63,10 +63,10 @@ def parse_args(args):
         nargs="*",  # 0 or more values expected => creates a list
         type=int)
     parser.add_argument(
-        "log_id",
-        help="ID or suffix to append to logfile, If empty, date is appended"
-        required=False
-        default=datetime.now().strftime("%m-%d-%Y-%H-%M-%S")
+        "--log_id",
+        help="ID or suffix to append to logfile, If empty, date is appended",
+        required=False,
+        default=datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
         type=str
     )
     parser.add_argument(

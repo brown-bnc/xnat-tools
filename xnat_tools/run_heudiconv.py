@@ -4,6 +4,8 @@ import argparse
 import shlex
 import shutil
 import glob
+from datetime import datetime
+from subprocess import Popen, PIPE, STDOUT
 from pathlib import Path
 from xnat_tools.xnat_utils import *
 from xnat_tools.bids_utils import *
@@ -47,10 +49,10 @@ def parse_args(args):
         default=False,
     )
     parser.add_argument(
-        "log_id",
-        help="ID or suffix to append to logfile, If empty, date is appended"
-        required=False
-        default=datetime.now().strftime("%m-%d-%Y-%H-%M-%S")
+        "--log_id",
+        help="ID or suffix to append to logfile, If empty, date is appended",
+        required=False,
+        default=datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
         type=str
     )
 
@@ -71,6 +73,7 @@ def main(args):
     bids_root_dir = os.path.expanduser(args.bids_root_dir)
     build_dir = os.getcwd()
     cleanup = args.cleanup
+    log_id = args.log_id
 
     # Set up working directory
     if not os.access(bids_root_dir, os.R_OK):
@@ -95,45 +98,40 @@ def main(args):
     heudi_output_dir = prepare_heudiconv_output_path(
         bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix
     )
-    dicom_dir_template = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/sub-{{subject}}/ses-{{session}}/"
+    dicom_dir_template = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/sub-{subject}/ses-{session_prefix}"
 
     # check if the extension of the images is dcm or IMA
     dicom_ext = "dcm"
-
-    if len(glob.glob("{dicom_dir_template}/*.dcm")) == 0:
-        if len(glob.glob("{dicom_dir_template}/*.IMA")) > 0:
+    if len(glob.glob(f"{dicom_dir_template}/*/*.dcm")) == 0:
+        if len(glob.glob(f"{dicom_dir_template}/*/*.IMA")) > 0:
             dicom_ext = "IMA"
         else:
-            EnvironmentError(f"No .dcm or .IMA files found in {dicom_dir_template}")
+            raise ValueError(f"No .dcm or .IMA files found in {dicom_dir_template}")
 
     heudi_cmd = f"heudiconv -f reproin --bids \
     -o {heudi_output_dir} \
-    --dicom_dir_template {bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/sub-{{subject}}/ses-{{session}}/*/*.dcm \
+    --dicom_dir_template {bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/sub-{{subject}}/ses-{{session}}/*/*.{dicom_ext} \
     --subjects {subject_prefix} --ses {session_prefix}"
 
     heudi_split_cmd = shlex.split(heudi_cmd)
 
     print(f"Executing Heudiconv command: {heudi_cmd}")
 
-    stdout_file = open(
-        str(Path(heudi_output_dir).parent) + f"/logs/heudiconv-stdout-{log_id}.log", "a"
-    )
-    stderr_file = open(
-        str(Path(heudi_output_dir).parent) + f"/logs/heudiconv-stderr-{log_id}.log", "a"
-    )
 
-    process = subprocess.run(
-        heudi_split_cmd, stdout=stdout_file, stderr=stderr_file, universal_newlines=True
-    )
-    # process = subprocess.run(heudi_split_cmd)
+    logfile = str(Path(heudi_output_dir).parent) + f"/logs/heudiconv-{log_id}.log"
 
-    stdout_file.close()
-    stderr_file.close()
+
+    with Popen(heudi_split_cmd, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p: 
+        with open(logfile, 'a') as file: 
+            for line in p.stdout: 
+                sys.stdout.write(line) 
+                file.write(line) 
+
     print("Done with Heudiconv BIDS Convesion.")
 
     if cleanup:
         print("Removing XNAT export.")
-        # shutil.rmtree(f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export")
+        shutil.rmtree(f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export")
         print("Moving XNAT export log to derivatives folder")
 
         # check if directory exists or not yet

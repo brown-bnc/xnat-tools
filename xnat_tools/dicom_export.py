@@ -15,7 +15,7 @@ import coloredlogs, logging
 import os
 import sys
 import tempfile
-
+from datetime import datetime   
 
 from xnat_tools.bids_utils import *
 from xnat_tools.xnat_utils import *
@@ -79,10 +79,10 @@ def parse_args(args):
         nargs="*",  # 0 or more values expected => creates a list
         type=int)
     parser.add_argument(
-        "log_id",
-        help="ID or suffix to append to logfile, If empty, date is appended"
-        required=False
-        default=datetime.now().strftime("%m-%d-%Y-%H-%M-%S")
+        "--log_id",
+        help="ID or suffix to append to logfile, If empty, date is appended",
+        required=False,
+        default=datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
         type=str
     )
     parser.add_argument(
@@ -140,6 +140,7 @@ def main(args):
     build_dir = os.getcwd()
     seqlist = args.seqlist
     skiplist = args.skiplist
+    log_id = args.log_id
 
     # Set up working directory
     if not os.access(bids_root_dir, os.R_OK):
@@ -167,9 +168,9 @@ def main(args):
     scanIDList, seriesDescList = get_scan_ids(connection, host, session)
 
     _logger.debug("---------------------------------")
-    _logger.debug("scanIDList and seriesDescList : ")
-    _logger.debug(scanIDList)
-    _logger.debug(seriesDescList)
+    _logger.debug("Processing Series (Before reading seqlist): ")
+    for (i, s) in zip(scanIDList, seriesDescList):
+        _logger.debug(f"Series: {i} named {s}")
     _logger.debug("---------------------------------")
 
 
@@ -177,14 +178,20 @@ def main(args):
         scanIDList = [scanIDList[i-1] for i in seqlist]
         seriesDescList = [seriesDescList[i-1] for i in seqlist]
 
+    _logger.debug("---------------------------------")
+    _logger.debug("1-Processing Series (Before reading seqlist): ")
+    for (i, s) in zip(scanIDList, seriesDescList):
+        _logger.debug(f"Series: {i} named {s}")
+    _logger.debug("---------------------------------")
+
     if skiplist != []:
+        seriesDescList = [seriesDescList[i] for i,idx in enumerate(scanIDList) if int(idx) not in skiplist]
         scanIDList = [scanIDList[i] for i, idx in enumerate(scanIDList) if int(idx) not in skiplist ]
-        seriesDescList = [seriesDescList[i-1] for i,idx in enumerate(scanIDList) if int(idx) not in skiplist]
 
     _logger.info("---------------------------------")
-    _logger.info("Processing Series: ")
-    for s in seriesDescList:
-        _logger.info(s)
+    _logger.info("Processing Series (seqlist+skiplist): ")
+    for (i, s) in zip(scanIDList, seriesDescList):
+        _logger.info(f"Series: {i} named {s}")
     _logger.info("---------------------------------")
 
 
