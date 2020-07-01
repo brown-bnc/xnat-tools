@@ -88,6 +88,11 @@ def parse_args(args):
         help="Remove/mode files and folders outside the bids directory",
         action='store_true',
         default=False)
+    parser.add_argument(
+        "--overwrite",
+        help="Remove directories where prior results for session/participant may exist",
+        action='store_true',
+        default=False)
     return parser.parse_args(args)
 
 
@@ -96,8 +101,11 @@ def run():
     """Entry point for console_scripts
     """
     args = parse_args(sys.argv[1:])
-    dicom_export.main(args)
-    run_heudiconv.main(args)
+    code1 = dicom_export.main(args)
+    code2 = run_heudiconv.main(args)
+    print(f"return codes {code1}, {code2}")
+    return code1 + code2
+
 
 if __name__ == "__main__":
     run()

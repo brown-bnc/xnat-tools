@@ -102,9 +102,9 @@ def main(args):
         project, subject, session_suffix
     )
     heudi_output_dir = prepare_heudiconv_output_path(
-        bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix
+        bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix, overwrite
     )
-    dicom_dir_template = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/sub-{subject}/ses-{session_prefix}"
+    dicom_dir_template = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/{subject_prefix}/{session_prefix}"
 
     # check if the extension of the images is dcm or IMA
     dicom_ext = "dcm"
@@ -117,7 +117,7 @@ def main(args):
     heudi_cmd = f"heudiconv -f reproin --bids \
     -o {heudi_output_dir} \
     --dicom_dir_template {bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/sub-{{subject}}/ses-{{session}}/*/*.{dicom_ext} \
-    --subjects {subject_prefix} --ses {session_prefix}"
+    --subjects {subject} --ses {session_suffix}"
 
     heudi_split_cmd = shlex.split(heudi_cmd)
 
@@ -129,9 +129,14 @@ def main(args):
 
     with Popen(heudi_split_cmd, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p: 
         with open(logfile, 'a') as file: 
-            for line in p.stdout: 
+            ouput, _ = p.communicate()
+            for line in ouput: 
                 sys.stdout.write(line) 
                 file.write(line) 
+        if p.returncode != 0:
+            raise RuntimeError("Heudiconv was asked to overwrite files. Try the --overwite flag")
+
+ 
 
     print("Done with Heudiconv BIDS Convesion.")
 
@@ -148,12 +153,17 @@ def main(args):
         if not os.path.exists(derivatives_dir):
             os.mkdir(derivatives_dir)
 
+    return 0
+
+    
+
 
 def run():
     """Entry point for console_scripts
     """
     args = parse_args(sys.argv[1:])
-    main(args)
+    code = main(args)
+    return code
 
 
 if __name__ == "__main__":

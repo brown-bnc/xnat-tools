@@ -146,6 +146,7 @@ def main(args):
     seqlist = args.seqlist
     skiplist = args.skiplist
     log_id = args.log_id
+    overwrite = args.overwrite
 
     # Set up working directory
     if not os.access(bids_root_dir, os.R_OK):
@@ -168,7 +169,7 @@ def main(args):
 
     setup_logging(args.loglevel, f"{logs_dir}/export-{log_id}.log")
 
-    bids_session_dir = prepare_bids_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
+    export_session_dir = prepare_export_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix, overwrite)
     
     scanIDList, seriesDescList = get_scan_ids(connection, host, session)
 
@@ -202,17 +203,19 @@ def main(args):
 
     # Prepare files for heudiconv
     bidsnamemap = populate_bidsmap(bidsmap_file, seriesDescList)
-    assign_bids_name(connection, host, subject, session, scanIDList, seriesDescList, build_dir, bids_session_dir, bidsnamemap)
+    assign_bids_name(connection, host, subject, session, scanIDList, seriesDescList, build_dir, export_session_dir, bidsnamemap)
 
     connection.delete(f"{host}/data/JSESSION")
     connection.close()
+
+    return 0
 
 def run():
     """Entry point for console scripts
     """
     args = parse_args(sys.argv[1:])
-    main(args)
-
+    code = main(args)
+    return code
 
 if __name__ == "__main__":
     run()

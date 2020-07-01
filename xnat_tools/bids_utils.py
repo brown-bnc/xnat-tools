@@ -90,8 +90,8 @@ def prepare_heudi_prefixes(project, subject, session):
 
      # Paths to export source data in a BIDS friendly way
     study_prefix = "study-" + project.lower().split('_')[1]
-    subject_prefix = subject.lower().replace("_","")
-    session_prefix = session.lower().replace("_","")
+    subject_prefix = "sub-" + subject.lower().replace("_","")
+    session_prefix = "ses-"+ session.lower().replace("_","")
 
     return pi_prefix, study_prefix, subject_prefix, session_prefix
 
@@ -103,15 +103,14 @@ def prepare_heudiconv_output_path(bids_root_dir, pi_prefix, study_prefix, subjec
     session_dir = os.path.join(subject_dir, session_prefix)
 
     # Set up working directory
-    if overwrite and os.path.exists(session_dir):
-        _logger.info('Removing existing heudi session directory %s' % session_dir)
-        shutil.rmtree(session_dir)
-        sbj = subject_prefix.split("-")[1]
-        heudi_hidden_dir = os.path.join(heudi_output_dir,".heudiconv", sbj, session_dir)
-        shutil.rmtree(heudi_hidden_dir)
+    if overwrite:
+        print("Overwrite set to True")
+        if os.path.exists(session_dir):
+            print('Removing existing heudi session directory %s' % session_dir)
+            shutil.rmtree(session_dir)
 
     if not os.access(heudi_output_dir, os.R_OK):
-        _logger.info('Making output BIDS Session directory %s' % heudi_output_dir)
+        print('Making output BIDS Session directory %s' % heudi_output_dir)
         os.makedirs(heudi_output_dir)
 
     return heudi_output_dir
