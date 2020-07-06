@@ -1,6 +1,5 @@
 from xnat_tools import __version__
 import subprocess
-from subprocess import Popen, PIPE, STDOUT
 import os
 import glob
 import shutil

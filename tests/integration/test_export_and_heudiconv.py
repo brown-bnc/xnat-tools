@@ -1,3 +1,13 @@
+import os
+import glob
+import subprocess
+import shlex
+import shutil
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
 def test_dicom_export():
     """Integration test for xnat-dicom-export"""
     xnat_user = os.environ.get("XNAT_USER", "testuser")
