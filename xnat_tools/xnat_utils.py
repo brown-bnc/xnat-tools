@@ -1,8 +1,5 @@
-import os
 import sys
-import json
 import logging
-from shutil import copy as fileCopy
 import requests
 import requests.packages.urllib3
 import getpass

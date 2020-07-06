@@ -1,9 +1,9 @@
-import subprocess
 import sys
 import argparse
 import shlex
 import shutil
 import glob
+import requests
 from datetime import datetime
 from subprocess import Popen, PIPE, STDOUT
 from pathlib import Path
@@ -77,7 +77,6 @@ def main(args):
     session = args.session
     session_suffix = args.session_suffix
     bids_root_dir = os.path.expanduser(args.bids_root_dir)
-    build_dir = os.getcwd()
     cleanup = args.cleanup
     log_id = args.log_id
     overwrite = args.overwrite
@@ -94,9 +93,6 @@ def main(args):
     project, subject = get_project_and_subject_id(connection, host, session)
     connection.delete(f"{host}/data/JSESSION")
     connection.close()
-
-    # get PI from project name
-    investigator = project.lower().split("_")[0]
 
     # Paths to export source data in a BIDS friendly way
     pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_heudi_prefixes(

@@ -1,11 +1,9 @@
-import subprocess
 import sys
+import os
 import argparse
-import coloredlogs, logging
-import shlex
-import shutil
-from pathlib import Path
-from xnat_tools.bids_utils import *
+import coloredlogs
+import logging
+from xnat_tools.bids_utils import insert_intended_for_fmap
 
 _logger = logging.getLogger(__name__)
 

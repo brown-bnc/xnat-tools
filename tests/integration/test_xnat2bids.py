@@ -1,10 +1,8 @@
-from xnat_tools import __version__
 import subprocess
 import os
 import glob
 import shutil
 import shlex
-import json
 from dotenv import load_dotenv
 
 load_dotenv()

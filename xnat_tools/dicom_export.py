@@ -10,11 +10,11 @@ Original file lives here: https://bitbucket.org/nrg_customizations/nrg_pipeline_
 """
 
 import argparse
-import coloredlogs, logging
-
+import coloredlogs
+import logging
+import requests
 import os
 import sys
-import tempfile
 from datetime import datetime
 
 from xnat_tools.bids_utils import *

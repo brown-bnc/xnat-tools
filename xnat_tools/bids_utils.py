@@ -4,7 +4,6 @@ import logging
 import collections
 import six
 import pydicom
-import stat
 import shutil
 
 from six.moves import zip
@@ -40,9 +39,13 @@ def insert_intended_for_fmap(bids_dir, sub_list):
             nii_files = [i for i in func_files if i.endswith(".nii.gz")]
             _logger.info(f"List of NII files")
 
-            # Open the json files ('r' for read only) as a dictionary add the Intended for key
-            # and add the func files to the key value
-            # The f.close is a duplication. f can only be used inside the with "loop"# we open the file again to write only and dump the dictionary to the files
+            # Open the json files ('r' for read only) as a dictionary
+            # Adds the Intended for key
+            # Add the func files to the key value
+            # The f.close is a duplication.
+            # f can only be used inside the with "loop"
+            # we open the file again to write only and
+            # dump the dictionary to the files
             for file in json_files:
                 os.chmod(file, 0o664)
                 with open(file, "r") as f:
@@ -53,7 +56,7 @@ def insert_intended_for_fmap(bids_dir, sub_list):
                 with open(file, "w") as f:
                     json.dump(data, f, indent=4, sort_keys=True)
                     f.close
-                    _logger.info(f"Done with re-write")
+                    _logger.info("Done with re-write")
 
 
 def prepare_bids_prefixes(project, subject, session):

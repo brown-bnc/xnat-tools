@@ -29,7 +29,7 @@ def parse_args(args):
     parser.add_argument("--session", help="Session ID", required=True)
     parser.add_argument(
         "--session_suffix",
-        help="Suffix of the session for BIDS e.g, 01. This will produce a sesstion label of sess-01",
+        help="Suffix of the session for BIDS e.g, 01. This will produce a session label of sess-01",
         required=True,
         type=str,
     )
@@ -44,7 +44,7 @@ def parse_args(args):
     )
     parser.add_argument(
         "--seqlist",
-        help="List of sequences from XNAT to run if don't want to process all seuqences. Accepts a list --seqlist 1 2 3",
+        help="List of sequences from XNAT to run if don't want to process all sequences. Accepts a list --seqlist 1 2 3",
         required=False,
         default=[],
         nargs="*",  # 0 or more values expected => creates a list

@@ -1,4 +1,3 @@
-from xnat_tools import __version__
 import subprocess
 import os
 import shutil
