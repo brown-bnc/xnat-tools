@@ -1,4 +1,4 @@
-'''
+"""
 Filename: /dicom2bids.py
 Path: xnat-dicom2bids-session
 Created Date: Monday, August 26th 2019, 10:12:40 am
@@ -7,7 +7,7 @@ Description: Export a XNAT session into BIDS directory format
 
 
 Original file lives here: https://bitbucket.org/nrg_customizations/nrg_pipeline_dicomtobids/src/default/scripts/catalog/DicomToBIDS/scripts/dcm2bids_wholeSession.py
-'''
+"""
 
 import argparse
 import coloredlogs, logging
@@ -15,12 +15,13 @@ import coloredlogs, logging
 import os
 import sys
 import tempfile
-from datetime import datetime   
+from datetime import datetime
 
 from xnat_tools.bids_utils import *
 from xnat_tools.xnat_utils import *
 
 _logger = logging.getLogger(__name__)
+
 
 def parse_args(args):
     """Parse command line parameters
@@ -32,81 +33,82 @@ def parse_args(args):
       :obj:`argparse.Namespace`: command line parameters namespace
     """
     parser = argparse.ArgumentParser(
-        description="Dump XNAT Session into a BIDS friendly directory")
+        description="Dump XNAT Session into a BIDS friendly directory"
+    )
+    parser.add_argument("--host", default="https://bnc.brown.edu/xnat", help="Host")
+    parser.add_argument("-u", "--user", help="XNAT username", required=True)
     parser.add_argument(
-        "--host",
-        default="https://bnc.brown.edu/xnat",
-        help="Host")
-    parser.add_argument(
-        "-u", "--user",
-        help="XNAT username",
-        required=True)
-    parser.add_argument(
-        '-p', '--password',
+        "-p",
+        "--password",
         type=XNATPass,
-        help='XNAT password',
-        default=XNATPass.DEFAULT)
-    parser.add_argument(
-        "--session",
-        help="Session ID",
-        required=True)
+        help="XNAT password",
+        default=XNATPass.DEFAULT,
+    )
+    parser.add_argument("--session", help="Session ID", required=True)
     parser.add_argument(
         "--session_suffix",
         help="Suffix of the session for BIDS e.g, 01. This will produce a sesstion label of sess-01",
         required=True,
-        type=str)
+        type=str,
+    )
     parser.add_argument(
-        "--bids_root_dir",
-        help="Root output directory for BIDS files",
-        required=True)
+        "--bids_root_dir", help="Root output directory for BIDS files", required=True
+    )
     parser.add_argument(
         "--bidsmap_file",
         help="Bidsmap JSON file to correct sequence names",
         required=False,
-        default="")
+        default="",
+    )
     parser.add_argument(
         "--seqlist",
         help="List of sequences from XNAT to run if don't want to process all seuqences",
         required=False,
         default=[],
         nargs="*",  # 0 or more values expected => creates a list
-        type=int)
+        type=int,
+    )
     parser.add_argument(
         "--skiplist",
         help="List of sequences from XNAT to SKIP. Accepts a list --skiplist 1 2 3",
         required=False,
         default=[],
         nargs="*",  # 0 or more values expected => creates a list
-        type=int)
+        type=int,
+    )
     parser.add_argument(
         "--log_id",
         help="ID or suffix to append to logfile, If empty, date is appended",
         required=False,
         default=datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
-        type=str
+        type=str,
     )
     parser.add_argument(
-        '-v',
-        '--verbose',
+        "-v",
+        "--verbose",
         dest="loglevel",
         help="set loglevel to INFO",
-        action='store_const',
-        const=logging.INFO)
+        action="store_const",
+        const=logging.INFO,
+    )
     parser.add_argument(
-        '-vv',
-        '--very-verbose',
+        "-vv",
+        "--very-verbose",
         dest="loglevel",
         help="set loglevel to DEBUG",
-        action='store_const',
-        const=logging.DEBUG)
+        action="store_const",
+        const=logging.DEBUG,
+    )
     parser.add_argument(
         "--overwrite",
         help="Remove directories where prior results for session/participant may exist",
-        action='store_true',
-        default=False)
+        action="store_true",
+        default=False,
+    )
 
     args, _ = parser.parse_known_args(args)
     return args
+
 
 def setup_logging(loglevel, logfile):
     """Setup basic logging
@@ -118,16 +120,12 @@ def setup_logging(loglevel, logfile):
         loglevel = logging.INFO
     logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
     logging.basicConfig(
-        level=loglevel, 
-        format=logformat, 
+        level=loglevel,
+        format=logformat,
         datefmt="%Y-%m-%d %H:%M:%S",
-        handlers=[
-            logging.FileHandler(logfile),
-            logging.StreamHandler(sys.stdout)
-        ]
+        handlers=[logging.FileHandler(logfile), logging.StreamHandler(sys.stdout)],
     )
     coloredlogs.install(level=loglevel, logger=_logger)
-    
 
 
 def main(args):
@@ -156,21 +154,30 @@ def main(args):
     connection = requests.Session()
     connection.verify = False
     connection.auth = (args.user, args.password)
-    
+
     project, subject = get_project_and_subject_id(connection, host, session)
-    
-    pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_bids_prefixes(project, subject, session_suffix)
+
+    pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_bids_prefixes(
+        project, subject, session_suffix
+    )
 
     # Set up logging
     logs_dir = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/logs"
-    
+
     if not os.path.exists(logs_dir):
         os.makedirs(logs_dir)
 
     setup_logging(args.loglevel, f"{logs_dir}/export-{log_id}.log")
 
-    export_session_dir = prepare_export_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix, overwrite)
-    
+    export_session_dir = prepare_export_output_path(
+        bids_root_dir,
+        pi_prefix,
+        study_prefix,
+        subject_prefix,
+        session_prefix,
+        overwrite,
+    )
+
     scanIDList, seriesDescList = get_scan_ids(connection, host, session)
 
     _logger.debug("---------------------------------")
@@ -179,10 +186,9 @@ def main(args):
         _logger.debug(f"Series: {i} named {s}")
     _logger.debug("---------------------------------")
 
-
     if seqlist != []:
-        scanIDList = [scanIDList[i-1] for i in seqlist]
-        seriesDescList = [seriesDescList[i-1] for i in seqlist]
+        scanIDList = [scanIDList[i - 1] for i in seqlist]
+        seriesDescList = [seriesDescList[i - 1] for i in seqlist]
 
     _logger.debug("---------------------------------")
     _logger.debug("1-Processing Series (Before reading seqlist): ")
@@ -191,8 +197,16 @@ def main(args):
     _logger.debug("---------------------------------")
 
     if skiplist != []:
-        seriesDescList = [seriesDescList[i] for i,idx in enumerate(scanIDList) if int(idx) not in skiplist]
-        scanIDList = [scanIDList[i] for i, idx in enumerate(scanIDList) if int(idx) not in skiplist ]
+        seriesDescList = [
+            seriesDescList[i]
+            for i, idx in enumerate(scanIDList)
+            if int(idx) not in skiplist
+        ]
+        scanIDList = [
+            scanIDList[i]
+            for i, idx in enumerate(scanIDList)
+            if int(idx) not in skiplist
+        ]
 
     _logger.info("---------------------------------")
     _logger.info("Processing Series (seqlist+skiplist): ")
@@ -200,15 +214,25 @@ def main(args):
         _logger.info(f"Series: {i} named {s}")
     _logger.info("---------------------------------")
 
-
     # Prepare files for heudiconv
     bidsnamemap = populate_bidsmap(bidsmap_file, seriesDescList)
-    assign_bids_name(connection, host, subject, session, scanIDList, seriesDescList, build_dir, export_session_dir, bidsnamemap)
+    assign_bids_name(
+        connection,
+        host,
+        subject,
+        session,
+        scanIDList,
+        seriesDescList,
+        build_dir,
+        export_session_dir,
+        bidsnamemap,
+    )
 
     connection.delete(f"{host}/data/JSESSION")
     connection.close()
 
     return 0
+
 
 def run():
     """Entry point for console scripts
@@ -216,6 +240,7 @@ def run():
     args = parse_args(sys.argv[1:])
     code = main(args)
     return code
+
 
 if __name__ == "__main__":
     run()

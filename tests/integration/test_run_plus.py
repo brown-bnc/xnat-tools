@@ -5,7 +5,9 @@ import shutil
 import shlex
 import json
 from dotenv import load_dotenv
+
 load_dotenv()
+
 
 @pytest.mark.skip(reason="Another slow test")
 def test_run_plus():
@@ -19,16 +21,15 @@ def test_run_plus():
 
     if os.path.exists(bids_root_dir):
         shutil.rmtree(bids_root_dir, ignore_errors=True)
-    
+
     os.mkdir(bids_root_dir)
 
     xnat2bids_cmd = f"xnat2bids --user {xnat_user} --password {xnat_pass} \
                       --session {session} --session_suffix {session_suffix} \
                       --bids_root_dir {bids_root_dir} --seqlist {' '.join(map(str, sequence))} -vv"
 
-
     xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
-    
+
     cmd = subprocess.run(xnat2bids_split_cmd, check=True)
 
     xnat_export_path = f"tests/xnat2bids/shenhav/study-201226/xnat-export/sub-tcb2006/ses-{session_suffix}/"
@@ -36,7 +37,9 @@ def test_run_plus():
 
     assert os.path.isdir(os.path.join(os.getcwd(), xnat_export_path))
     for i in range(1, len(sequence) + 1):
-        assert os.path.isdir(os.path.join(os.getcwd(), xnat_export_path, f"{task_name}-{i:02}"))
+        assert os.path.isdir(
+            os.path.join(os.getcwd(), xnat_export_path, f"{task_name}-{i:02}")
+        )
 
-    #cleanup output -- for debugging coment this out
+    # cleanup output -- for debugging coment this out
     shutil.rmtree(bids_root_dir, ignore_errors=True)

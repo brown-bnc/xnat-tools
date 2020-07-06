@@ -53,13 +53,14 @@ def parse_args(args):
         help="ID or suffix to append to logfile, If empty, date is appended",
         required=False,
         default=datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
-        type=str
+        type=str,
     )
     parser.add_argument(
         "--overwrite",
         help="Remove directories where prior results for session/participant may exist",
-        action='store_true',
-        default=False)
+        action="store_true",
+        default=False,
+    )
 
     args, _ = parser.parse_known_args(args)
     return args
@@ -102,7 +103,12 @@ def main(args):
         project, subject, session_suffix
     )
     heudi_output_dir = prepare_heudiconv_output_path(
-        bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix, overwrite
+        bids_root_dir,
+        pi_prefix,
+        study_prefix,
+        subject_prefix,
+        session_prefix,
+        overwrite,
     )
     dicom_dir_template = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/{subject_prefix}/{session_prefix}"
 
@@ -123,20 +129,20 @@ def main(args):
 
     print(f"Executing Heudiconv command: {heudi_cmd}")
 
-
     logfile = str(Path(heudi_output_dir).parent) + f"/logs/heudiconv-{log_id}.log"
 
-
-    with Popen(heudi_split_cmd, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p: 
-        with open(logfile, 'a') as file: 
+    with Popen(
+        heudi_split_cmd, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True
+    ) as p:
+        with open(logfile, "a") as file:
             ouput, _ = p.communicate()
-            for line in ouput: 
-                sys.stdout.write(line) 
-                file.write(line) 
+            for line in ouput:
+                sys.stdout.write(line)
+                file.write(line)
         if p.returncode != 0:
-            raise RuntimeError("Heudiconv was asked to overwrite files. Try the --overwite flag")
-
- 
+            raise RuntimeError(
+                "Heudiconv was asked to overwrite files. Try the --overwite flag"
+            )
 
     print("Done with Heudiconv BIDS Convesion.")
 
@@ -154,8 +160,6 @@ def main(args):
             os.mkdir(derivatives_dir)
 
     return 0
-
-    
 
 
 def run():
