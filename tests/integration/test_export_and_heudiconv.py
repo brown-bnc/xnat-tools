@@ -5,7 +5,7 @@ def test_dicom_export():
     session = os.environ.get("XNAT_SESSION", "")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "01")
     bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
-    
+
     if os.path.exists(bids_root_dir):
         shutil.rmtree(bids_root_dir, ignore_errors=True)
 
@@ -26,11 +26,14 @@ def test_dicom_export():
 
     filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}")[0]
     
+    assert len(glob.glob(f"{filepath}/*/*.IMA")) > 0 or len(glob.glob(f"{filepath}/*/*.dcm")) >0
     subdirs = [f.name for f in os.scandir(filepath) if f.is_dir()]
 
-
-    assert len(glob.glob(f"{filepath}/*/*.IMA")) > 0 or len(glob.glob(f"{filepath}/*/*.dcm")) >0
     assert len(subdirs) == 1
+    for d in subdirs:
+        for f in os.listdir(d):
+            dicom_sequence = int(f.split('.')[3])
+            assert str(dicom_sequence) == 9
 
     #***************************************************************************
     #Test that default overwrite flag is NOT wiping the xnat-export directory
@@ -50,6 +53,12 @@ def test_dicom_export():
 
     assert len(subdirs) == 2
 
+    for d in subdirs:
+        for f in os.listdir(d):
+            dicom_sequence = int(f.split('.')[3])
+            assert str(dicom_sequence) in [8, 9]
+
+
     #***************************************************************************
     # Test that overwrite flag is wiping the xnat-export directory
     #***************************************************************************
@@ -67,6 +76,12 @@ def test_dicom_export():
     subdirs = [f.name for f in os.scandir(filepath) if f.is_dir()]
 
     assert len(subdirs) == 1
+
+    for d in subdirs:
+        for f in os.listdir(d):
+            dicom_sequence = int(f.split('.')[3])
+            assert str(dicom_sequence) == 8
+
 
 
 def test_heudiconv():
