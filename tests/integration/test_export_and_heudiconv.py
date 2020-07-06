@@ -41,13 +41,13 @@ def test_dicom_export():
         len(glob.glob(f"{filepath}/*/*.IMA")) > 0
         or len(glob.glob(f"{filepath}/*/*.dcm")) > 0
     )
-    subdirs = [f.name for f in os.scandir(filepath) if f.is_dir()]
+    subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
     assert len(subdirs) == 1
     for d in subdirs:
         for f in os.listdir(d):
             dicom_sequence = int(f.split(".")[3])
-            assert str(dicom_sequence) == 9
+            assert str(dicom_sequence) == "9"
 
     # ***************************************************************************
     # Test that default overwrite flag is NOT wiping the xnat-export directory
@@ -64,14 +64,14 @@ def test_dicom_export():
     filepath = glob.glob(
         f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
     )[0]
-    subdirs = [f.name for f in os.scandir(filepath) if f.is_dir()]
+    subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
     assert len(subdirs) == 2
 
     for d in subdirs:
         for f in os.listdir(d):
             dicom_sequence = int(f.split(".")[3])
-            assert str(dicom_sequence) in [8, 9]
+            assert str(dicom_sequence) in ["8", "9"]
 
     # ***************************************************************************
     # Test that overwrite flag is wiping the xnat-export directory
@@ -88,14 +88,14 @@ def test_dicom_export():
     filepath = glob.glob(
         f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
     )[0]
-    subdirs = [f.name for f in os.scandir(filepath) if f.is_dir()]
+    subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
     assert len(subdirs) == 1
 
     for d in subdirs:
         for f in os.listdir(d):
             dicom_sequence = int(f.split(".")[3])
-            assert str(dicom_sequence) == 8
+            assert str(dicom_sequence) == "8"
 
 
 def test_heudiconv():
@@ -121,8 +121,6 @@ def test_heudiconv():
     filepath = glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}")[
         0
     ]
-
-    subdirs = [f.name for f in os.scandir(filepath) if f.is_dir()]
 
     assert (
         len(glob.glob(f"{filepath}/*/*.json")) > 0
