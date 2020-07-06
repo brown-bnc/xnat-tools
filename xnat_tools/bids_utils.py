@@ -78,7 +78,7 @@ def prepare_export_output_path(bids_root_dir, pi_prefix, study_prefix, subject_p
         _logger.info('Removing existing xnat-export session directory %s' % session_dir)
         shutil.rmtree(session_dir, ignore_errors=True)
 
-    if not os.access(session_dir, os.R_OK):
+    if not os.path.isdir(session_dir):
         _logger.info('Making output xnat-export session directory %s' % session_dir)
         os.makedirs(session_dir)
 
@@ -104,12 +104,10 @@ def prepare_heudiconv_output_path(bids_root_dir, pi_prefix, study_prefix, subjec
 
     # Set up working directory
     if overwrite:
-        print("Overwrite set to True")
-        if os.path.exists(session_dir):
-            print('Removing existing heudi session directory %s' % session_dir)
-            shutil.rmtree(session_dir)
+      print('Overwrite - Removing existing heudi session directory %s' % session_dir)
+      shutil.rmtree(session_dir, ignore_errors=True)
 
-    if not os.access(heudi_output_dir, os.R_OK):
+    if not os.path.isdir(heudi_output_dir):
         print('Making output BIDS Session directory %s' % heudi_output_dir)
         os.makedirs(heudi_output_dir)
 
