@@ -6,6 +6,8 @@ import xnat_tools.dicom_export as dicom_export
 import xnat_tools.run_heudiconv as run_heudiconv
 from xnat_tools.xnat_utils import XNATPass
 
+_logger = logging.getLogger(__name__)
+
 
 def parse_args(args):
     """Parse command line parameters
@@ -102,7 +104,7 @@ def run():
     args = parse_args(sys.argv[1:])
     code1 = dicom_export.main(args)
     code2 = run_heudiconv.main(args)
-    print(f"return codes {code1}, {code2}")
+    _logger.debug(f"return codes {code1}, {code2}")
     return code1 + code2
 
 

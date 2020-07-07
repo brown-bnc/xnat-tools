@@ -27,8 +27,7 @@ def get(connection, url, **kwargs):
         r = connection.get(url, **kwargs)
         r.raise_for_status()
     except (requests.ConnectionError, requests.exceptions.RequestException) as e:
-        print("Request Failed")
-        print("    " + str(e))
+        _logger.critical("Request Failed\t%s", str(e))
         sys.exit(1)
     return r
 
@@ -50,8 +49,8 @@ def get_project_and_subject_id(connection, host, session):
     """Get project ID and subject ID from session JSON
        If calling within XNAT, only session is passed"""
 
-    print("------------------------------------------------")
-    print("Get project and subject information")
+    _logger.debug("------------------------------------------------")
+    _logger.debug("Get project and subject information")
     r = get(
         connection,
         host + "/data/experiments/%s" % session,
@@ -60,8 +59,8 @@ def get_project_and_subject_id(connection, host, session):
     sessionValuesJson = r.json()["ResultSet"]["Result"][0]
     project = sessionValuesJson["project"]
     subjectID = sessionValuesJson["subject_ID"]
-    print("Project: " + project)
-    print("Subject ID: " + subjectID)
+    _logger.debug("Project: " + project)
+    _logger.debug("Subject ID: " + subjectID)
 
     r = get(
         connection,
@@ -69,8 +68,8 @@ def get_project_and_subject_id(connection, host, session):
         params={"format": "json", "handler": "values", "columns": "label"},
     )
     subject = r.json()["ResultSet"]["Result"][0]["label"]
-    print("Subject label: " + subject)
-    print("------------------------------------------------")
+    _logger.debug("Subject label: " + subject)
+    _logger.debug("------------------------------------------------")
 
     return project, subject
 

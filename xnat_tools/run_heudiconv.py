@@ -1,15 +1,17 @@
-import sys
 import argparse
+import glob
+import logging
+import requests
 import shlex
 import shutil
-import glob
-import requests
+import sys
 from datetime import datetime
 from subprocess import Popen, PIPE, STDOUT
 from pathlib import Path
 from xnat_tools.xnat_utils import *
 from xnat_tools.bids_utils import *
 
+_logger = logging.getLogger(__name__)
 
 def parse_args(args):
     """Parse command line parameters
@@ -123,30 +125,31 @@ def main(args):
 
     heudi_split_cmd = shlex.split(heudi_cmd)
 
-    print(f"Executing Heudiconv command: {heudi_cmd}")
+    _logger.debug(f"Executing Heudiconv command: {heudi_cmd}")
 
     logfile = str(Path(heudi_output_dir).parent) + f"/logs/heudiconv-{log_id}.log"
 
     with Popen(
         heudi_split_cmd, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True
     ) as p:
-        with open(logfile, "a") as file:
-            ouput, _ = p.communicate()
-            for line in ouput:
-                sys.stdout.write(line)
-                file.write(line)
+        heudiconv_logger = logging.getLogger('heudiconv')
+        for line in p.stdout:
+            if line == '':
+                continue
+            line = line.replace('INFO:', '')
+            heudiconv_logger.info(line.strip())
         if p.returncode != 0:
             raise RuntimeError(
                 "Heudiconv was asked to overwrite files. Try the --overwite flag"
             )
 
-    print("Done with Heudiconv BIDS Convesion.")
+    _logger.debug("Done with Heudiconv BIDS Convesion.")
 
     if cleanup:
-        print("Removing XNAT export.")
+        _logger.debug("Removing XNAT export.")
         shutil.rmtree(f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export")
 
-        print("Moving XNAT export log to derivatives folder")
+        _logger.debug("Moving XNAT export log to derivatives folder")
 
         # check if directory exists or not yet
         derivatives_dir = (

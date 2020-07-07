@@ -124,11 +124,11 @@ def prepare_heudiconv_output_path(
 
     # Set up working directory
     if overwrite:
-        print("Overwrite - Removing existing heudi session directory %s" % session_dir)
+        _logger.info("Overwrite - Removing existing heudi session directory %s" % session_dir)
         shutil.rmtree(session_dir, ignore_errors=True)
 
     if not os.path.isdir(heudi_output_dir):
-        print("Making output BIDS Session directory %s" % heudi_output_dir)
+        _logger.info("Making output BIDS Session directory %s" % heudi_output_dir)
         os.makedirs(heudi_output_dir)
 
     return heudi_output_dir
