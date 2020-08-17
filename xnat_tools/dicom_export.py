@@ -14,11 +14,25 @@ import coloredlogs
 import logging
 import requests
 import os
+import requests
 import sys
 from datetime import datetime
 
 from xnat_tools.bids_utils import *
 from xnat_tools.xnat_utils import *
+
+from xnat_tools.bids_utils import (
+    assign_bids_name,
+    populate_bidsmap,
+    prepare_bids_prefixes,
+    prepare_export_output_path,
+)
+
+from xnat_tools.xnat_utils import (
+    filter_scans,
+    get_project_and_subject_id,
+    get_scan_ids,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -178,41 +192,14 @@ def main(args):
         overwrite,
     )
 
-    scanIDList, seriesDescList = get_scan_ids(connection, host, session)
+    scans = get_scan_ids(connection, host, session)
+    scans = filter_scans(scans, seqlist=seqlist, skiplist=skiplist)
 
-    _logger.debug("---------------------------------")
-    _logger.debug("Processing Series (Before reading seqlist): ")
-    for (i, s) in zip(scanIDList, seriesDescList):
-        _logger.debug(f"Series: {i} named {s}")
-    _logger.debug("---------------------------------")
-
-    if seqlist != []:
-        scanIDList = [scanIDList[i - 1] for i in seqlist]
-        seriesDescList = [seriesDescList[i - 1] for i in seqlist]
-
-    _logger.debug("---------------------------------")
-    _logger.debug("1-Processing Series (Before reading seqlist): ")
-    for (i, s) in zip(scanIDList, seriesDescList):
-        _logger.debug(f"Series: {i} named {s}")
-    _logger.debug("---------------------------------")
-
-    if skiplist != []:
-        seriesDescList = [
-            seriesDescList[i]
-            for i, idx in enumerate(scanIDList)
-            if int(idx) not in skiplist
-        ]
-        scanIDList = [
-            scanIDList[i]
-            for i, idx in enumerate(scanIDList)
-            if int(idx) not in skiplist
-        ]
-
-    _logger.info("---------------------------------")
-    _logger.info("Processing Series (seqlist+skiplist): ")
-    for (i, s) in zip(scanIDList, seriesDescList):
-        _logger.info(f"Series: {i} named {s}")
-    _logger.info("---------------------------------")
+    # TODO (BNR): Make populate_bidsmap and assign_bids_name take the scans
+    #             argument without having to tear apart the structure of the
+    #             scans datastructure at the top level of our script.
+    scanIDList = [scan[0] for scan in scans]
+    seriesDescList = [scan[1] for scan in scans]
 
     # Prepare files for heudiconv
     bidsnamemap = populate_bidsmap(bidsmap_file, seriesDescList)
