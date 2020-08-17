@@ -134,6 +134,44 @@ def prepare_heudiconv_output_path(
     return heudi_output_dir
 
 
+def bidsmap_scans(scans, bidsmap = None):
+    """Filter the series descriptions based on the bidsmap file"""
+    # NOTE (BNR): We could break these down into smaller functions, one for
+    #             bidsmap, one for scanner exceptions, one for run+, but that
+    #             would add an extra loop per function. I feel like this
+    #             strikes a balance. One loop to handle the scan_id stuff, one
+    #             loop to handle the series_description stuff.
+
+    if bidsmap is None:
+        bidsmap = []
+
+    # NOTE (BNR): First thing we do is flatten the bidsmap structure. This makes
+    #             the bidsmap much easier to use when trying to figure out which
+    #             sequences match something in the bidsmap file.
+    bidsmap = { i["series_description"]: i["bidsname"] for i in bidsmap }
+
+    # NOTE (BNR): In order to replace run+ we need to keep a count of how many
+    #             times we've seen a particular series_description before. That
+    #             is where the defaultdict comes in. It helps us keep track of
+    #             the series_descriptions we've seen before.
+    run_count_cache = defaultdict(int)
+
+    desired_scans = []
+    for scan_id, series_description in scans:
+        if series_description in bidsmap:
+            series_description = bidsmap[series_description]
+
+        series_description = handle_scanner_exceptions(series_description)
+
+        if "run+" in series_description:
+            run_count_cache[series_description] += 1
+            series_description = series_description.replace("run+", f"run-{run_count_cache[series_description]:02}")
+
+        desired_scans.append((scan_id, series_description))
+
+    return desired_scans
+
+
 def populate_bidsmap(bidsmap_file, seriesDescList):
     # Read bids map from input config
     bidsmaplist = []
@@ -244,51 +282,19 @@ def assign_bids_name(
     host,
     subject,
     session,
-    scanIDList,
-    seriesDescList,
+    scans,
     build_dir,
     bids_session_dir,
-    bidsnamemap,
 ):
     """
         subject: Subject to process
-        scanIDList: ID List of scans 
-        seriesDescList: List of series descriptions
+        scans: Tuple of scan id and series descriptions
         build_dir: build director. What is this?
         study_bids_dir: BIDS directory to copy simlinks to. Typically the RESOURCES/BIDS
     """
 
-    run_number_cache = defaultdict(int)
-
-    for scanid, seriesdesc in zip(scanIDList, seriesDescList):
-
+    for scanid, seriesdesc in scans:
         _logger.info("---------------------------------")
-
-        _logger.info(f"Assigning BIDS name for scan {scanid}: {seriesdesc}")
-        os.chdir(build_dir)
-
-        # We use the bidsmap to correct miss-labeled series at the scanner.
-        # otherwise we assume decription is correct and let heudiconv do the work
-        if seriesdesc not in bidsnamemap:
-            _logger.info(f"Series {seriesdesc}  not found in {bidsnamemap}")
-            match = seriesdesc
-
-        else:
-            _logger.info(
-                f"Series {seriesdesc}  to be replaced with {bidsnamemap[seriesdesc]}"
-            )
-            match = bidsnamemap[seriesdesc]
-
-        _logger.debug(f"bidsname after searching bidsmap: {match}")
-
-        match = handle_scanner_exceptions(match)
-        _logger.debug(f"bidsname after scanner fixes: {match}")
-
-        if "run+" in match:
-            run_number_cache[match] += 1
-            _logger.info(f"Replacing 'run+' with run number {run_number_cache[match]}")
-            match = match.replace("run+", f"run-{run_number_cache[match]:02}")
-        bidsname = match
 
         # Get scan resources
         r = get(
@@ -328,8 +334,8 @@ def assign_bids_name(
 
         # BIDS sourcedatadirectory for this scan
         _logger.info(f"bids_session_dir: {bids_session_dir}")
-        _logger.info(f"BIDSNAME: {bidsname}")
-        bids_scan_directory = os.path.join(bids_session_dir, bidsname)
+        _logger.info(f"BIDSNAME: {seriesdesc}")
+        bids_scan_directory = os.path.join(bids_session_dir, seriesdesc)
 
         if not os.path.isdir(bids_scan_directory):
             _logger.info("Making scan DICOM directory %s." % bids_scan_directory)
@@ -367,12 +373,12 @@ def assign_bids_name(
         (name, pathDict) = dicomFileList[0]
         download(connection, name, pathDict)
 
-        bidsify_dicom_headers(name, bidsname)
+        bidsify_dicom_headers(name, seriesdesc)
 
         # Download remaining DICOMs
         for name, pathDict in dicomFileList[1:]:
             download(connection, name, pathDict)
-            bidsify_dicom_headers(name, bidsname)
+            bidsify_dicom_headers(name, seriesdesc)
 
         os.chdir(build_dir)
         _logger.info("Done.")

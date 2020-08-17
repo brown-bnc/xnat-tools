@@ -11,18 +11,18 @@ Original file lives here: https://bitbucket.org/nrg_customizations/nrg_pipeline_
 
 import argparse
 import coloredlogs
+import json
 import logging
-import requests
 import os
 import requests
 import sys
-from datetime import datetime
 
-from xnat_tools.bids_utils import *
-from xnat_tools.xnat_utils import *
+from datetime import datetime
+from pathlib import Path
 
 from xnat_tools.bids_utils import (
     assign_bids_name,
+    bidsmap_scans,
     populate_bidsmap,
     prepare_bids_prefixes,
     prepare_export_output_path,
@@ -159,6 +159,16 @@ def main(args):
     skiplist = args.skiplist
     log_id = args.log_id
     overwrite = args.overwrite
+    bidsmap = None
+
+    # Parse bidsmap file
+    if args.bidsmap_file:
+        bidsmap_file = Path(args.bidsmap_file)
+        if not bidsmap_file.exists():
+            _logger.info("BIDSMAP file does not exist or wasn't passed")
+        else:
+            with bidsmap_file.open() as f:
+                bidsmap = json.load(f)
 
     # Set up working directory
     if not os.access(bids_root_dir, os.R_OK):
@@ -194,25 +204,17 @@ def main(args):
 
     scans = get_scan_ids(connection, host, session)
     scans = filter_scans(scans, seqlist=seqlist, skiplist=skiplist)
-
-    # TODO (BNR): Make populate_bidsmap and assign_bids_name take the scans
-    #             argument without having to tear apart the structure of the
-    #             scans datastructure at the top level of our script.
-    scanIDList = [scan[0] for scan in scans]
-    seriesDescList = [scan[1] for scan in scans]
+    scans = bidsmap_scans(scans, bidsmap)
 
     # Prepare files for heudiconv
-    bidsnamemap = populate_bidsmap(bidsmap_file, seriesDescList)
     assign_bids_name(
         connection,
         host,
         subject,
         session,
-        scanIDList,
-        seriesDescList,
+        scans,
         build_dir,
         export_session_dir,
-        bidsnamemap,
     )
 
     connection.delete(f"{host}/data/JSESSION")
