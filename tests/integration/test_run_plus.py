@@ -2,6 +2,7 @@ import subprocess
 import os
 import shutil
 import shlex
+import pytest
 from dotenv import load_dotenv
 
 load_dotenv()
