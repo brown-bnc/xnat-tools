@@ -1,8 +1,13 @@
 import os
 import shutil
+import pytest
 import xnat_tools.bids_utils as utils
 
-from xnat_tools.bids_utils import handle_scanner_exceptions, bidsmap_scans
+from xnat_tools.bids_utils import (
+    handle_scanner_exceptions,
+    bidsmap_scans,
+    bidsify_dicom_headers,
+)
 
 
 def test_prepare_export_output_path():
@@ -71,7 +76,7 @@ def test_bidsmap_scans_scanner_exception():
     # NOTE (BNR): What we're really testing here is that handle_scanner_exceptions
     #             gets called. We could do that with a mock, but I think this is
     #             good enough. The reason I'm not enumerating the exceptions here
-    #             is because I _only_ care if handle_scanner_exceptions gets called. 
+    #             is because I _only_ care if handle_scanner_exceptions gets called.
     #             Enumerating the different cases will not yield a better test here.
     assert bidsmap_scans(scans) == [("1", "foo_T1w")]
 
@@ -81,3 +86,66 @@ def test_bidsmap_scans_run_plus():
     scans = [("1", "run+"), ("2", "run+"), ("3", "run+")]
 
     assert bidsmap_scans(scans) == [("1", "run-01"), ("2", "run-02"), ("3", "run-03")]
+
+
+def test_bidsify_dicom_headers(mocker):
+    """Test bidsify_dicom_headers without ProtocolName field"""
+    dataset = mocker.MagicMock()
+    dataset.__contains__.return_value = False
+
+    dcmread = mocker.patch("pydicom.dcmread")
+    dcmread.return_value = dataset
+
+    bidsify_dicom_headers("filename", "foo")
+
+    assert dataset.data_element.called == False
+
+
+def test_bidsify_dicom_headers_with_protocol_name(mocker):
+    """Test bidsify_dicom_headers with ProtocolName match"""
+    series_description = "foo"
+
+    dataset = mocker.MagicMock()
+    dataset.__contains__.return_value = True
+    dataset.data_element.return_value = mocker.Mock(value=series_description)
+
+    dcmread = mocker.patch("pydicom.dcmread")
+    dcmread.return_value = dataset
+
+    bidsify_dicom_headers("filename", series_description)
+
+    dataset.data_element.assert_called_once_with("ProtocolName")
+
+
+def test_bidsify_dicom_headers_with_protocol_name_mismatch(mocker):
+    """Test bidsify_dicom_headers with ProtocolName mismatch"""
+    series_description = "foo"
+    protocol_name_mock = mocker.Mock(value="bar")
+    series_description_mock = mocker.Mock(value="quux")
+
+    side_effect = [
+        protocol_name_mock,      # 1st call to check if the ProtocolName
+        protocol_name_mock,      # 2nd call to set the ProtocolName
+        series_description_mock, # 3rd call to set SeriesDescription
+    ]
+
+    dataset = mocker.MagicMock()
+    dataset.__contains__.return_value = True
+    dataset.data_element.side_effect = side_effect
+
+    dcmread = mocker.patch("pydicom.dcmread")
+    dcmread.return_value = dataset
+
+    bidsify_dicom_headers("filename", series_description)
+
+    print(dataset.data_element.mock_calls)
+    dataset.data_element.assert_has_calls(
+        [
+            mocker.call("ProtocolName"),
+            mocker.call("ProtocolName"),
+            mocker.call("SeriesDescription"),
+        ]
+    )
+
+    assert protocol_name_mock.value == series_description
+    assert series_description_mock.value == series_description
