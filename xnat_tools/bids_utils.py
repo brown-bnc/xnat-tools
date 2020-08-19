@@ -134,7 +134,7 @@ def prepare_heudiconv_output_path(
     return heudi_output_dir
 
 
-def bidsmap_scans(scans, bidsmap = None):
+def bidsmap_scans(scans, bidsmap=None):
     """Filter the series descriptions based on the bidsmap file"""
     # NOTE (BNR): We could break these down into smaller functions, one for
     #             bidsmap, one for scanner exceptions, one for run+, but that
@@ -148,7 +148,7 @@ def bidsmap_scans(scans, bidsmap = None):
     # NOTE (BNR): First thing we do is flatten the bidsmap structure. This makes
     #             the bidsmap much easier to use when trying to figure out which
     #             sequences match something in the bidsmap file.
-    bidsmap = { i["series_description"]: i["bidsname"] for i in bidsmap }
+    bidsmap = {i["series_description"]: i["bidsname"] for i in bidsmap}
 
     # NOTE (BNR): In order to replace run+ we need to keep a count of how many
     #             times we've seen a particular series_description before. That
@@ -165,53 +165,13 @@ def bidsmap_scans(scans, bidsmap = None):
 
         if "run+" in series_description:
             run_count_cache[series_description] += 1
-            series_description = series_description.replace("run+", f"run-{run_count_cache[series_description]:02}")
+            series_description = series_description.replace(
+                "run+", f"run-{run_count_cache[series_description]:02}"
+            )
 
         desired_scans.append((scan_id, series_description))
 
     return desired_scans
-
-
-def populate_bidsmap(bidsmap_file, seriesDescList):
-    # Read bids map from input config
-    bidsmaplist = []
-
-    _logger.info("---------------------------------")
-    _logger.info(f"Read bidsmap file: {bidsmap_file}")
-
-    if os.path.exists(bidsmap_file):
-        with open(bidsmap_file) as json_file:
-            bidsmaptoadd = json.load(json_file)
-            _logger.debug(f"BIDS bidsmaptoadd: {bidsmaptoadd}")
-            for mapentry in bidsmaptoadd:
-                if mapentry not in bidsmaplist:
-                    bidsmaplist.append(mapentry)
-    else:
-        _logger.info("BIDSMAP file does not exist or wasn't passed")
-
-    _logger.info("User-provided BIDS-map for renaming sequences:")
-    _logger.info({json.dumps(bidsmaplist)})
-
-    # Collapse human-readable JSON to dict for processing
-    bidsnamemap = {
-        x["series_description"]: x["bidsname"]
-        for x in bidsmaplist
-        if "series_description" in x and "bidsname" in x
-    }
-
-    # Map all series descriptions to BIDS names (case insensitive)
-    resolved = [bidsnamemap[x] for x in seriesDescList if x in bidsnamemap]
-
-    # Count occurrences
-    bidscount = collections.Counter(resolved)
-
-    # Remove multiples
-    multiples = {
-        seriesdesc: count for seriesdesc, count in six.viewitems(bidscount) if count > 1
-    }
-    _logger.info("---------------------------------")
-
-    return bidsnamemap
 
 
 def handle_scanner_exceptions(match):
@@ -228,31 +188,6 @@ def handle_scanner_exceptions(match):
     match = match.replace(" RMS", "RMS")
 
     return match
-
-
-def detect_multiple_runs(seriesDescList):
-
-    dups = {}
-
-    # Make series descriptions unique by appending _run- to non-unique ones
-    for i, val in enumerate(seriesDescList):
-        if val not in dups:
-            # Store index of first occurrence and occurrence value
-            dups[val] = [i, 1]
-        else:
-            # Special case for first occurrence
-            if dups[val][1] == 1:
-                run_idx = dups[val][1]
-                seriesDescList[dups[val][0]] += f"_run-{run_idx}"
-
-            # Increment occurrence value, index value doesn't matter anymore
-            dups[val][1] += 1
-
-            # Use stored occurrence value
-            run_idx = dups[val][1]
-            seriesDescList[i] += f"_run-{run_idx}"
-
-    return seriesDescList
 
 
 def bidsify_dicom_headers(filename, protocol_name):
@@ -278,13 +213,7 @@ def bidsify_dicom_headers(filename, protocol_name):
 
 
 def assign_bids_name(
-    connection,
-    host,
-    subject,
-    session,
-    scans,
-    build_dir,
-    bids_session_dir,
+    connection, host, subject, session, scans, build_dir, bids_session_dir,
 ):
     """
         subject: Subject to process
