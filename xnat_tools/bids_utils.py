@@ -190,26 +190,17 @@ def handle_scanner_exceptions(match):
     return match
 
 
-def bidsify_dicom_headers(filename, protocol_name):
+def bidsify_dicom_headers(filename, series_description):
+    """Updates the DICOM headers to match the new series_description"""
 
     dataset = pydicom.dcmread(filename)
 
-    if "ProtocolName" in dataset:
-        if dataset.data_element("ProtocolName").value != protocol_name:
-            _logger.info("---------------------------------")
-            _logger.info(f"File: {filename}")
-            _logger.info("Modifying DICOM Header for ProtocolName from")
-            _logger.info(
-                f"{dataset.data_element('ProtocolName').value} to {protocol_name}"
-            )
-            dataset.data_element("ProtocolName").value = protocol_name
-            _logger.info("Modifying DICOM Header for SeriesDescription from")
-            _logger.info(
-                f"{dataset.data_element('SeriesDescription').value} to {protocol_name}"
-            )
-            dataset.data_element("SeriesDescription").value = protocol_name
-            dataset.save_as(filename)
-            _logger.info("---------------------------------")
+    if "ProtocolName" not in dataset:
+        return
+
+    if dataset.data_element("ProtocolName").value != series_description:
+        dataset.data_element("ProtocolName").value = series_description
+        dataset.data_element("SeriesDescription").value = series_description
 
 
 def assign_bids_name(
