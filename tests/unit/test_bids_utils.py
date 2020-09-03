@@ -1,12 +1,15 @@
 import os
-import shutil
 import pytest
+import requests
+import responses
+import shutil
 import xnat_tools.bids_utils as utils
 
 from xnat_tools.bids_utils import (
-    handle_scanner_exceptions,
-    bidsmap_scans,
     bidsify_dicom_headers,
+    bidsmap_scans,
+    handle_scanner_exceptions,
+    scan_contains_dicom,
 )
 
 
@@ -124,9 +127,9 @@ def test_bidsify_dicom_headers_with_protocol_name_mismatch(mocker):
     series_description_mock = mocker.Mock(value="quux")
 
     side_effect = [
-        protocol_name_mock,      # 1st call to check if the ProtocolName
-        protocol_name_mock,      # 2nd call to set the ProtocolName
-        series_description_mock, # 3rd call to set SeriesDescription
+        protocol_name_mock,  # 1st call to check if the ProtocolName
+        protocol_name_mock,  # 2nd call to set the ProtocolName
+        series_description_mock,  # 3rd call to set SeriesDescription
     ]
 
     dataset = mocker.MagicMock()
@@ -149,3 +152,90 @@ def test_bidsify_dicom_headers_with_protocol_name_mismatch(mocker):
 
     assert protocol_name_mock.value == series_description
     assert series_description_mock.value == series_description
+
+
+@responses.activate
+def test_scan_contains_dicom_no_dicom():
+    """Test scan_contains_dicom without any DICOM resources"""
+    host = "https://example.com/xnat"
+    session = "SESSION-01"
+    scanid = "SCAN-01"
+
+    url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
+    payload = {"ResultSet": {"Result": [{"file_count": "10", "label": "NOTDICOM",}],}}
+
+    responses.add(responses.GET, url, json=payload, status=200)
+    connection = requests.Session()
+
+    assert scan_contains_dicom(connection, host, session, scanid) == False
+
+
+@responses.activate
+def test_scan_contains_dicom_many_dicom():
+    """Test scan_contains_dicom with more than one DICOM resource"""
+    host = "https://example.com/xnat"
+    session = "SESSION-01"
+    scanid = "SCAN-01"
+
+    url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
+    payload = {
+        "ResultSet": {
+            "Result": [
+                {"file_count": "10", "label": "DICOM",},
+                {"file_count": "20", "label": "DICOM",},
+            ],
+        }
+    }
+
+    responses.add(responses.GET, url, json=payload, status=200)
+    connection = requests.Session()
+
+    assert scan_contains_dicom(connection, host, session, scanid) == False
+
+
+@responses.activate
+def test_scan_contains_dicom_empty_file_count():
+    """Test scan_contains_dicom without file_count field"""
+    host = "https://example.com/xnat"
+    session = "SESSION-01"
+    scanid = "SCAN-01"
+
+    url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
+    payload = {"ResultSet": {"Result": [{"label": "DICOM",}],}}
+
+    responses.add(responses.GET, url, json=payload, status=200)
+    connection = requests.Session()
+
+    assert scan_contains_dicom(connection, host, session, scanid) == True
+
+
+@responses.activate
+def test_scan_contains_dicom_zero_file_count():
+    """Test scan_contains_dicom with file_count equal to zero"""
+    host = "https://example.com/xnat"
+    session = "SESSION-01"
+    scanid = "SCAN-01"
+
+    url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
+    payload = {"ResultSet": {"Result": [{"file_count": "0", "label": "DICOM",}],}}
+
+    responses.add(responses.GET, url, json=payload, status=200)
+    connection = requests.Session()
+
+    assert scan_contains_dicom(connection, host, session, scanid) == False
+
+
+@responses.activate
+def test_scan_contains_dicom_many_file_count():
+    """Test scan_contains_dicom with file_count greater than 1"""
+    host = "https://example.com/xnat"
+    session = "SESSION-01"
+    scanid = "SCAN-01"
+
+    url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
+    payload = {"ResultSet": {"Result": [{"file_count": "10", "label": "DICOM",}],}}
+
+    responses.add(responses.GET, url, json=payload, status=200)
+    connection = requests.Session()
+
+    assert scan_contains_dicom(connection, host, session, scanid) == True

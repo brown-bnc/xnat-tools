@@ -203,6 +203,48 @@ def bidsify_dicom_headers(filename, series_description):
         dataset.data_element("SeriesDescription").value = series_description
 
 
+def scan_contains_dicom(connection, host, session, scanid):
+    """Checks to see if the scan has suitable DICOM files for BIDS conversion"""
+    resp = get(
+        connection,
+        host + "/data/experiments/%s/scans/%s/resources" % (session, scanid),
+        params={"format": "json"},
+    )
+
+    dicomResourceList = [
+        r for r in resp.json()["ResultSet"]["Result"] if r["label"] == "DICOM"
+    ]
+
+    # NOTE (BNR): A scan contains multiple resources. A resource can be thought
+    #             of as a folder. We only want a single DICOM folder. If we have
+    #             multiple, something is weird. If we don't have any DICOM
+    #             resources the scan doesn't have any DICOM images. We only
+    #             download the scan if there's a single DICOM resource
+    if len(dicomResourceList) <= 0:
+        return False
+    elif len(dicomResourceList) > 1:
+        return False
+    else:
+        dicomResource = dicomResourceList[0]
+
+    # NOTE (BNR): We only want to process the scan if we have dicom files. But
+    #       sometimes the file_count field is empty and we process anyway even
+    #       though that might make things break later
+    if dicomResource.get("file_count") is None:
+        _logger.warning(
+            'DICOM resources for scan %s have a blank "file_count". '
+            "I cannot check to see if there are no files. "
+            "I am not skipping the scan. "
+            "This may lead to errors later if there are no DICOM files in the scan.",
+            scanid,
+        )
+        return True
+    elif int(dicomResource["file_count"]) == 0:
+        return False
+
+    return True
+
+
 def assign_bids_name(
     connection, host, subject, session, scans, build_dir, bids_session_dir,
 ):
@@ -214,43 +256,9 @@ def assign_bids_name(
     """
 
     for scanid, seriesdesc in scans:
-        _logger.info("---------------------------------")
-
-        # Get scan resources
-        r = get(
-            connection,
-            host + "/data/experiments/%s/scans/%s/resources" % (session, scanid),
-            params={"format": "json"},
-        )
-        scanResources = r.json()["ResultSet"]["Result"]
-        _logger.debug(
-            "Found resources %s." % ", ".join(res["label"] for res in scanResources)
-        )
-
-        dicomResourceList = [res for res in scanResources if res["label"] == "DICOM"]
-
-        if len(dicomResourceList) == 0:
-            _logger.debug("Scan %s has no DICOM resource." % scanid)
-            continue
-        elif len(dicomResourceList) > 1:
-            _logger.debug("Scan %s has more than one DICOM resource Skipping." % scanid)
+        if not scan_contains_dicom(connection, host, session, scanid):
             continue
 
-        dicomResource = dicomResourceList[0] if len(dicomResourceList) > 0 else None
-
-        usingDicom = True if (len(dicomResourceList) == 1) else False
-
-        if dicomResource is not None and dicomResource["file_count"]:
-            if int(dicomResource["file_count"]) == 0:
-                _logger.info(
-                    "DICOM resource for scan %s has no files. Skipping." % scanid
-                )
-                continue
-        else:
-            _logger.info(
-                'DICOM resources for scan %s have a blank "file_count", so I cannot check to see if there are no files. I am not skipping the scan, but this may lead to errors later if there are no files.'
-                % scanid
-            )
 
         # BIDS sourcedatadirectory for this scan
         _logger.info(f"bids_session_dir: {bids_session_dir}")
@@ -262,15 +270,13 @@ def assign_bids_name(
             os.mkdir(bids_scan_directory)
         else:
             _logger.warning(
-                f"{bids_scan_directory} already exists. See documentation to understad how xnat_tools handles repeaded sequences."
+                f"{bids_scan_directory} already exists. See documentation to understad how xnat_tools handles repeated sequences."
             )
 
-        # Get DICOMs
-        if usingDicom:
-            filesURL = host + "/data/experiments/%s/scans/%s/resources/DICOM/files" % (
-                session,
-                scanid,
-            )
+        filesURL = host + "/data/experiments/%s/scans/%s/resources/DICOM/files" % (
+            session,
+            scanid,
+        )
 
         r = get(connection, filesURL, params={"format": "json"})
         # Build a dict keyed off file name
