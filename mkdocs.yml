@@ -1,0 +1,38 @@
+site_name: xnat-tools
+site_description: Documentation for the xnat-tools model
+site_url: http://marshall-lab.github.io/xnat-tools
+theme:
+  name: material
+  features:
+    - instant
+    - tabs
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          setup_commands:
+            - import sys
+            - sys.path.append("docs")
+          rendering:
+            show_root_heading: false
+            show_root_toc_entry: false
+            heading_level: 3
+      watch:
+        - xnat_tools
+
+markdown_extensions:
+  - admonition
+  - codehilite
+
+nav:
+  - Overview: index.md
+  - Getting Started:
+    - Installation: getting_started.md
+    - Running locally: run_local.md
+    - Running on Oscar: run_oscar.md
+  - Development:
+    - Setting up your environment: dev_setup.md
+    - Code standards: code_standards.md 
+#   - API Reference:
