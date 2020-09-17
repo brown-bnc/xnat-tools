@@ -23,7 +23,6 @@ from pathlib import Path
 from xnat_tools.bids_utils import (
     assign_bids_name,
     bidsmap_scans,
-    populate_bidsmap,
     prepare_bids_prefixes,
     prepare_export_output_path,
 )
@@ -208,13 +207,7 @@ def main(args):
 
     # Prepare files for heudiconv
     assign_bids_name(
-        connection,
-        host,
-        subject,
-        session,
-        scans,
-        build_dir,
-        export_session_dir,
+        connection, host, subject, session, scans, build_dir, export_session_dir,
     )
 
     connection.delete(f"{host}/data/JSESSION")
