@@ -1,12 +1,9 @@
 import json
 import os
 import logging
-import collections
-import six
 import pydicom
 import shutil
 
-from six.moves import zip
 from xnat_tools.xnat_utils import get, download
 from collections import defaultdict
 
@@ -258,7 +255,6 @@ def assign_bids_name(
     for scanid, seriesdesc in scans:
         if not scan_contains_dicom(connection, host, session, scanid):
             continue
-
 
         # BIDS sourcedatadirectory for this scan
         _logger.info(f"bids_session_dir: {bids_session_dir}")
