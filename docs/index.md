@@ -1,17 +1,3 @@
-# Welcome to MkDocs
+# Welcome to xnat-tools
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
-
-## Commands
-
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
-
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+XNAT tools is maintained by members of the [Behavioral Neuroimaging Core](https://brown-bnc.github.io) at Brown University. This package facilitates the export and conversion of data stored in Brown's XNAT platform, to the BIDS format. The optimal way to install and run this package depends on your computation environment. We outline all the possibilities!

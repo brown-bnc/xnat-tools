@@ -1,6 +1,6 @@
 site_name: xnat-tools
 site_description: Documentation for the xnat-tools model
-site_url: http://marshall-lab.github.io/xnat-tools
+site_url: http://brown-bnc.github.io/xnat-tools
 theme:
   name: material
   features:
@@ -27,9 +27,11 @@ markdown_extensions:
   - codehilite
 
 nav:
-  - Overview: index.md
   - Getting Started:
+    - Overview: index.md
     - Installation: installation.md
+  - Converting to BIDS:
+    - User Interface: interface.md
     - Running locally: run_local.md
     - Running on Oscar: run_oscar.md
   - Development:
