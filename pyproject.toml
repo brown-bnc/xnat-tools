@@ -11,6 +11,7 @@ six = "^1.14"
 pydicom = "^1.4.1"
 coloredlogs = "^14.0"
 pytest-mock = "^3.2.0"
+typer = "^0.3.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.3.5"
