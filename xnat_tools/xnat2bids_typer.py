@@ -2,7 +2,7 @@ import sys
 import logging
 import typer
 from datetime import datetime
-from typing import List
+from typing import List, Path, Optional
 
 # from xnat_tools.xnat_utils import XNATPass
 
@@ -17,7 +17,7 @@ def dicom_export(
     bids_root_dir: str,
     host: str = "https://bnc.brown.edu/xnat",
     session_suffix: str = "01",
-    bidsmap_file: str = "",
+    bidsmap_file: Optional[Path] = "",
     includeseq: List[int] = typer.Option(
         [],
         "-i",
@@ -36,7 +36,52 @@ def dicom_export(
     """
     Export XNAT DICOM images in an experiment to a BIDS friendly format
     """
-    print(f"run dicom export")
+
+    bids_root_dir = os.path.expanduser(args.bids_root_dir)
+    build_dir = os.getcwd()
+    bidsmap = None
+
+    # Parse bidsmap file
+    if bidsmap_file is not None:
+        bidsmap = json.load(f)
+
+    # Set up working directory
+    if not os.access(bids_root_dir, os.R_OK):
+        raise ValueError(f"BIDS Root directory must exist: {bids_root_dir}")
+
+    # Set up session
+    connection = requests.Session()
+    connection.verify = False
+    connection.auth = (args.user, args.password)
+
+    project, subject = get_project_and_subject_id(connection, host, session)
+
+    pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_bids_prefixes(
+        project, subject, session_suffix
+    )
+
+    # Set up logging
+    logs_dir = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/logs"
+
+    if not os.path.exists(logs_dir):
+        os.makedirs(logs_dir)
+
+    setup_logging(args.loglevel, f"{logs_dir}/export-{log_id}.log")
+
+    # Export
+    scans = get_scan_ids(connection, host, session)
+    scans = filter_scans(scans, seqlist=seqlist, skiplist=skiplist)
+    scans = bidsmap_scans(scans, bidsmap)
+
+    assign_bids_name(
+        connection, host, subject, session, scans, build_dir, export_session_dir,
+    )
+
+    # Close connection(I don't think this works)
+    connection.delete(f"{host}/data/JSESSION")
+    connection.close()
+
+    return project, subject
 
 
 @app.command()
