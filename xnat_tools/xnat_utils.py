@@ -13,7 +13,7 @@ class XNATPass:
 
     DEFAULT = "Prompt if not specified"
 
-    def __init__(self, value):
+    def __init__(self, value=DEFAULT):
         if value == self.DEFAULT:
             value = getpass.getpass("XNAT Password: ")
         self.value = value

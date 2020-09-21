@@ -28,6 +28,7 @@ bids-postprocess ="xnat_tools.bids_postprocess:run"
 xnat-heudiconv = "xnat_tools.run_heudiconv:run"
 xnat-dicom-export = "xnat_tools.dicom_export:run"
 xnat2bids = "xnat_tools.xnat2bids:run"
+xnat2bids_typer = "xnat_tools.xnat2bids_typer:main"
 
 [build-system]
 requires = ["poetry>=0.12"]
