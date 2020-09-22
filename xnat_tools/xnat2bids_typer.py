@@ -26,7 +26,6 @@ from xnat_tools.xnat_utils import (
 
 # from xnat_tools.xnat_utils import XNATPass
 _logger = logging.getLogger(__name__)
-
 app = typer.Typer()
 
 
@@ -51,8 +50,8 @@ def dicom_export(
         "--session-suffix",
         help="Suffix of the session for BIDS defaults to 01. This will produce a session label of sess-01. You likely only need to change the dault for multi-session studies",
     ),
-    bidsmap_file: Optional[str] = typer.Option(
-        None, "-f", "--bidsmap-file", help="Bidsmap JSON file to correct sequence names"
+    bidsmap_file: str = typer.Option(
+        "", "-f", "--bidsmap-file", help="Bidsmap JSON file to correct sequence names"
     ),
     includeseq: List[int] = typer.Option(
         [],
@@ -71,11 +70,11 @@ def dicom_export(
         False, "-v", help="Verbose logging. If True, sets loglevel to INFO"
     ),
     very_verbose: bool = typer.Option(
-        False, "-vv", help="Very verbose logging. If True, sets loglevel to DEBUG"
+        False, "--vv", help="Very verbose logging. If True, sets loglevel to DEBUG"
     ),
     overwrite: bool = typer.Option(
         False,
-        "-vv",
+        "-overwrite",
         help="If True, remove directories where prior results for session/participant may exist",
     ),
 ):
@@ -89,7 +88,7 @@ def dicom_export(
     bidsmap = None
 
     # Parse bidsmap file
-    if bidsmap_file is not None:
+    if bidsmap_file is not "":
         with Path(bidsmap_file).open() as f:
             bidsmap = json.load(f)
 
