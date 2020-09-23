@@ -92,7 +92,7 @@ def dicom_export(
     """
     Export XNAT DICOM images in an experiment to a BIDS friendly format
     """
-
+    print("here2")
     bids_root_dir = os.path.expanduser(bids_root_dir)
     build_dir = os.getcwd()
     bidsmap = None

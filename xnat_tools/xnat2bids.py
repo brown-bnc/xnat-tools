@@ -1,110 +1,99 @@
-import sys
-import argparse
-import logging
 from datetime import datetime
-import xnat_tools.dicom_export as dicom_export
-import xnat_tools.run_heudiconv as run_heudiconv
-from xnat_tools.xnat_utils import XNATPass
+from typing import List
+from xnat_tools.dicom_export import dicom_export
+from .run_heudiconv import run_heudiconv
+import typer
+
+app = typer.Typer()
 
 
-def parse_args(args):
-    """Parse command line parameters
-
-    Args:
-      args ([str]): command line parameters as list of strings
-
-    Returns:
-      :obj:`argparse.Namespace`: command line parameters namespace
-    """
-    parser = argparse.ArgumentParser(description="BIDSify an XNAT session")
-    parser.add_argument("--host", default="https://bnc.brown.edu/xnat", help="Host")
-    parser.add_argument("-u", "--user", help="XNAT username", required=True)
-    parser.add_argument(
-        "-p",
-        "--password",
-        type=XNATPass,
-        help="XNAT password",
-        default=XNATPass.DEFAULT,
-    )
-    parser.add_argument("--session", help="Session ID", required=True)
-    parser.add_argument(
-        "--session_suffix",
-        help="Suffix of the session for BIDS e.g, 01. This will produce a session label of sess-01",
-        required=True,
-        type=str,
-    )
-    parser.add_argument(
-        "--bids_root_dir", help="Root output directory for BIDS files", required=True
-    )
-    parser.add_argument(
-        "--bidsmap_file",
-        help="Bidsmap JSON file to correct sequence names",
-        required=False,
-        default="",
-    )
-    parser.add_argument(
-        "--seqlist",
-        help="List of sequences from XNAT to run if don't want to process all sequences. Accepts a list --seqlist 1 2 3",
-        required=False,
-        default=[],
-        nargs="*",  # 0 or more values expected => creates a list
-        type=int,
-    )
-    parser.add_argument(
-        "--skiplist",
-        help="List of sequences from XNAT to SKIP. Accepts a list --skiplist 1 2 3",
-        required=False,
-        default=[],
-        nargs="*",  # 0 or more values expected => creates a list
-        type=int,
-    )
-    parser.add_argument(
-        "--log_id",
+@app.command()
+def xnat2bids(
+    session: str = typer.Argument(
+        ..., help="XNAT Session ID, that is the Accession # for an experiment."
+    ),
+    bids_root_dir: str = typer.Argument(
+        ..., help="Root output directory for exporting the files"
+    ),
+    user: str = typer.Option(None, "-u", "--user", prompt=True, help="XNAT User"),
+    password: str = typer.Option(
+        None, "-p", "--pass", prompt=True, hide_input=True, help="XNAT Password"
+    ),
+    host: str = typer.Option(
+        "https://bnc.brown.edu/xnat", "-h", "--host", help="XNAT'sURL"
+    ),
+    session_suffix: str = typer.Option(
+        "01",
+        "-ss",
+        "--session-suffix",
+        help="Suffix of the session for BIDS defaults to 01. This will produce a session label of sess-01. You likely only need to change the dault for multi-session studies",
+    ),
+    bidsmap_file: str = typer.Option(
+        "", "-f", "--bidsmap-file", help="Bidsmap JSON file to correct sequence names"
+    ),
+    includeseq: List[int] = typer.Option(
+        [],
+        "-i",
+        "--includeseq",
+        help="Include this sequence only, can specify multiple times",
+    ),
+    skipseq: List[int] = typer.Option(
+        [], "-s", "--skipseq", help="Exclude this sequence, can specify multiple times",
+    ),
+    log_id: str = typer.Option(
+        datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
         help="ID or suffix to append to logfile, If empty, date is appended",
-        required=False,
-        default=datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
-        type=str,
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        dest="loglevel",
-        help="set loglevel to INFO",
-        action="store_const",
-        const=logging.INFO,
-    )
-    parser.add_argument(
-        "-vv",
-        "--very-verbose",
-        dest="loglevel",
-        help="set loglevel to DEBUG",
-        action="store_const",
-        const=logging.DEBUG,
-    )
-    parser.add_argument(
-        "--cleanup",
-        help="Remove/mode files and folders outside the bids directory",
-        action="store_true",
-        default=False,
-    )
-    parser.add_argument(
+    ),
+    verbose: bool = typer.Option(
+        False, "-v", help="Verbose logging. If True, sets loglevel to INFO"
+    ),
+    very_verbose: bool = typer.Option(
+        False, "--vv", help="Very verbose logging. If True, sets loglevel to DEBUG"
+    ),
+    overwrite: bool = typer.Option(
+        False,
         "--overwrite",
-        help="Remove directories where prior results for session/participant may exist",
-        action="store_true",
-        default=False,
-    )
-    return parser.parse_args(args)
-
-
-def run():
-    """Entry point for console_scripts
+        help="If True, remove directories where prior results for session/participant may exist",
+    ),
+    cleanup: bool = typer.Option(
+        False,
+        help="If True, Remove xnat-export folder and move logs to derivatives/xnat/logs inside bids directory",
+    ),
+):
     """
-    args = parse_args(sys.argv[1:])
-    code1 = dicom_export.main(args)
-    code2 = run_heudiconv.main(args)
-    print(f"return codes {code1}, {code2}")
-    return code1 + code2
+    Export DICOM images from an XNAT experiment to a BIDS compliant directory
+    """
+
+    project, subject = dicom_export(
+        session,
+        bids_root_dir,
+        user=user,
+        password=password,
+        host=host,
+        session_suffix=session_suffix,
+        bidsmap_file=bidsmap_file,
+        includeseq=includeseq,
+        skipseq=skipseq,
+        log_id=log_id,
+        verbose=verbose,
+        very_verbose=very_verbose,
+        overwrite=overwrite,
+    )
+
+    r = run_heudiconv(
+        project,
+        subject,
+        session,
+        bids_root_dir,
+        session_suffix=session_suffix,
+        log_id=log_id,
+        verbose=verbose,
+        very_verbose=very_verbose,
+        overwrite=overwrite,
+        cleanup=cleanup,
+    )
+    return r
 
 
-if __name__ == "__main__":
-    run()
+def main():
+    app()
