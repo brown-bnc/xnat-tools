@@ -136,14 +136,15 @@ xnat-heudiconv --user ${xnat_user}  \
 
 ## Testing
 
-For isntance to run  a test file  with Peotry, run:
+For instance to run  a test file  with Peotry, run:
 
 ```
-poetry run pytest -s -o log_cli=true --log-cli-level=INFO tests/integration/test_export_typer.py
+poetry run pytest -x -s -o log_cli=true --log-cli-level=INFO tests/integration/test_export_typer.py
 ```
 
 `-s` makes sure that `stdout` is printed to terminal
 `-o log_cli=true --log-cli-level=INFO` allows the logger output to go to cli
+`-x` exists on first failure
 
 You will need to have a local `.env` file where you set some environment variables, e.i `XNAT_PASS`
 
