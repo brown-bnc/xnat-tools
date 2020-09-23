@@ -17,6 +17,7 @@ import requests
 
 from datetime import datetime
 from pathlib import Path
+from typing import List
 
 from xnat_tools.bids_utils import (
     assign_bids_name,

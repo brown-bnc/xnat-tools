@@ -74,13 +74,12 @@ def test_dicom_export():
     # Here we test using typer's CLIRunner
     # ***************************************************************************
 
-    cmd = (
-        f"dicom-export {session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -i 8 -v "
-    )
+    cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -i 8 -v"
 
     split_cmd = shlex.split(cmd)
 
-    runner.invoke(export_app, split_cmd)
+    r = runner.invoke(export_app, split_cmd)
+    print(r.stdout)
 
     filepath = glob.glob(
         f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
@@ -98,11 +97,12 @@ def test_dicom_export():
     # Test that overwrite flag is wiping the xnat-export directory
     # ***************************************************************************
 
-    cmd = f"dicom-export {session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -i 8 -v --overwrite"
+    cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -i 8 -v --overwrite"
 
     split_cmd = shlex.split(cmd)
 
-    runner.invoke(export_app, split_cmd)
+    r = runner.invoke(export_app, split_cmd)
+    print(r.stdout)
 
     filepath = glob.glob(
         f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
@@ -130,7 +130,7 @@ def test_heudiconv():
     # ***************************************************************************
     # Test for succesfull execution
     # ***************************************************************************
-    cmd = f"run-heudiconv {project} {subject} {session} {bids_root_dir}"
+    cmd = f"{project} {subject} {session} {bids_root_dir}"
 
     split_cmd = shlex.split(cmd)
 
@@ -140,6 +140,7 @@ def test_heudiconv():
     filepath = glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}")[
         0
     ]
+    assert r.exit_code == 0
 
     assert (
         len(glob.glob(f"{filepath}/*/*.json")) > 0
@@ -149,7 +150,7 @@ def test_heudiconv():
     # ***************************************************************************
     # Test for RuntimeError Heudiconv doesn't allow overwrite
     # ***************************************************************************
-    cmd = f"run-heudiconv {project} {subject} {session} {bids_root_dir}"
+    cmd = f"{project} {subject} {session} {bids_root_dir}"
 
     split_cmd = shlex.split(cmd)
     r = runner.invoke(heudi_app, split_cmd)
@@ -161,12 +162,12 @@ def test_heudiconv():
     # Test overwrite is working
     # ***************************************************************************
 
-    cmd = f"run-heudiconv {project} {subject} {session} {bids_root_dir} --overwrite"
+    cmd = f"{project} {subject} {session} {bids_root_dir} --overwrite"
 
     split_cmd = shlex.split(cmd)
-    p = runner.invoke(heudi_app, split_cmd)
+    r = runner.invoke(heudi_app, split_cmd)
     print(r.stdout)
-    assert p.exit_code == 0
+    assert r.exit_code == 0
 
     # cleanup output -- for debugging coment this out
     shutil.rmtree(bids_root_dir, ignore_errors=True)
