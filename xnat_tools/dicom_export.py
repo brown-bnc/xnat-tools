@@ -9,13 +9,11 @@ Description: Export a XNAT session into BIDS directory format
 Original file lives here: https://bitbucket.org/nrg_customizations/nrg_pipeline_dicomtobids/src/default/scripts/catalog/DicomToBIDS/scripts/dcm2bids_wholeSession.py
 """
 
-import argparse
-import coloredlogs
+import typer
 import json
 import logging
 import os
 import requests
-import sys
 
 from datetime import datetime
 from pathlib import Path
@@ -33,141 +31,75 @@ from xnat_tools.xnat_utils import (
     get_scan_ids,
 )
 
+from xnat_tools.logging import setup_logging
+
+
 _logger = logging.getLogger(__name__)
+app = typer.Typer()
 
 
-def parse_args(args):
-    """Parse command line parameters
-
-    Args:
-      args ([str]): command line parameters as list of strings
-
-    Returns:
-      :obj:`argparse.Namespace`: command line parameters namespace
-    """
-    parser = argparse.ArgumentParser(
-        description="Dump XNAT Session into a BIDS friendly directory"
-    )
-    parser.add_argument("--host", default="https://bnc.brown.edu/xnat", help="Host")
-    parser.add_argument("-u", "--user", help="XNAT username", required=True)
-    parser.add_argument(
-        "-p",
-        "--password",
-        type=XNATPass,
-        help="XNAT password",
-        default=XNATPass.DEFAULT,
-    )
-    parser.add_argument("--session", help="Session ID", required=True)
-    parser.add_argument(
-        "--session_suffix",
-        help="Suffix of the session for BIDS e.g, 01. This will produce a sesstion label of sess-01",
-        required=True,
-        type=str,
-    )
-    parser.add_argument(
-        "--bids_root_dir", help="Root output directory for BIDS files", required=True
-    )
-    parser.add_argument(
-        "--bidsmap_file",
-        help="Bidsmap JSON file to correct sequence names",
-        required=False,
-        default="",
-    )
-    parser.add_argument(
-        "--seqlist",
-        help="List of sequences from XNAT to run if don't want to process all seuqences",
-        required=False,
-        default=[],
-        nargs="*",  # 0 or more values expected => creates a list
-        type=int,
-    )
-    parser.add_argument(
-        "--skiplist",
-        help="List of sequences from XNAT to SKIP. Accepts a list --skiplist 1 2 3",
-        required=False,
-        default=[],
-        nargs="*",  # 0 or more values expected => creates a list
-        type=int,
-    )
-    parser.add_argument(
-        "--log_id",
+@app.command()
+def dicom_export(
+    session: str = typer.Argument(
+        ..., help="XNAT Session ID, that is the Accession # for an experiment."
+    ),
+    bids_root_dir: str = typer.Argument(
+        ..., help="Root output directory for exporting the files"
+    ),
+    user: str = typer.Option(None, "-u", "--user", prompt=True, help="XNAT User"),
+    password: str = typer.Option(
+        None, "-p", "--pass", prompt=True, hide_input=True, help="XNAT Password"
+    ),
+    host: str = typer.Option(
+        "https://bnc.brown.edu/xnat", "-h", "--host", help="XNAT'sURL"
+    ),
+    session_suffix: str = typer.Option(
+        "01",
+        "-ss",
+        "--session-suffix",
+        help="Suffix of the session for BIDS defaults to 01. This will produce a session label of sess-01. You likely only need to change the dault for multi-session studies",
+    ),
+    bidsmap_file: str = typer.Option(
+        "", "-f", "--bidsmap-file", help="Bidsmap JSON file to correct sequence names"
+    ),
+    includeseq: List[int] = typer.Option(
+        [],
+        "-i",
+        "--includeseq",
+        help="Include this sequence only, can specify multiple times",
+    ),
+    skipseq: List[int] = typer.Option(
+        [], "-s", "--skipseq", help="Exclude this sequence, can specify multiple times",
+    ),
+    log_id: str = typer.Option(
+        datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
         help="ID or suffix to append to logfile, If empty, date is appended",
-        required=False,
-        default=datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
-        type=str,
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        dest="loglevel",
-        help="set loglevel to INFO",
-        action="store_const",
-        const=logging.INFO,
-    )
-    parser.add_argument(
-        "-vv",
-        "--very-verbose",
-        dest="loglevel",
-        help="set loglevel to DEBUG",
-        action="store_const",
-        const=logging.DEBUG,
-    )
-    parser.add_argument(
+    ),
+    verbose: bool = typer.Option(
+        False, "-v", help="Verbose logging. If True, sets loglevel to INFO"
+    ),
+    very_verbose: bool = typer.Option(
+        False, "--vv", help="Very verbose logging. If True, sets loglevel to DEBUG"
+    ),
+    overwrite: bool = typer.Option(
+        False,
         "--overwrite",
-        help="Remove directories where prior results for session/participant may exist",
-        action="store_true",
-        default=False,
-    )
+        help="If True, remove directories where prior results for session/participant may exist",
+    ),
+):
 
-    args, _ = parser.parse_known_args(args)
-    return args
-
-
-def setup_logging(loglevel, logfile):
-    """Setup basic logging
-
-    Args:
-      loglevel (int): minimum loglevel for emitting messages
     """
-    if loglevel is None:
-        loglevel = logging.INFO
-    logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
-    logging.basicConfig(
-        level=loglevel,
-        format=logformat,
-        datefmt="%Y-%m-%d %H:%M:%S",
-        handlers=[logging.FileHandler(logfile), logging.StreamHandler(sys.stdout)],
-    )
-    coloredlogs.install(level=loglevel, logger=_logger)
-
-
-def main(args):
-    """Main entry point allowing external calls
-
-    Args:
-      args ([namespase]): command line parameter list
+    Export XNAT DICOM images in an experiment to a BIDS friendly format
     """
-    host = args.host
-    session = args.session
-    session_suffix = args.session_suffix
-    bidsmap_file = args.bidsmap_file
-    bids_root_dir = os.path.expanduser(args.bids_root_dir)
 
+    bids_root_dir = os.path.expanduser(bids_root_dir)
     build_dir = os.getcwd()
-    seqlist = args.seqlist
-    skiplist = args.skiplist
-    log_id = args.log_id
-    overwrite = args.overwrite
     bidsmap = None
 
     # Parse bidsmap file
-    if args.bidsmap_file:
-        bidsmap_file = Path(args.bidsmap_file)
-        if not bidsmap_file.exists():
-            _logger.info("BIDSMAP file does not exist or wasn't passed")
-        else:
-            with bidsmap_file.open() as f:
-                bidsmap = json.load(f)
+    if bidsmap_file != "":
+        with Path(bidsmap_file).open() as f:
+            bidsmap = json.load(f)
 
     # Set up working directory
     if not os.access(bids_root_dir, os.R_OK):
@@ -175,8 +107,8 @@ def main(args):
 
     # Set up session
     connection = requests.Session()
-    connection.verify = False
-    connection.auth = (args.user, args.password)
+    connection.verify = True
+    connection.auth = (user, password)
 
     project, subject = get_project_and_subject_id(connection, host, session)
 
@@ -190,7 +122,12 @@ def main(args):
     if not os.path.exists(logs_dir):
         os.makedirs(logs_dir)
 
-    setup_logging(args.loglevel, f"{logs_dir}/export-{log_id}.log")
+    setup_logging(
+        _logger,
+        f"{logs_dir}/export-{log_id}.log",
+        verbose=verbose,
+        very_verbose=very_verbose,
+    )
 
     export_session_dir = prepare_export_output_path(
         bids_root_dir,
@@ -198,31 +135,24 @@ def main(args):
         study_prefix,
         subject_prefix,
         session_prefix,
-        overwrite,
+        overwrite=overwrite,
     )
 
+    # Export
     scans = get_scan_ids(connection, host, session)
-    scans = filter_scans(scans, seqlist=seqlist, skiplist=skiplist)
+    scans = filter_scans(scans, seqlist=includeseq, skiplist=skipseq)
     scans = bidsmap_scans(scans, bidsmap)
 
-    # Prepare files for heudiconv
     assign_bids_name(
         connection, host, subject, session, scans, build_dir, export_session_dir,
     )
 
+    # Close connection(I don't think this works)
     connection.delete(f"{host}/data/JSESSION")
     connection.close()
 
-    return 0
+    return project, subject
 
 
-def run():
-    """Entry point for console scripts
-    """
-    args = parse_args(sys.argv[1:])
-    code = main(args)
-    return code
-
-
-if __name__ == "__main__":
-    run()
+def main():
+    app()

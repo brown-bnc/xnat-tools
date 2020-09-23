@@ -1,98 +1,62 @@
 import sys
-import argparse
 import shlex
 import shutil
 import glob
-import requests
+import os
 from datetime import datetime
 from subprocess import Popen, PIPE, STDOUT
 from pathlib import Path
-from xnat_tools.xnat_utils import *
-from xnat_tools.bids_utils import *
+from xnat_tools.bids_utils import prepare_heudi_prefixes, prepare_heudiconv_output_path
+
+import typer
+
+app = typer.Typer()
 
 
-def parse_args(args):
-    """Parse command line parameters
-
-    Args:
-      args ([str]): command line parameters as list of strings
-
-    Returns:
-      :obj:`argparse.Namespace`: command line parameters namespace
-    """
-    parser = argparse.ArgumentParser(
-        description="Run Heudiconv on DICOMS form XNAT dump using Reproin Heuristic"
-    )
-    parser.add_argument("--host", default="https://bnc.brown.edu/xnat", help="Host")
-    parser.add_argument("-u", "--user", help="XNAT username", required=True)
-    parser.add_argument(
-        "-p",
-        "--password",
-        type=XNATPass,
-        help="XNAT password",
-        default=XNATPass.DEFAULT,
-    )
-    parser.add_argument("--session", help="Session ID", required=True)
-    parser.add_argument(
-        "--session_suffix",
-        help="Suffix of the session for BIDS e.g, 01. This will produce a sesstion label of sess-01",
-        required=True,
-        type=str,
-    )
-    parser.add_argument(
-        "--bids_root_dir", help="Root output directory for BIDS files", required=True
-    )
-    parser.add_argument(
-        "--cleanup",
-        help="Remove/mode files and folders outside the bids directory",
-        action="store_true",
-        default=False,
-    )
-    parser.add_argument(
-        "--log_id",
+@app.command()
+def run_heudiconv(
+    project: str = typer.Argument(..., help="XNAT's Project ID"),
+    subject: str = typer.Argument(..., help="XNAT's subject ID"),
+    session: str = typer.Argument(
+        ..., help="XNAT's Session ID, i.e., Accession # for an experiment"
+    ),
+    bids_root_dir: str = typer.Argument(
+        ..., help="Root output directory for exporting the files"
+    ),
+    session_suffix: str = typer.Option(
+        "01",
+        "-ss",
+        "--session-suffix",
+        help="Suffix of the session for BIDS defaults to 01. This will produce a session label of sess-01. You likely only need to change the dault for multi-session studies",
+    ),
+    log_id: str = typer.Option(
+        datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
         help="ID or suffix to append to logfile, If empty, date is appended",
-        required=False,
-        default=datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
-        type=str,
-    )
-    parser.add_argument(
-        "--overwrite",
-        help="Remove directories where prior results for session/participant may exist",
-        action="store_true",
-        default=False,
-    )
-
-    args, _ = parser.parse_known_args(args)
-    return args
-
-
-def main(args):
-    """Main entry point allowing external calls
-
-    Args:
-      args ([str]): command line parameter list
+    ),
+    verbose: bool = typer.Option(
+        False, "-v", help="Verbose logging. If True, sets loglevel to INFO"
+    ),
+    very_verbose: bool = typer.Option(
+        False, "--vv", help="Very verbose logging. If True, sets loglevel to DEBUG"
+    ),
+    overwrite: bool = typer.Option(
+        False,
+        help="If True, remove directories where prior results for session/participant may exist",
+    ),
+    cleanup: bool = typer.Option(
+        False,
+        help="If True, Remove xnat-export folder and move logs to derivatives/xnat/logs inside bids directory",
+    ),
+):
     """
-
-    host = args.host
-    session = args.session
-    session_suffix = args.session_suffix
-    bids_root_dir = os.path.expanduser(args.bids_root_dir)
-    cleanup = args.cleanup
-    log_id = args.log_id
-    overwrite = args.overwrite
+    Run Heudiconv
+    """
+    print("************************")
+    bids_root_dir = os.path.expanduser(bids_root_dir)
 
     # Set up working directory
     if not os.access(bids_root_dir, os.R_OK):
         raise ValueError("BIDS Root directory must exist")
-
-    # Set up session
-    connection = requests.Session()
-    connection.verify = False
-    connection.auth = (args.user, args.password)
-
-    project, subject = get_project_and_subject_id(connection, host, session)
-    connection.delete(f"{host}/data/JSESSION")
-    connection.close()
 
     # Paths to export source data in a BIDS friendly way
     pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_heudi_prefixes(
@@ -158,13 +122,5 @@ def main(args):
     return 0
 
 
-def run():
-    """Entry point for console_scripts
-    """
-    args = parse_args(sys.argv[1:])
-    code = main(args)
-    return code
-
-
-if __name__ == "__main__":
-    run()
+def main():
+    app()

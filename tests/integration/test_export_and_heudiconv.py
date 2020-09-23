@@ -1,13 +1,12 @@
 import os
 import glob
-import subprocess
 import shlex
 import shutil
-import logging
-from xnat_tools.xnat2bids_typer import dicom_export, app
 from typer.testing import CliRunner
 from dotenv import load_dotenv
-import pytest
+
+from xnat_tools.dicom_export import dicom_export, app as export_app
+from xnat_tools.run_heudiconv import app as heudi_app
 
 load_dotenv()
 runner = CliRunner()
@@ -81,7 +80,7 @@ def test_dicom_export():
 
     split_cmd = shlex.split(cmd)
 
-    runner.invoke(app, split_cmd)
+    runner.invoke(export_app, split_cmd)
 
     filepath = glob.glob(
         f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
@@ -103,7 +102,7 @@ def test_dicom_export():
 
     split_cmd = shlex.split(cmd)
 
-    runner.invoke(app, split_cmd)
+    runner.invoke(export_app, split_cmd)
 
     filepath = glob.glob(
         f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
@@ -135,7 +134,7 @@ def test_heudiconv():
 
     split_cmd = shlex.split(cmd)
 
-    r = runner.invoke(app, split_cmd)
+    r = runner.invoke(heudi_app, split_cmd)
     print(r.stdout)
 
     filepath = glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}")[
@@ -153,7 +152,7 @@ def test_heudiconv():
     cmd = f"run-heudiconv {project} {subject} {session} {bids_root_dir}"
 
     split_cmd = shlex.split(cmd)
-    r = runner.invoke(app, split_cmd)
+    r = runner.invoke(heudi_app, split_cmd)
     print(r.stdout)
 
     assert r.exit_code == 1
@@ -165,7 +164,7 @@ def test_heudiconv():
     cmd = f"run-heudiconv {project} {subject} {session} {bids_root_dir} --overwrite"
 
     split_cmd = shlex.split(cmd)
-    p = runner.invoke(app, split_cmd)
+    p = runner.invoke(heudi_app, split_cmd)
     print(r.stdout)
     assert p.exit_code == 0
 
