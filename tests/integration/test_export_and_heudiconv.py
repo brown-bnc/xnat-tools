@@ -3,15 +3,22 @@ import glob
 import subprocess
 import shlex
 import shutil
+import logging
+from xnat_tools.xnat2bids_typer import dicom_export, app
+from typer.testing import CliRunner
 from dotenv import load_dotenv
+import pytest
 
 load_dotenv()
+runner = CliRunner()
 
 
 def test_dicom_export():
     """Integration test for xnat-dicom-export"""
     xnat_user = os.environ.get("XNAT_USER", "testuser")
     xnat_pass = os.environ.get("XNAT_PASS", "")
+    project = os.environ.get("XNAT_PROJECT", "")
+    subject = os.environ.get("XNAT_SUBJECT", "")
     session = os.environ.get("XNAT_SESSION", "")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "01")
     bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
@@ -23,15 +30,29 @@ def test_dicom_export():
 
     # ***************************************************************************
     # Test for succesfull execution
+    # Here we call the function directly. Note, that at the moment, when calling
+    # the fucntion, the default values are not correct.
+    # See https://github.com/tiangolo/typer/issues/106
     # ***************************************************************************
 
-    cmd = f"xnat-dicom-export --user {xnat_user} --password {xnat_pass} \
-                      --session {session} --session_suffix {session_suffix} \
-                      --bids_root_dir {bids_root_dir} --seqlist 9 -vv"
+    p, s, = dicom_export(
+        session,
+        bids_root_dir,
+        user=xnat_user,
+        password=xnat_pass,
+        host="https://bnc.brown.edu/xnat",
+        bidsmap_file="",
+        session_suffix="01",
+        includeseq=[9],
+        skipseq=[],
+        log_id="pytest",
+        verbose=False,
+        very_verbose=True,
+        overwrite=False,
+    )
 
-    split_cmd = shlex.split(cmd)
-
-    subprocess.run(split_cmd)
+    assert p == project
+    assert s == subject
 
     filepath = glob.glob(
         f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
@@ -51,15 +72,16 @@ def test_dicom_export():
 
     # ***************************************************************************
     # Test that default overwrite flag is NOT wiping the xnat-export directory
+    # Here we test using typer's CLIRunner
     # ***************************************************************************
 
-    cmd = f"xnat-dicom-export --user {xnat_user} --password {xnat_pass} \
-                      --session {session} --session_suffix {session_suffix} \
-                      --bids_root_dir {bids_root_dir} --seqlist 8 -vv "
+    cmd = (
+        f"dicom-export {session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -i 8 -v "
+    )
 
     split_cmd = shlex.split(cmd)
 
-    subprocess.run(split_cmd)
+    runner.invoke(app, split_cmd)
 
     filepath = glob.glob(
         f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
@@ -77,13 +99,11 @@ def test_dicom_export():
     # Test that overwrite flag is wiping the xnat-export directory
     # ***************************************************************************
 
-    cmd = f"xnat-dicom-export --user {xnat_user} --password {xnat_pass} \
-                      --session {session} --session_suffix {session_suffix} \
-                      --bids_root_dir {bids_root_dir} --seqlist 8 -vv --overwrite"
+    cmd = f"dicom-export {session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -i 8 -v --overwrite"
 
     split_cmd = shlex.split(cmd)
 
-    subprocess.run(split_cmd)
+    runner.invoke(app, split_cmd)
 
     filepath = glob.glob(
         f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
@@ -99,9 +119,11 @@ def test_dicom_export():
 
 
 def test_heudiconv():
-    """Integration test for running xnat-heudiconv executable on the output of xnat-dicom-export """
+    """Integration test for running run-heudiconv executable on the output of xnat-dicom-export """
     xnat_user = os.environ.get("XNAT_USER", "testuser")
     xnat_pass = os.environ.get("XNAT_PASS", "")
+    project = os.environ.get("XNAT_PROJECT", "")
+    subject = os.environ.get("XNAT_SUBJECT", "")
     session = os.environ.get("XNAT_SESSION", "")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "01")
     bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
@@ -109,14 +131,12 @@ def test_heudiconv():
     # ***************************************************************************
     # Test for succesfull execution
     # ***************************************************************************
-
-    cmd = f"xnat-heudiconv --user {xnat_user} --password {xnat_pass} \
-            --session {session} --session_suffix {session_suffix} \
-            --bids_root_dir {bids_root_dir}"
+    cmd = f"run-heudiconv {project} {subject} {session} {bids_root_dir}"
 
     split_cmd = shlex.split(cmd)
 
-    subprocess.run(split_cmd)
+    r = runner.invoke(app, split_cmd)
+    print(r.stdout)
 
     filepath = glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}")[
         0
@@ -130,26 +150,24 @@ def test_heudiconv():
     # ***************************************************************************
     # Test for RuntimeError Heudiconv doesn't allow overwrite
     # ***************************************************************************
-    cmd = f"xnat-heudiconv --user {xnat_user} --password {xnat_pass} \
-            --session {session} --session_suffix {session_suffix} \
-            --bids_root_dir {bids_root_dir}"
+    cmd = f"run-heudiconv {project} {subject} {session} {bids_root_dir}"
 
     split_cmd = shlex.split(cmd)
-    p = subprocess.run(split_cmd)
+    r = runner.invoke(app, split_cmd)
+    print(r.stdout)
 
-    assert p.returncode == 1
+    assert r.exit_code == 1
 
     # ***************************************************************************
     # Test overwrite is working
     # ***************************************************************************
 
-    cmd = f"xnat-heudiconv --user {xnat_user} --password {xnat_pass} \
-            --session {session} --session_suffix {session_suffix} \
-            --bids_root_dir {bids_root_dir} --overwrite"
+    cmd = f"run-heudiconv {project} {subject} {session} {bids_root_dir} --overwrite"
 
     split_cmd = shlex.split(cmd)
-    p = subprocess.run(split_cmd)
-    assert p.returncode == 0
+    p = runner.invoke(app, split_cmd)
+    print(r.stdout)
+    assert p.exit_code == 0
 
     # cleanup output -- for debugging coment this out
     shutil.rmtree(bids_root_dir, ignore_errors=True)
