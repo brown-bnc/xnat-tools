@@ -1,0 +1,22 @@
+name: Build Documentation using MkDocs 
+on: [push]
+jobs: 
+  build: 
+    name: Build and Deploy Documentation 
+    runs-on: ubuntu-latest 
+    steps: 
+      - name: Checkout Master 
+        uses: actions/checkout@v2 
+      - name: Set up Python 3.7 
+        uses: actions/setup-python@v2 
+        with: 
+          python-version: '3.x' 
+      - name: Install dependencies 
+        run: | 
+          python -m pip install --upgrade pip 
+          pip install poetry
+          poetry install 
+      - name: Deploy 
+        run: | 
+          git pull
+          poetry run mkdocs gh-deploy
