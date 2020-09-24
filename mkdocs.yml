@@ -54,6 +54,6 @@ nav:
     - xnat-heudiconv: run_heudiconv.md
     - bids-postprocess: bids_postprocess.md
   - Development:
-    - Setting up your environment: dev_setup.md
+    - Setting Up: dev_setup.md
     - Code standards: code_standards.md 
 #   - API Reference:

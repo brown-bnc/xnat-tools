@@ -79,7 +79,7 @@ def get_scan_ids(connection, host, session):
 
     # Get list of scan ids
     _logger.info("------------------------------------------------")
-    _logger.info(f"Get scans.")
+    _logger.info("Get scans.")
     r = get(
         connection,
         host + "/data/experiments/%s/scans" % session,

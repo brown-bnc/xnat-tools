@@ -23,6 +23,7 @@ mkdocs = "^1.1.2"
 mkdocs-material = "^5.5.12"
 mkdocstrings = "^0.13.2"
 typer-cli = "^0.0.10"
+mypy = "^0.782"
 
 [tool.poetry.scripts]
 bids-postprocess ="xnat_tools.bids_postprocess:main"

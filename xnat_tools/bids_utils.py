@@ -34,7 +34,7 @@ def insert_intended_for_fmap(bids_dir, sub_list):
             # makes list of the func files to add into the intended for field
             func_files = [f"{sess}/func/{file}" for file in os.listdir(func_path)]
             nii_files = [i for i in func_files if i.endswith(".nii.gz")]
-            _logger.info(f"List of NII files")
+            _logger.info("List of NII files")
 
             # Open the json files ('r' for read only) as a dictionary
             # Adds the Intended for key

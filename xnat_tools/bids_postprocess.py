@@ -24,13 +24,13 @@ def bids_postprocess(
         "--session-suffix",
         help="Suffix of the session for BIDS defaults to 01. This will produce a session label of sess-01. You likely only need to change the dault for multi-session studies",
     ),
-    includesubj: List[int] = typer.Option(
+    includesubj: List[str] = typer.Option(
         [],
         "-i",
         "--includeseq",
         help="Include this participant only, can be specified multiple times",
     ),
-    skipsubj: List[int] = typer.Option(
+    skipsubj: List[str] = typer.Option(
         [],
         "-s",
         "--skipseq",
@@ -45,8 +45,9 @@ def bids_postprocess(
     ),
 ):
     """
-        Script for performing post BIDSIFY processing. 
-        At the moment it inserts the IntendedFor field to JSON sidecart for fieldmap data
+        Script for performing post BIDSIFY processing.
+        At the moment it inserts the IntendedFor field
+        to JSON sidecart for fieldmap data
     """
 
     setup_logging(

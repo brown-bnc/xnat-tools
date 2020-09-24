@@ -1,3 +1,5 @@
+# Usage Overview 
+
 This package installs the following executables which constitute the main way that users will interface with xnat-tools
 
 * `xnat2bids` : `xnat_tools/xnat2bids.py`
