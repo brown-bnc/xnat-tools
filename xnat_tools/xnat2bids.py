@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 from xnat_tools.dicom_export import dicom_export
-from .run_heudiconv import run_heudiconv
+from xnat_tools.run_heudiconv import run_heudiconv
 import typer
 
 app = typer.Typer()

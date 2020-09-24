@@ -1,11 +1,20 @@
-site_name: xnat-tools
+site_name: XNAT Tools
 site_description: Documentation for the xnat-tools model
 site_url: http://brown-bnc.github.io/xnat-tools
 theme:
   name: material
+  # palette:
+  #   primary: 'black'
+  #   accent: 'teal'
+  icon:
+    repo: fontawesome/brands/github-alt
   features:
     - instant
     - tabs
+
+repo_name: brown-bnc/xnat-tools
+repo_url: https://github.com/brown-bnc/xnat-tools
+edit_uri: ''
 
 plugins:
   - search
@@ -23,17 +32,27 @@ plugins:
         - xnat_tools
 
 markdown_extensions:
+  - toc:
+      permalink: true
   - admonition
   - codehilite
+  - extra
+
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: 'https://github.com/brown-bnc/xnat-tools'
 
 nav:
   - Getting Started:
     - Overview: index.md
     - Installation: installation.md
-  - Converting to BIDS:
-    - User Interface: interface.md
-    - Running locally: run_local.md
-    - Running on Oscar: run_oscar.md
+  - Usage:
+    - Overview: usage_overview.md
+    - xnat2bids: xnat2bids.md
+    - xnat-dicom-export: dicom_export.md
+    - xnat-heudiconv: run_heudiconv.md
+    - bids-postprocess: bids_postprocess.md
   - Development:
     - Setting up your environment: dev_setup.md
     - Code standards: code_standards.md 

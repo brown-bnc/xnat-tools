@@ -2,8 +2,8 @@ import os
 import typer
 import logging
 from typing import List
-from .bids_utils import insert_intended_for_fmap
-from .logging import setup_logging
+from xnat_tools.bids_utils import insert_intended_for_fmap
+from xnat_tools.logging import setup_logging
 
 _logger = logging.getLogger(__name__)
 

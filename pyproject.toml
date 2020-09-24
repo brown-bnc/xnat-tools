@@ -22,20 +22,11 @@ responses = "^0.12.0"
 mkdocs = "^1.1.2"
 mkdocs-material = "^5.5.12"
 mkdocstrings = "^0.13.2"
+typer-cli = "^0.0.10"
 
 [tool.poetry.scripts]
-bids-postprocess ="xnat_tools.bids_postprocess:run"
-xnat-heudiconv = "xnat_tools.run_heudiconv:run"
-xnat-dicom-export = "xnat_tools.dicom_export:run"
-xnat2bids = "xnat_tools.xnat2bids:run"
-xnat2bids_typer = "xnat_tools.xnat2bids_typer:main"
+bids-postprocess ="xnat_tools.bids_postprocess:main"
+xnat-heudiconv = "xnat_tools.run_heudiconv:main"
+xnat-dicom-export = "xnat_tools.dicom_export:main"
+xnat2bids = "xnat_tools.xnat2bids:main"
 
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
-
-[tool.pytest]
-log_cli = 1
-log_cli_level = "DEBUG"
-log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
-log_cli_date_format = "%Y-%m-%d %H:%M:%S"

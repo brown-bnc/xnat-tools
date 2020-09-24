@@ -56,7 +56,7 @@ def test_postprocessing():
         f.close
 
     # cleanup output -- for debugging commsent this out
-    # shutil.rmtree(bids_root_dir, ignore_errors=True)
+    shutil.rmtree(bids_root_dir, ignore_errors=True)
 
     # you can locally run bids-validator
     # bids_directory=${PWD}/tests/xnat2bids/ashenhav/study-1222/bids/
