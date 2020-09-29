@@ -18,6 +18,8 @@ edit_uri: ''
 
 plugins:
   - search
+  - mkdocs-versioning:
+      version: 0.2.0
   - mkdocstrings:
       handlers:
         python:
@@ -57,3 +59,4 @@ nav:
     - Setting Up: dev_setup.md
     - Code standards: code_standards.md 
 #   - API Reference:
+  - Version Selector: "../"

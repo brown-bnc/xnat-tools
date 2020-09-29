@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xnat-tools"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = ["Isabel Restrepo <isabelrestre@gmail.com>"]
 
@@ -24,6 +24,7 @@ mkdocs-material = "^5.5.12"
 mkdocstrings = "^0.13.2"
 typer-cli = "^0.0.10"
 mypy = "^0.782"
+mkdocs-versioning = "^0.3.0"
 
 [tool.poetry.scripts]
 bids-postprocess ="xnat_tools.bids_postprocess:main"

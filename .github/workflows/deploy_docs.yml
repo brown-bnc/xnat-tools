@@ -19,4 +19,4 @@ jobs:
       - name: Deploy 
         run: | 
           git pull
-          poetry run mkdocs gh-deploy
+          poetry run mkdocs-versioning deploy
