@@ -19,6 +19,7 @@ jobs:
       - name: Deploy 
         run: | 
           git pull
+          mkdir site
           poetry run mkdocs-versioning sync
           poetry run mkdocs build
           poetry run mkdocs-versioning deploy
