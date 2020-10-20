@@ -14,15 +14,6 @@ When working on xnat-tools, we using a flow a simple flow based on following rul
 * `master` is the default branch and where releases are made off. This branch should be in clean/working conditions at all times. This branch is protected and can only be merged from Pull Requests for topic branches
 * topic branches are created for new features, fixes, or really any changes
 
-<!-- ### Commitizen
-
-All commits should use the angular style.  Commitizen makes this easy.
-
-```
-pip install --user commitizen
-```
-
-Then use `cz commit` where you would have previously done `git commit`. -->
 
 ## Testing
 
