@@ -47,8 +47,7 @@ def test_dicom_export():
         includeseq=[9],
         skipseq=[],
         log_id="pytest",
-        verbose=False,
-        very_verbose=True,
+        verbose=0,
         overwrite=False,
     )
 

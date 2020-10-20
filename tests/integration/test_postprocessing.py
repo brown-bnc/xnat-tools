@@ -43,8 +43,7 @@ def test_postprocessing():
         session_suffix="01",
         includesubj=[9011, 9999, 111, 9999, 111],
         skipsubj=[9999, 111],
-        verbose=True,
-        very_verbose=False,
+        verbose=0,
     )
 
     # lazy check for the intendedFor field in one json file

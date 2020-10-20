@@ -94,7 +94,6 @@ def xnat2bids(
         bids_root_dir,
         session_suffix=session_suffix,
         log_id=log_id,
-        verbose=verbose,
         overwrite=overwrite,
         cleanup=cleanup,
     )

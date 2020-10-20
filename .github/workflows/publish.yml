@@ -1,5 +1,5 @@
 name: New release and versioned docs 
-on: 
+on:
   push:
     master
 jobs: 
@@ -18,7 +18,7 @@ jobs:
   docs:  
     name: Build and Deploy Documentation 
     runs-on: ubuntu-latest 
-    depends-on: release
+    depends-on: bump_version
     steps: 
       - name: Checkout Master 
         uses: actions/checkout@v2 

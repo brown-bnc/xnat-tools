@@ -49,7 +49,7 @@ def dicom_export(
     ),
     session_suffix: str = typer.Option(
         "01",
-        "S",
+        "-S",
         "--session-suffix",
         help="Suffix of the session for BIDS defaults to 01. \
         This will produce a session label of sess-01. \
