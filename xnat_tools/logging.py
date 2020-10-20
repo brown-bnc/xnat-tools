@@ -4,7 +4,7 @@ import sys
 
 
 def setup_logging(
-    logger, logfile: str = "", verbose: bool = False, very_verbose: bool = False
+    logger, logfile: str = "", verbose_level: int = 0, very_verbose: bool = False
 ):
     """Setup basic logging
 
@@ -13,15 +13,13 @@ def setup_logging(
     """
 
     loglevel = logging.INFO
-    if very_verbose:
+    if verbose_level > = 1:
         loglevel = logging.DEBUG
     logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
-    handlers = None
-    if logfile == "":
-        handlers = [logging.StreamHandler(sys.stdout)]
-    else:
-        handlers = [logging.FileHandler(logfile), logging.StreamHandler(sys.stdout)]
-
+    handlers = [logging.StreamHandler(sys.stdout)]
+    if logfile:
+        handlers.append(logging.FileHandler(logfile))
+    
     logging.basicConfig(
         level=loglevel,
         format=logformat,

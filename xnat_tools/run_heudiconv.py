@@ -25,19 +25,13 @@ def run_heudiconv(
     ),
     session_suffix: str = typer.Option(
         "01",
-        "-ss",
+        "-S",
         "--session-suffix",
         help="Suffix of the session for BIDS defaults to 01. This will produce a session label of sess-01. You likely only need to change the dault for multi-session studies",
     ),
     log_id: str = typer.Option(
         datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
         help="ID or suffix to append to logfile, If empty, date is appended",
-    ),
-    verbose: bool = typer.Option(
-        False, "-v", help="Verbose logging. If True, sets loglevel to INFO"
-    ),
-    very_verbose: bool = typer.Option(
-        False, "--vv", help="Very verbose logging. If True, sets loglevel to DEBUG"
     ),
     overwrite: bool = typer.Option(
         False,

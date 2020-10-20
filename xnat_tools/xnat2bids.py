@@ -24,7 +24,7 @@ def xnat2bids(
     ),
     session_suffix: str = typer.Option(
         "01",
-        "-ss",
+        "-S",
         "--session-suffix",
         help="Suffix of the session for BIDS defaults to 01. This will produce a session label of sess-01. You likely only need to change the dault for multi-session studies",
     ),
@@ -38,17 +38,21 @@ def xnat2bids(
         help="Include this sequence only, can specify multiple times",
     ),
     skipseq: List[int] = typer.Option(
-        [], "-s", "--skipseq", help="Exclude this sequence, can specify multiple times",
+        [],
+        "-s",
+        "--skipseq",
+        help="Exclude this sequence, can be specified multiple times",
     ),
     log_id: str = typer.Option(
         datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
         help="ID or suffix to append to logfile, If empty, date is appended",
     ),
-    verbose: bool = typer.Option(
-        False, "-v", help="Verbose logging. If True, sets loglevel to INFO"
-    ),
-    very_verbose: bool = typer.Option(
-        False, "--vv", help="Very verbose logging. If True, sets loglevel to DEBUG"
+    verbose: int = typer.Option(
+        0,
+        "-v",
+        "--verbose",
+        count=True,
+        help="Verbose level. Can be specified multiple times to increase verbosity",
     ),
     overwrite: bool = typer.Option(
         False,
@@ -76,7 +80,6 @@ def xnat2bids(
         skipseq=skipseq,
         log_id=log_id,
         verbose=verbose,
-        very_verbose=very_verbose,
         overwrite=overwrite,
     )
 
@@ -88,7 +91,6 @@ def xnat2bids(
         session_suffix=session_suffix,
         log_id=log_id,
         verbose=verbose,
-        very_verbose=very_verbose,
         overwrite=overwrite,
         cleanup=cleanup,
     )
