@@ -10,7 +10,12 @@ This instructions are for MacOS, while they should roughly be the same for Windo
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 ```
 
-[Chocolatey](https://chocolatey.org) is a popular package manager for Windows
+[Chocolatey](https://chocolatey.org) is a popular package manager for Windows. To install, run the following from a priviledged powershell prompt:
+
+
+```
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+```
 
 
 
@@ -41,11 +46,11 @@ And restart your SHELL
 
 A stable version means there is no `-dev` of `-rc` after the name. For instance run
 
-`pyenv install 3.8.1`
+`pyenv install 3.7.4`
 
 ### Activate global environment
 
-`pyenv global 3.8.1`
+`pyenv global 3.7.4`
 
 ### Listing available versions to the system
 
