@@ -28,7 +28,7 @@ In the future we will add testing as part of CI. For the moment, you'll need to 
 
 To run all of the tests:
 ```
-poetry run pytest
+poetry run pytest -x -s -o log_cli=true --log-cli-level=INFO
 ```
 
 To run only a file
@@ -54,6 +54,35 @@ docker run -ti --rm -v ${bids_directory}:/data:ro bids/validator /data
 
 ## Code Style
 
+### Typing
+
+Please use [type hints](https://mypy.readthedocs.io/en/stable/) on all signatures where reasonable.  This will make sure the code is more readable, can be statically tested for type soundness, and helps fill in the documentation.
+
+Run the below to check for type errors:
+```
+mypy xnat_tools
+```
+
+### Formatting
+
+#### Pre-Commit hooks
+
+This repository has pre-commit hooks configured to enforce formatting.
+
+To set up the hooks, run 
+
+```
+poetry run pre-commit install
+```
+
+Now, you hooks will run on `git commit`
+
+If you would like to run on all file (not just staged ones), you can run
+
+```
+poetry run pre-commit run --all-files
+```
+
 ### black
 
 The code must conform to `black`'s standards and this is automatically checked via github actions.  To automatically fix files, run `poetry run black .` from the root of the `xnat_tools` directory.
@@ -71,14 +100,7 @@ Check for all warnings:
 poetry run flake8 xnat_tools --count --exit-zero --max-complexity=12 --max-line-length=88 --statistics
 ```
 
-### Typing
 
-Please use [type hints](https://mypy.readthedocs.io/en/stable/) on all signatures where reasonable.  This will make sure the code is more readable, can be statically tested for type soundness, and helps fill in the documentation.
-
-Run the below to check for type errors:
-```
-mypy xnat_tools
-```
 
 ## Documentation
 
