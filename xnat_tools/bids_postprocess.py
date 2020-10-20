@@ -42,13 +42,14 @@ def bids_postprocess(
     ),
     log_file: str = typer.Option(
         "",
-        help="File to senf logs to",
+        help="File to send logs to",
     ),
-    verbose: bool = typer.Option(
-        False, "-v", help="Verbose logging. If True, sets loglevel to INFO"
-    ),
-    very_verbose: bool = typer.Option(
-        False, "--vv", help="Very verbose logging. If True, sets loglevel to DEBUG"
+    verbose: int = typer.Option(
+        0,
+        "-v",
+        "--verbose",
+        count=True,
+        help="Verbose level. Can be specified multiple times to increase verbosity",
     ),
 ):
     """
@@ -57,12 +58,7 @@ def bids_postprocess(
     to JSON sidecart for fieldmap data
     """
 
-    setup_logging(
-        _logger,
-        log_file,
-        verbose=verbose,
-        very_verbose=very_verbose,
-    )
+    setup_logging(_logger, log_file, verbose_level=verbose)
 
     bids_experiment_dir = os.path.expanduser(bids_experiment_dir)
 
