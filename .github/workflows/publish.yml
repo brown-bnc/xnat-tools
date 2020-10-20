@@ -3,22 +3,22 @@ on:
   push:
     master
 jobs: 
-  release:
-    name: Publish release
-    runs-on: ubuntu-latest 
+  bump_version:
+    runs-on: ubuntu-latest
+    name: 'Bump version and create changelog with commitizen'
     steps:
-      steps:
-        - uses: actions/checkout@v2
-          with:
-            fetch-depth: 0    
-        - name: Python Semantic Release
-          uses: relekang/python-semantic-release@master
-          with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Check out
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Create bump and changelog
+      uses: commitizen-tools/commitizen-action@0.3.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
   docs:  
     name: Build and Deploy Documentation 
     runs-on: ubuntu-latest 
-    depends-on: 
+    depends-on: release
     steps: 
       - name: Checkout Master 
         uses: actions/checkout@v2 
@@ -37,7 +37,7 @@ jobs:
           mkdir site
           VERSION=$(cat pyproject.toml | grep version | head -1 | awk -F: '{ print $1 }'| sed 's/[\",]//g'| tr -d 'version = ')
           echo "Making docs for version $VERSION"
-          (envsubst '${VERSION}' < mkdocs-template.yml) > mkdocs.yml
+          (envsubst 'v${VERSION}' < mkdocs-template.yml) > mkdocs.yml
           poetry run mkdocs-versioning sync
           poetry run mkdocs build
           poetry run mkdocs-versioning deploy
