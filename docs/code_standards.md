@@ -14,6 +14,11 @@ When working on xnat-tools, we using a flow a simple flow based on following rul
 * `master` is the default branch and where releases are made off. This branch should be in clean/working conditions at all times. This branch is protected and can only be merged from Pull Requests for topic branches
 * topic branches are created for new features, fixes, or really any changes
 
+### Comment styles
+
+Developers should use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/). [Commitizen](https://commitizen-tools.github.io/commitizen/) comes installed as a `dev` dependency via poetry and you can use it to help you format your commit messages. It can also be installed as stand alone CLI or as a plugin on VSCODE.
+
+We use Commitizen in GitHub Actions to automatically bump the version and update the [CHANGELOG.md](CHANGELOG.md) of this package according to the commit messages. Using conventional commits guarantees than Commitizen works appropriately.  
 
 ## Testing
 
