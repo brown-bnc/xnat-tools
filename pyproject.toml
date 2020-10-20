@@ -32,6 +32,14 @@ xnat-heudiconv = "xnat_tools.run_heudiconv:main"
 xnat-dicom-export = "xnat_tools.dicom_export:main"
 xnat2bids = "xnat_tools.xnat2bids:main"
 
+[tool.semantic_release]
+version_variable = "xnat_tools/__init__.py:__version__"
+version_source = "tag"
+commit_version_number = "true"
+upload_to_pypi = "false"
+patch_without_tag = "true"
+
 [build-system]		
 requires = ["poetry>=0.12"]		
 build-backend = "poetry.masonry.api"
+

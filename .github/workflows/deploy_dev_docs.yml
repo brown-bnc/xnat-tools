@@ -20,6 +20,10 @@ jobs:
         run: | 
           git pull
           mkdir site
-          poetry run mkdocs-versioning sync
+          VERSION=dev
+          echo "Making docs for version $VERSION"
+          (envsubst '${VERSION}' < mkdocs-template.yml) > mkdocs.yml
+        #   poetry run mkdocs-versioning sync
+        #   rm -rf site/dev
           poetry run mkdocs build
           poetry run mkdocs-versioning deploy

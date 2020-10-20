@@ -19,7 +19,7 @@ edit_uri: ''
 plugins:
   - search
   - mkdocs-versioning:
-      version: 0.2.0
+      version: ${VERSION}
   - mkdocstrings:
       handlers:
         python:
