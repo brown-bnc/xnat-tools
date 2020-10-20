@@ -4,14 +4,14 @@ import shutil
 import shlex
 import pytest
 from typer.testing import CliRunner
-from xnat_tools.xnat2bids import app as app
+from xnat_tools.xnat2bids import app
 from dotenv import load_dotenv
 
 load_dotenv()
 runner = CliRunner()
 
 
-# @pytest.mark.skip(reason="Another slow test")
+@pytest.mark.skip(reason="Another slow test")
 def test_run_plus():
     """Integration test for sequence list"""
     xnat_user = os.environ.get("XNAT_USER", "testuser")
@@ -43,5 +43,5 @@ def test_run_plus():
             os.path.join(os.getcwd(), xnat_export_path, f"{task_name}-{i:02}")
         )
 
-    # cleanup output -- for debugging coment this out
+    # cleanup output -- for debugging comment this out
     shutil.rmtree(bids_root_dir, ignore_errors=True)

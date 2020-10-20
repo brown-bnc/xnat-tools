@@ -56,9 +56,6 @@ def test_xnat2bids():
 
     for d in export_subdirs:
         for f in os.listdir(d):
-            # print(f)
             dicom_sequence = int(f.split(".")[3])
-            # print("------- Dicom sequence:")
-            # print(dicom_sequence)
             assert str(dicom_sequence) in seqlist
             assert str(dicom_sequence) not in skiplist
