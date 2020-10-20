@@ -6,18 +6,18 @@ Maintainer: Isabel Restrepo
 Description: Export a XNAT session into BIDS directory format
 
 
-Original file lives here: https://bitbucket.org/nrg_customizations/nrg_pipeline_dicomtobids/src/default/scripts/catalog/DicomToBIDS/scripts/dcm2bids_wholeSession.py
+Original file lives here:
+https://bitbucket.org/nrg_customizations/nrg_pipeline_dicomtobids/src/default/scripts/catalog/DicomToBIDS/scripts/dcm2bids_wholeSession.py
 """
-
-import typer
 import json
 import logging
 import os
-import requests
-
 from datetime import datetime
 from pathlib import Path
 from typing import List
+
+import requests
+import typer
 
 from xnat_tools.bids_utils import (
     assign_bids_name,
@@ -25,15 +25,8 @@ from xnat_tools.bids_utils import (
     prepare_bids_prefixes,
     prepare_export_output_path,
 )
-
-from xnat_tools.xnat_utils import (
-    filter_scans,
-    get_project_and_subject_id,
-    get_scan_ids,
-)
-
 from xnat_tools.logging import setup_logging
-
+from xnat_tools.xnat_utils import filter_scans, get_project_and_subject_id, get_scan_ids
 
 _logger = logging.getLogger(__name__)
 app = typer.Typer()
@@ -58,7 +51,9 @@ def dicom_export(
         "01",
         "S",
         "--session-suffix",
-        help="Suffix of the session for BIDS defaults to 01. This will produce a session label of sess-01. You likely only need to change the dault for multi-session studies",
+        help="Suffix of the session for BIDS defaults to 01. \
+        This will produce a session label of sess-01. \
+        You likely only need to change the default for multi-session studies",
     ),
     bidsmap_file: str = typer.Option(
         "", "-f", "--bidsmap-file", help="Bidsmap JSON file to correct sequence names"
@@ -70,7 +65,10 @@ def dicom_export(
         help="Include this sequence only, can specify multiple times",
     ),
     skipseq: List[int] = typer.Option(
-        [], "-s", "--skipseq", help="Exclude this sequence, can specify multiple times",
+        [],
+        "-s",
+        "--skipseq",
+        help="Exclude this sequence, can specify multiple times",
     ),
     log_id: str = typer.Option(
         datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
@@ -86,7 +84,7 @@ def dicom_export(
     overwrite: bool = typer.Option(
         False,
         "--overwrite",
-        help="If True, remove directories where prior results for session/participant may exist",
+        help="Remove directories where prior results for session/participant may exist",
     ),
 ):
 
@@ -140,7 +138,13 @@ def dicom_export(
     scans = bidsmap_scans(scans, bidsmap)
 
     assign_bids_name(
-        connection, host, subject, session, scans, build_dir, export_session_dir,
+        connection,
+        host,
+        subject,
+        session,
+        scans,
+        build_dir,
+        export_session_dir,
     )
 
     # Close connection(I don't think this works)

@@ -1,14 +1,15 @@
-import sys
-import shlex
-import shutil
 import glob
 import os
+import shlex
+import shutil
+import sys
 from datetime import datetime
-from subprocess import Popen, PIPE, STDOUT
 from pathlib import Path
-from xnat_tools.bids_utils import prepare_heudi_prefixes, prepare_heudiconv_output_path
+from subprocess import PIPE, STDOUT, Popen
 
 import typer
+
+from xnat_tools.bids_utils import prepare_heudi_prefixes, prepare_heudiconv_output_path
 
 app = typer.Typer()
 
@@ -27,7 +28,9 @@ def run_heudiconv(
         "01",
         "-S",
         "--session-suffix",
-        help="Suffix of the session for BIDS defaults to 01. This will produce a session label of sess-01. You likely only need to change the dault for multi-session studies",
+        help="Suffix of the session for BIDS defaults to 01.\
+              This will produce a session label of sess-01.\
+              You likely only need to change the default for multi-session studies",
     ),
     log_id: str = typer.Option(
         datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
@@ -35,11 +38,11 @@ def run_heudiconv(
     ),
     overwrite: bool = typer.Option(
         False,
-        help="If True, remove directories where prior results for session/participant may exist",
+        help="Remove directories where prior results for session/participant may exist",
     ),
     cleanup: bool = typer.Option(
         False,
-        help="If True, Remove xnat-export folder and move logs to derivatives/xnat/logs inside bids directory",
+        help="Remove xnat-export folder and move logs to derivatives/xnat/logs",
     ),
 ):
     """
@@ -64,7 +67,9 @@ def run_heudiconv(
         session_prefix,
         overwrite,
     )
-    dicom_dir_template = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/{subject_prefix}/{session_prefix}"
+
+    export_dir = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export"
+    dicom_dir_template = f"{export_dir}/{subject_prefix}/{session_prefix}"
 
     # check if the extension of the images is dcm or IMA
     dicom_ext = "dcm"
@@ -76,7 +81,7 @@ def run_heudiconv(
 
     heudi_cmd = f"heudiconv -f reproin --bids \
     -o {heudi_output_dir} \
-    --dicom_dir_template {bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/sub-{{subject}}/ses-{{session}}/*/*.{dicom_ext} \
+    --dicom_dir_template {export_dir}/sub-{{subject}}/ses-{{session}}/*/*.{dicom_ext} \
     --subjects {subject} --ses {session_suffix}"
 
     heudi_split_cmd = shlex.split(heudi_cmd)

@@ -1,6 +1,7 @@
-import coloredlogs
 import logging
 import sys
+
+import coloredlogs
 
 
 def setup_logging(
@@ -13,13 +14,13 @@ def setup_logging(
     """
 
     loglevel = logging.INFO
-    if verbose_level > = 1:
+    if verbose_level >= 1:
         loglevel = logging.DEBUG
     logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
     handlers = [logging.StreamHandler(sys.stdout)]
     if logfile:
         handlers.append(logging.FileHandler(logfile))
-    
+
     logging.basicConfig(
         level=loglevel,
         format=logformat,

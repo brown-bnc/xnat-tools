@@ -1,11 +1,12 @@
-import subprocess
 import os
-import shutil
 import shlex
+import shutil
+
 import pytest
-from typer.testing import CliRunner
-from xnat_tools.xnat2bids import app
 from dotenv import load_dotenv
+from typer.testing import CliRunner
+
+from xnat_tools.xnat2bids import app
 
 load_dotenv()
 runner = CliRunner()
@@ -34,7 +35,8 @@ def test_run_plus():
     r = runner.invoke(app, xnat2bids_split_cmd)
     print(r.stdout)
 
-    xnat_export_path = f"tests/xnat2bids/shenhav/study-201226/xnat-export/sub-tcb2006/ses-{session_suffix}/"
+    xnat_export_path = f"tests/xnat2bids/shenhav/study-201226/xnat-export/\
+                         sub-tcb2006/ses-{session_suffix}/"
     task_name = "func-bold_task-TSSblock_acq-2dot4mm-SMS4TR1200AP_run"
 
     assert os.path.isdir(os.path.join(os.getcwd(), xnat_export_path))

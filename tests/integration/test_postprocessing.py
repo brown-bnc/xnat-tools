@@ -1,11 +1,13 @@
-import os
-import shutil
-import shlex
 import json
+import os
+import shlex
+import shutil
+
 from dotenv import load_dotenv
 from typer.testing import CliRunner
-from xnat_tools.xnat2bids import app as xnat2bids_app
+
 from xnat_tools.bids_postprocess import bids_postprocess
+from xnat_tools.xnat2bids import app as xnat2bids_app
 
 runner = CliRunner()
 load_dotenv()

@@ -1,11 +1,13 @@
-import os
 import glob
+import os
 import shlex
 import shutil
-from typer.testing import CliRunner
-from dotenv import load_dotenv
 
-from xnat_tools.dicom_export import dicom_export, app as export_app
+from dotenv import load_dotenv
+from typer.testing import CliRunner
+
+from xnat_tools.dicom_export import app as export_app
+from xnat_tools.dicom_export import dicom_export
 from xnat_tools.run_heudiconv import app as heudi_app
 
 load_dotenv()
@@ -118,9 +120,8 @@ def test_dicom_export():
 
 
 def test_heudiconv():
-    """Integration test for running run-heudiconv executable on the output of xnat-dicom-export """
-    xnat_user = os.environ.get("XNAT_USER", "testuser")
-    xnat_pass = os.environ.get("XNAT_PASS", "")
+    """Integration test for running the run-heudiconv
+    executable on the output of xnat-dicom-export"""
     project = os.environ.get("XNAT_PROJECT", "")
     subject = os.environ.get("XNAT_SUBJECT", "")
     session = os.environ.get("XNAT_SESSION", "")
@@ -137,9 +138,7 @@ def test_heudiconv():
     r = runner.invoke(heudi_app, split_cmd)
     print(r.stdout)
 
-    filepath = glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}")[
-        0
-    ]
+    filepath = glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}")[0]
     assert r.exit_code == 0
 
     assert (

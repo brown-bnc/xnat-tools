@@ -1,7 +1,9 @@
-import os
-import typer
 import logging
+import os
 from typing import List
+
+import typer
+
 from xnat_tools.bids_utils import insert_intended_for_fmap
 from xnat_tools.logging import setup_logging
 
@@ -22,7 +24,9 @@ def bids_postprocess(
         "01",
         "-ss",
         "--session-suffix",
-        help="Suffix of the session for BIDS defaults to 01. This will produce a session label of sess-01. You likely only need to change the dault for multi-session studies",
+        help="Suffix of the session for BIDS defaults to 01. \
+        This will produce a session label of sess-01. \
+        You likely only need to change the default for multi-session studies",
     ),
     includesubj: List[str] = typer.Option(
         [],
@@ -36,7 +40,10 @@ def bids_postprocess(
         "--skipseq",
         help="Skip this participant, can be specified multiple times",
     ),
-    log_file: str = typer.Option("", help="File to senf logs to",),
+    log_file: str = typer.Option(
+        "",
+        help="File to senf logs to",
+    ),
     verbose: bool = typer.Option(
         False, "-v", help="Verbose logging. If True, sets loglevel to INFO"
     ),
@@ -45,13 +52,16 @@ def bids_postprocess(
     ),
 ):
     """
-        Script for performing post BIDSIFY processing.
-        At the moment it inserts the IntendedFor field
-        to JSON sidecart for fieldmap data
+    Script for performing post BIDSIFY processing.
+    At the moment it inserts the IntendedFor field
+    to JSON sidecart for fieldmap data
     """
 
     setup_logging(
-        _logger, log_file, verbose=verbose, very_verbose=very_verbose,
+        _logger,
+        log_file,
+        verbose=verbose,
+        very_verbose=very_verbose,
     )
 
     bids_experiment_dir = os.path.expanduser(bids_experiment_dir)
@@ -79,6 +89,5 @@ def bids_postprocess(
 
 
 def main():
-    """Entry point for console_scripts
-    """
+    """Entry point for console_scripts"""
     app()

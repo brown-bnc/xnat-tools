@@ -1,11 +1,12 @@
 import json
-import os
 import logging
-import pydicom
+import os
 import shutil
-
-from xnat_tools.xnat_utils import get, download
 from collections import defaultdict
+
+import pydicom
+
+from xnat_tools.xnat_utils import download, get
 
 _logger = logging.getLogger(__name__)
 
@@ -243,13 +244,19 @@ def scan_contains_dicom(connection, host, session, scanid):
 
 
 def assign_bids_name(
-    connection, host, subject, session, scans, build_dir, bids_session_dir,
+    connection,
+    host,
+    subject,
+    session,
+    scans,
+    build_dir,
+    bids_session_dir,
 ):
     """
-        subject: Subject to process
-        scans: Tuple of scan id and series descriptions
-        build_dir: build director. What is this?
-        study_bids_dir: BIDS directory to copy simlinks to. Typically the RESOURCES/BIDS
+    subject: Subject to process
+    scans: Tuple of scan id and series descriptions
+    build_dir: build director. What is this?
+    study_bids_dir: BIDS directory to copy simlinks to. Typically the RESOURCES/BIDS
     """
 
     for scanid, seriesdesc in scans:
@@ -266,7 +273,8 @@ def assign_bids_name(
             os.mkdir(bids_scan_directory)
         else:
             _logger.warning(
-                f"{bids_scan_directory} already exists. See documentation to understad how xnat_tools handles repeated sequences."
+                f"{bids_scan_directory} already exists. \
+                See documentation to understand behavior for repeated sequences."
             )
 
         filesURL = host + "/data/experiments/%s/scans/%s/resources/DICOM/files" % (

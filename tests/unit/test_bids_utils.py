@@ -1,9 +1,10 @@
 import os
+import shutil
+
 import requests
 import responses
-import shutil
-import xnat_tools.bids_utils as utils
 
+from xnat_tools import bids_utils as utils
 from xnat_tools.bids_utils import (
     bidsify_dicom_headers,
     bidsmap_scans,
@@ -100,7 +101,7 @@ def test_bidsify_dicom_headers(mocker):
 
     bidsify_dicom_headers("filename", "foo")
 
-    assert dataset.data_element.called == False
+    assert dataset.data_element.called is False
 
 
 def test_bidsify_dicom_headers_with_protocol_name(mocker):
@@ -161,12 +162,21 @@ def test_scan_contains_dicom_no_dicom():
     scanid = "SCAN-01"
 
     url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
-    payload = {"ResultSet": {"Result": [{"file_count": "10", "label": "NOTDICOM",}],}}
+    payload = {
+        "ResultSet": {
+            "Result": [
+                {
+                    "file_count": "10",
+                    "label": "NOTDICOM",
+                }
+            ],
+        }
+    }
 
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert scan_contains_dicom(connection, host, session, scanid) == False
+    assert scan_contains_dicom(connection, host, session, scanid) is False
 
 
 @responses.activate
@@ -180,8 +190,14 @@ def test_scan_contains_dicom_many_dicom():
     payload = {
         "ResultSet": {
             "Result": [
-                {"file_count": "10", "label": "DICOM",},
-                {"file_count": "20", "label": "DICOM",},
+                {
+                    "file_count": "10",
+                    "label": "DICOM",
+                },
+                {
+                    "file_count": "20",
+                    "label": "DICOM",
+                },
             ],
         }
     }
@@ -189,7 +205,7 @@ def test_scan_contains_dicom_many_dicom():
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert scan_contains_dicom(connection, host, session, scanid) == False
+    assert scan_contains_dicom(connection, host, session, scanid) is False
 
 
 @responses.activate
@@ -200,12 +216,20 @@ def test_scan_contains_dicom_empty_file_count():
     scanid = "SCAN-01"
 
     url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
-    payload = {"ResultSet": {"Result": [{"label": "DICOM",}],}}
+    payload = {
+        "ResultSet": {
+            "Result": [
+                {
+                    "label": "DICOM",
+                }
+            ],
+        }
+    }
 
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert scan_contains_dicom(connection, host, session, scanid) == True
+    assert scan_contains_dicom(connection, host, session, scanid) is True
 
 
 @responses.activate
@@ -216,12 +240,21 @@ def test_scan_contains_dicom_zero_file_count():
     scanid = "SCAN-01"
 
     url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
-    payload = {"ResultSet": {"Result": [{"file_count": "0", "label": "DICOM",}],}}
+    payload = {
+        "ResultSet": {
+            "Result": [
+                {
+                    "file_count": "0",
+                    "label": "DICOM",
+                }
+            ],
+        }
+    }
 
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert scan_contains_dicom(connection, host, session, scanid) == False
+    assert scan_contains_dicom(connection, host, session, scanid) is False
 
 
 @responses.activate
@@ -232,9 +265,18 @@ def test_scan_contains_dicom_many_file_count():
     scanid = "SCAN-01"
 
     url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
-    payload = {"ResultSet": {"Result": [{"file_count": "10", "label": "DICOM",}],}}
+    payload = {
+        "ResultSet": {
+            "Result": [
+                {
+                    "file_count": "10",
+                    "label": "DICOM",
+                }
+            ],
+        }
+    }
 
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert scan_contains_dicom(connection, host, session, scanid) == True
+    assert scan_contains_dicom(connection, host, session, scanid) is True

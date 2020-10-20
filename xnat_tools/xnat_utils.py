@@ -1,8 +1,9 @@
-import sys
+import getpass
 import logging
+import sys
+
 import requests
 import requests.packages.urllib3
-import getpass
 
 requests.packages.urllib3.disable_warnings()
 
@@ -48,7 +49,7 @@ def download(connection, name, pathDict):
 
 def get_project_and_subject_id(connection, host, session):
     """Get project ID and subject ID from session JSON
-       If calling within XNAT, only session is passed"""
+    If calling within XNAT, only session is passed"""
 
     print("------------------------------------------------")
     print("Get project and subject information")

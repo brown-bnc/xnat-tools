@@ -1,8 +1,10 @@
 from datetime import datetime
 from typing import List
+
+import typer
+
 from xnat_tools.dicom_export import dicom_export
 from xnat_tools.run_heudiconv import run_heudiconv
-import typer
 
 app = typer.Typer()
 
@@ -26,7 +28,9 @@ def xnat2bids(
         "01",
         "-S",
         "--session-suffix",
-        help="Suffix of the session for BIDS defaults to 01. This will produce a session label of sess-01. You likely only need to change the dault for multi-session studies",
+        help="Suffix of the session for BIDS defaults to 01. \
+             This will produce a session label of sess-01. \
+             You likely only need to change the default for multi-session studies",
     ),
     bidsmap_file: str = typer.Option(
         "", "-f", "--bidsmap-file", help="Bidsmap JSON file to correct sequence names"
@@ -57,11 +61,11 @@ def xnat2bids(
     overwrite: bool = typer.Option(
         False,
         "--overwrite",
-        help="If True, remove directories where prior results for session/participant may exist",
+        help="Remove directories where prior results for this session/participant",
     ),
     cleanup: bool = typer.Option(
         False,
-        help="If True, Remove xnat-export folder and move logs to derivatives/xnat/logs inside bids directory",
+        help="Remove xnat-export folder and move logs to derivatives/xnat/logs",
     ),
 ):
     """

@@ -1,9 +1,11 @@
-import os
 import glob
-import shutil
+import os
 import shlex
+import shutil
+
 from dotenv import load_dotenv
 from typer.testing import CliRunner
+
 from xnat_tools.xnat2bids import app
 
 runner = CliRunner()
