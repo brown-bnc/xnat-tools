@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#xnat_tools" class="md-skip">
+        <a href="#xnat-dicom-export" class="md-skip">
           Skip to content
         </a>
       
@@ -492,10 +492,10 @@
               
                 
                 
-                <h1 id="xnat_tools"><code>xnat_tools</code><a class="headerlink" href="#xnat_tools" title="Permanent link">&para;</a></h1>
+                <h1 id="xnat-dicom-export"><code>xnat-dicom-export</code><a class="headerlink" href="#xnat-dicom-export" title="Permanent link">&para;</a></h1>
 <p>Export XNAT DICOM images in an experiment to a BIDS friendly format</p>
 <p><strong>Usage</strong>:</p>
-<div class="codehilite"><pre><span></span><code><span class="gp">$</span> xnat_tools <span class="o">[</span>OPTIONS<span class="o">]</span> SESSION BIDS_ROOT_DIR
+<div class="codehilite"><pre><span></span><code><span class="gp">$</span> xnat-dicom-export <span class="o">[</span>OPTIONS<span class="o">]</span> SESSION BIDS_ROOT_DIR
 </code></pre></div>
 
 <p><strong>Arguments</strong>:</p>
@@ -512,7 +512,7 @@
 <li><code>-f, --bidsmap-file TEXT</code>: Bidsmap JSON file to correct sequence names  [default: ]</li>
 <li><code>-i, --includeseq INTEGER</code>: Include this sequence only, can specify multiple times  [default: ]</li>
 <li><code>-s, --skipseq INTEGER</code>: Exclude this sequence, can specify multiple times  [default: ]</li>
-<li><code>--log-id TEXT</code>: ID or suffix to append to logfile, If empty, date is appended  [default: 10-21-2020-22-00-27]</li>
+<li><code>--log-id TEXT</code>: ID or suffix to append to logfile, If empty, date is appended  [default: 10-21-2020-23-28-32]</li>
 <li><code>-v, --verbose</code>: Verbose level. Can be specified multiple times to increase verbosity  [default: 0]</li>
 <li><code>--overwrite</code>: Remove directories where prior results for session/participant may exist  [default: False]</li>
 <li><code>--install-completion</code>: Install completion for the current shell.</li>
