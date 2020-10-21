@@ -20,6 +20,7 @@ plugins:
   - search
   - mkdocs-versioning:
       version: ${VERSION}
+      version_selection_page: "docs/version_selection.md"
   - mkdocstrings:
       handlers:
         python:
@@ -46,9 +47,7 @@ extra:
       link: 'https://github.com/brown-bnc/xnat-tools'
 
 nav:
-  - Getting Started:
-    - Overview: index.md
-    - Installation: installation.md
+  - Installation: installation.md
   - Usage:
     - Overview: usage_overview.md
     - xnat2bids: xnat2bids.md
