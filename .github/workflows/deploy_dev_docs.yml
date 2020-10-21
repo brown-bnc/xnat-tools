@@ -27,9 +27,10 @@ jobs:
           mkdir site
           mkdocs-versioning sync
           rm -rf ./site/dev/
+          rm -rf ./site/.git/
           ls -la
           ls -la ./site
       - name: Build
         run: mkdocs build
       - name: Deploy
-        run: mkdocs-versioning deploy
+        run: mkdocs-versioning -v deploy
