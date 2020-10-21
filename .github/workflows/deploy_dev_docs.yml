@@ -15,7 +15,7 @@ jobs:
         run: | 
           python -m pip install --upgrade pip 
           pip install .
-          pip install mkdocs mkdocs-material mkdocs-versioning
+          pip install mkdocs mkdocs-material mkdocstrings mkdocs-versioning
       - name: Set up 
         run: | 
           mkdir site
