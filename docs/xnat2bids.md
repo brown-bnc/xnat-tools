@@ -1,11 +1,11 @@
-# `xnat_tools`
+# `xnat2bids`
 
 Export DICOM images from an XNAT experiment to a BIDS compliant directory
 
 **Usage**:
 
 ```console
-$ xnat_tools [OPTIONS] SESSION BIDS_ROOT_DIR
+$ xnat2bids [OPTIONS] SESSION BIDS_ROOT_DIR
 ```
 
 **Arguments**:
@@ -22,7 +22,7 @@ $ xnat_tools [OPTIONS] SESSION BIDS_ROOT_DIR
 * `-f, --bidsmap-file TEXT`: Bidsmap JSON file to correct sequence names  [default: ]
 * `-i, --includeseq INTEGER`: Include this sequence only, can specify multiple times  [default: ]
 * `-s, --skipseq INTEGER`: Exclude this sequence, can be specified multiple times  [default: ]
-* `--log-id TEXT`: ID or suffix to append to logfile, If empty, date is appended  [default: 10-21-2020-22-00-27]
+* `--log-id TEXT`: ID or suffix to append to logfile, If empty, date is appended  [default: 10-21-2020-23-28-32]
 * `-v, --verbose`: Verbose level. Can be specified multiple times to increase verbosity  [default: 0]
 * `--overwrite`: Remove directories where prior results for this session/participant  [default: False]
 * `--cleanup / --no-cleanup`: Remove xnat-export folder and move logs to derivatives/xnat/logs  [default: False]
