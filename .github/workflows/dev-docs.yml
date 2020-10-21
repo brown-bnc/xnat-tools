@@ -1,7 +1,7 @@
 name: dev-docs 
 on:
-  pull_request:
-    branches:
+  push:
+    branches-ignore:
       - master
 jobs: 
   build: 
@@ -10,8 +10,6 @@ jobs:
     steps: 
       - name: Checkout Master 
         uses: actions/checkout@v2 
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python 3.7 
         uses: actions/setup-python@v2 
         with: 
