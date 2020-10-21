@@ -7,21 +7,21 @@ jobs:
     steps: 
       - name: Checkout Master 
         uses: actions/checkout@v2 
-      - name: Set up Python 3.7 
-        uses: actions/setup-python@v2 
-        with: 
-          python-version: '3.x' 
-      - name: Install dependencies 
-        run: | 
-          python -m pip install --upgrade pip 
-          pip install .
+      # - name: Set up Python 3.7 
+      #   uses: actions/setup-python@v2 
+      #   with: 
+      #     python-version: '3.x' 
+      # - name: Install dependencies 
+      #   run: | 
+      #     python -m pip install --upgrade pip 
+      #     pip install .
       - name: Deploy 
         run: | 
           git pull
           mkdir site
           VERSION=dev
           echo "Making docs for version $VERSION"
-        #   (envsubst '${VERSION}' < mkdocs-template.yml) > mkdocs.yml
+          (envsubst '${VERSION}' < mkdocs-template.yml) > mkdocs.yml
         # #   poetry run mkdocs-versioning sync
         # #   rm -rf site/dev
         #   poetry run mkdocs build
