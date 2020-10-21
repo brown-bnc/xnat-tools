@@ -27,7 +27,7 @@ jobs:
           typer xnat_tools/xnat2bids.py utils docs --name xnat_tools --output docs/xnat2bids.md
           typer xnat_tools/dicom_export.py utils docs --name xnat_tools --output docs/dicom_export.md
           typer xnat_tools/run_heudiconv.py utils docs --name xnat_tools --output docs/run_heudiconv.md
-          cp CHANGELOG.md docs/CHANGELOG.md
+          cp CHANGELOG.md docs/changelog.md
       - name: Push to remote
         run: |
           echo "Test push commit to the remote in the workflow" >> test.txt
