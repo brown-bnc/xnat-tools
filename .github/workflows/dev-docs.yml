@@ -1,5 +1,8 @@
 name: dev-docs 
-on: [push]
+on:
+  push:
+    branches-ignore:
+      - master
 jobs: 
   build: 
     name: Build and Deploy Documentation 
