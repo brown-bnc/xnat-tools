@@ -27,9 +27,10 @@ jobs:
           (envsubst '${VERSION}' < mkdocs-template.yml) > mkdocs.yml
       - name: Generate CLI docs and copy CHANGELOG   
         run: |
-          typer xnat_tools/xnat2bids.py utils docs --name xnat_tools --output docs/xnat2bids.md
-          typer xnat_tools/dicom_export.py utils docs --name xnat_tools --output docs/dicom_export.md
-          typer xnat_tools/run_heudiconv.py utils docs --name xnat_tools --output docs/run_heudiconv.md
+          typer xnat_tools/xnat2bids.py utils docs --name xnat2bids --output docs/xnat2bids.md
+          typer xnat_tools/dicom_export.py utils docs --name xnat-dicom-export --output docs/dicom_export.md
+          typer xnat_tools/run_heudiconv.py utils docs --name xnat-heudiconv --output docs/run_heudiconv.md
+          typer xnat_tools/bids_postprocess.py utils docs --name bids-postprocess --output docs/bids_postprocess.md
           cp CHANGELOG.md docs/changelog.md
       - name: Push to remote
         run: |
