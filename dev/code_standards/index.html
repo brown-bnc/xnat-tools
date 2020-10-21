@@ -201,6 +201,8 @@
       
         
       
+        
+      
     </ul>
   </div>
 </nav>
@@ -570,6 +572,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../CHANGELOG/" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
     <a href="../../" class="md-nav__link">
       Version Selector
     </a>
@@ -777,7 +791,7 @@ docker run -ti --rm -v <span class="cp">${</span><span class="n">bids_directory<
 </code></pre></div>
 
 <h3 id="black">black<a class="headerlink" href="#black" title="Permanent link">&para;</a></h3>
-<p>The code must conform to <code>black</code>'s standards and this is automatically checked via github actions.  To automatically fix files, run <code>poetry run black .</code> from the root of the <code>xnat_tools</code> directory.</p>
+<p>The code must conform to <code>black</code>'s standards and this is automatically checked via github actions.  While it is highly recommended to run the pre-commit hooks, you can also run black directly  to automatically fix files with <code>poetry run black .</code> from the root of the <code>xnat_tools</code> directory.</p>
 <h3 id="flake8">flake8<a class="headerlink" href="#flake8" title="Permanent link">&para;</a></h3>
 <p>The code must not have any egregious linting errors. And others should be minimized as reasonable.</p>
 <p>Check for egregious errors:</p>
@@ -790,15 +804,50 @@ docker run -ti --rm -v <span class="cp">${</span><span class="n">bids_directory<
 
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
 <p>All functions and methods should have an up to date <a href="https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html">google style docstring</a>.  These docstrings are used to build xnat-tools's documentation website.  Additional prose can be added to the website by editing the appropriate markdown file in the <code>docs/</code> directory.</p>
-<p>To develop/see the docs locally, run:</p>
+<p>We are using <a href="https://github.com/zayd62/mkdocs-versioning">mkdocs-versioning</a> to deploy MkDocs documentation that keeps track of the different versions. The deployment happens in CI and there are few things to be aware of</p>
+<ul>
+<li>The configuration file for the documentation <code>mkdocs.yml</code> is rendered in CI depending on the branch and software version. For non-main branches the version is set to <code>dev</code>, for the <code>main</code> branch, we read the version from the <code>pyproject.toml</code></li>
+<li>The following documentation files are updated in CI, so you don't need to manually update them:<ul>
+<li>docs/xnat2bids.md</li>
+<li>docs/dicom_export.md</li>
+<li>docs/run_heudiconv.md</li>
+<li>docs/bids_postprocess.md</li>
+<li>docs/CHANGELOG.md</li>
+</ul>
+</li>
+</ul>
+<p>Running the documentation locally (within a Poetry shell or add <code>poetry run</code>)</p>
+<div class="codehilite"><pre><span></span><code><span class="k">export</span> <span class="n">VERSION</span><span class="o">=</span><span class="n">dev</span>
+<span class="p">(</span><span class="n">envsubst</span> <span class="s1">&#39;${VERSION}&#39;</span> <span class="o">&lt;</span> <span class="n">mkdocs</span><span class="o">-</span><span class="n">template</span><span class="o">.</span><span class="n">yml</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">mkdocs</span><span class="o">.</span><span class="n">yml</span>
+<span class="n">mkdir</span> <span class="n">site</span>
+<span class="c1">#bring contents from gh-pages branch</span>
+<span class="n">mkdocs</span><span class="o">-</span><span class="n">versioning</span> <span class="n">sync</span> 
+<span class="c1">#clean dev environment and problematic .git folder</span>
+<span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="o">./</span><span class="n">site</span><span class="o">/</span><span class="n">dev</span><span class="o">/</span>
+<span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="o">./</span><span class="n">site</span><span class="o">/.</span><span class="n">git</span><span class="o">/</span>
+<span class="c1">#build docs</span>
+<span class="n">mkdocs</span> <span class="n">build</span>
+</code></pre></div>
+
+<p>To serve:</p>
 <div class="codehilite"><pre><span></span><code><span class="err">mkdocs serve</span>
 </code></pre></div>
 
-<p>then navigate to http://localhost:8000 to see your docs.  They will automoatically reload as you make changes to files.</p>
+<p>To deploy:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">mkdocs-versioning -v deploy</span>
+</code></pre></div>
+
+<p>⚠ After deployment, <code>mkdocs</code> prints</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span><span class="n">gh_deploy</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">134</span><span class="p">]:</span> <span class="n">Your</span> <span class="n">documentation</span> <span class="n">should</span> <span class="n">shortly</span> <span class="n">be</span> <span class="n">available</span> <span class="n">at</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">brown</span><span class="o">-</span><span class="n">bnc</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">xnat_tools</span><span class="o">/</span> 
+</code></pre></div>
+
+<p>However, the URL is https://brown-bnc.github.io/xnat-tools/ dash instead of underscore</p>
 <h3 id="documentation-for-console-scripts">Documentation for console scripts<a class="headerlink" href="#documentation-for-console-scripts" title="Permanent link">&para;</a></h3>
 <p>The markdown files for console scripts are generated by the <code>typer-cli</code>. Here is an example of how to call it manually from your Poetry shell i.e. <code>poetry shell</code></p>
 <div class="codehilite"><pre><span></span><code><span class="n">PYTHONPATH</span><span class="o">=&lt;</span><span class="n">path</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">xnat</span><span class="o">-</span><span class="n">tools</span><span class="o">&gt;</span> <span class="n">typer</span> <span class="o">./</span><span class="n">dicom_export</span><span class="o">.</span><span class="n">py</span> <span class="n">utils</span> <span class="n">docs</span> <span class="o">--</span><span class="n">name</span> <span class="n">xnat</span><span class="o">-</span><span class="n">dicom</span><span class="o">-</span><span class="k">export</span> <span class="o">--</span><span class="n">output</span> <span class="o">../</span><span class="n">docs</span><span class="o">/</span><span class="n">dicom_export</span><span class="o">.</span><span class="n">md</span>
 </code></pre></div>
+
+<p>⚠ Remember, these files are updated by CI. While you can update them manually, they will be overwritten in CI according to the latest content</p>
                 
               
               
@@ -831,6 +880,20 @@ docker run -ti --rm -v <span class="cp">${</span><span class="n">bids_directory<
             </div>
           </a>
         
+        
+          <a href="../CHANGELOG/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Changelog
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
         
       </nav>
     </div>
