@@ -18,16 +18,17 @@ jobs:
           pip install mkdocs mkdocs-material mkdocstrings mkdocs-versioning
       - name: Set up 
         run: | 
-          mkdir site
           export VERSION=dev
           echo "Making docs for version $VERSION"
           (envsubst '${VERSION}' < mkdocs-template.yml) > mkdocs.yml
       - name: Sync 
         run: |
-          cat mkdocs.yml
+          mkdir site
           mkdocs-versioning sync
-          rm -rf site/dev
+          rm -rf ./site/dev/
+          ls -la
+          ls -la ./site
+      - name: Build
+        run: mkdocs build
       - name: Deploy
-        run: |
-          mkdocs build
-          mkdocs-versioning deploy
+        run: mkdocs-versioning deploy
