@@ -25,8 +25,7 @@ jobs:
           (envsubst '${VERSION}' < mkdocs-template.yml) > mkdocs.yml
       - name: Sync 
         run: |
-          pwd 
-          ls -la
+          cat mkdocs.yml
           mkdocs-versioning sync
           rm -rf site/dev
       - name: Deploy
