@@ -16,14 +16,20 @@ jobs:
           python -m pip install --upgrade pip 
           pip install .
           pip install mkdocs mkdocs-material mkdocs-versioning
-      - name: Deploy 
+      - name: Set up 
         run: | 
           git pull
           mkdir site
-          VERSION=dev
+          export VERSION=dev
           echo "Making docs for version $VERSION"
           (envsubst '${VERSION}' < mkdocs-template.yml) > mkdocs.yml
+      - name: Sync 
+        run: |
+          pwd 
+          ls -la
           mkdocs-versioning sync
           rm -rf site/dev
+      - name: Deploy
+        run: |
           mkdocs build
           mkdocs-versioning deploy
