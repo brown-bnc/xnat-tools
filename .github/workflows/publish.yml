@@ -1,4 +1,4 @@
-name: New release and versioned docs 
+name: publish 
 on:
   push:
     branches:
@@ -26,19 +26,24 @@ jobs:
       - name: Set up Python 3.7 
         uses: actions/setup-python@v2 
         with: 
-          python-version: '3.x' 
+          python-version: '3.7.5' 
       - name: Install dependencies 
         run: | 
           python -m pip install --upgrade pip 
-          pip install poetry
-          poetry install 
-      - name: Deploy 
+          pip install .
+          pip install mkdocs mkdocs-material mkdocstrings mkdocs-versioning
+      - name: Set up mkdocs config 
+        run: |
+          export VERSION=$(cat pyproject.toml | grep version | head -1 | awk -F: '{ print $1 }'| sed 's/[\",]//g'| tr -d 'version = ')
+          echo "Making docs for version $VERSION"
+          (envsubst 'v${VERSION}' < mkdocs-template.yml) > mkdocs.yml
+      - name: Sync 
         run: | 
           git pull
           mkdir site
-          VERSION=$(cat pyproject.toml | grep version | head -1 | awk -F: '{ print $1 }'| sed 's/[\",]//g'| tr -d 'version = ')
-          echo "Making docs for version $VERSION"
-          (envsubst 'v${VERSION}' < mkdocs-template.yml) > mkdocs.yml
-          poetry run mkdocs-versioning sync
-          poetry run mkdocs build
-          poetry run mkdocs-versioning deploy
+          mkdocs-versioning sync
+          rm -rf ./site/.git/
+      - name: Build
+        run: mkdocs build
+      - name: Deploy
+        run: mkdocs-versioning -v deploy
