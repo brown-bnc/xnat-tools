@@ -18,7 +18,6 @@ jobs:
           pip install mkdocs mkdocs-material mkdocs-versioning
       - name: Set up 
         run: | 
-          git pull
           mkdir site
           export VERSION=dev
           echo "Making docs for version $VERSION"
