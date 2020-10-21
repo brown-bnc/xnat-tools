@@ -23,6 +23,7 @@ jobs:
           (envsubst '${VERSION}' < mkdocs-template.yml) > mkdocs.yml
       - name: Sync 
         run: |
+          git pull
           mkdir site
           mkdocs-versioning sync
           rm -rf ./site/dev/
