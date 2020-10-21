@@ -47,7 +47,9 @@ extra:
       link: 'https://github.com/brown-bnc/xnat-tools'
 
 nav:
-  - Installation: installation.md
+  - Getting Started:
+    - Overview: index.md
+    - Installation: installation.md
   - Usage:
     - Overview: usage_overview.md
     - xnat2bids: xnat2bids.md
