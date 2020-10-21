@@ -3,14 +3,14 @@ site_description: Documentation for the xnat-tools model
 site_url: http://brown-bnc.github.io/xnat-tools
 theme:
   name: material
-  # palette:
-  #   primary: 'black'
-  #   accent: 'teal'
+  palette:
+    primary: 'pink'
   icon:
     repo: fontawesome/brands/github-alt
   features:
-    - instant
-    - tabs
+    - navigation.instant
+    - navigation.tabs
+    - navigation.expand
 
 repo_name: brown-bnc/xnat-tools
 repo_url: https://github.com/brown-bnc/xnat-tools
