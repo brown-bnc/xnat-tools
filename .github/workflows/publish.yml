@@ -19,7 +19,7 @@ jobs:
   docs:  
     name: Build and Deploy Documentation 
     runs-on: ubuntu-latest 
-    depends-on: bump_version
+    needs: bump_version
     steps: 
       - name: Checkout Master 
         uses: actions/checkout@v2 
