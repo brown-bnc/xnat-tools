@@ -54,20 +54,9 @@ docker run -ti --rm -v ${bids_directory}:/data:ro bids/validator /data
 
 ## Code Style
 
-### Typing
-
-Please use [type hints](https://mypy.readthedocs.io/en/stable/) on all signatures where reasonable.  This will make sure the code is more readable, can be statically tested for type soundness, and helps fill in the documentation.
-
-Run the below to check for type errors:
-```
-mypy xnat_tools
-```
-
-### Formatting
-
 #### Pre-Commit hooks
 
-This repository has pre-commit hooks configured to enforce formatting.
+This repository has pre-commit hooks configured to enforce typing and formatting.
 
 To set up the hooks, run 
 
@@ -82,6 +71,25 @@ If you would like to run on all file (not just staged ones), you can run
 ```
 poetry run pre-commit run --all-files
 ```
+
+The following hooks are set up 
+- [isort](https://github.com/timothycrosley/isort) - Sorting imports
+- [black](https://github.com/ambv/black) - Formatting
+- [flake8](https://gitlab.com/pycqa/flake8) - Linting
+- [mypy](https://github.com/pre-commit/mirrors-mypy) - Typing
+
+Most of these tools are installed as dev dependencies so you can also run them outside of the hooks. More details below
+
+### Typing
+
+Please use [type hints](https://mypy.readthedocs.io/en/stable/) on all signatures where reasonable.  This will make sure the code is more readable, can be statically tested for type soundness, and helps fill in the documentation.
+
+Run the below to check for type errors:
+```
+poetry run mypy xnat_tools
+```
+
+### Formatting
 
 ### black
 
@@ -99,7 +107,6 @@ Check for all warnings:
 ```
 poetry run flake8 xnat_tools --count --exit-zero --max-complexity=12 --max-line-length=88 --statistics
 ```
-
 
 
 ## Documentation
