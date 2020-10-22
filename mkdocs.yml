@@ -1,5 +1,5 @@
 site_name: XNAT Tools
-site_description: Documentation for the xnat-tools
+site_description: Documentation for the xnat-tools model
 site_url: http://brown-bnc.github.io/xnat-tools
 theme:
   name: material

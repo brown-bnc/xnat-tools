@@ -17,7 +17,7 @@ $ bids-postprocess [OPTIONS] SESSION BIDS_EXPERIMENT_DIR
 
 **Options**:
 
-* `-ss, --session-suffix TEXT`: Suffix of the session for BIDS defaults to 01.         This will produce a session label of sess-01.         You likely only need to change the default for multi-session studies  [default: 01]
+* `-S, --session-suffix TEXT`: Suffix of the session for BIDS defaults to 01.         This will produce a session label of sess-01.         You likely only need to change the default for multi-session studies  [default: 01]
 * `-i, --includeseq TEXT`: Include this participant only, can be specified multiple times  [default: ]
 * `-s, --skipseq TEXT`: Skip this participant, can be specified multiple times  [default: ]
 * `--log-file TEXT`: File to send logs to  [default: ]
