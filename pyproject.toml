@@ -43,14 +43,11 @@ version_files = [
 ]
 
 [tool.flake8]
-ignore = "E203, E266, E501, W503, F403, F401"
 max-line-length = 89
-max-complexity = 18
-select = "B,C,E,F,W,T4,B9"
 
 [tool.black]
 line-length = 89
-target-version = ['py38']
+target-version = ['py37']
 exclude = '''
 /(
     \.git

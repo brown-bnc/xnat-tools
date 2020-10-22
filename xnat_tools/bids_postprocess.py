@@ -22,7 +22,7 @@ def bids_postprocess(
     ),
     session_suffix: str = typer.Option(
         "01",
-        "-ss",
+        "-S",
         "--session-suffix",
         help="Suffix of the session for BIDS defaults to 01. \
         This will produce a session label of sess-01. \
