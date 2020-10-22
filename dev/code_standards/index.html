@@ -489,6 +489,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#pre-commit-hooks" class="md-nav__link">
+    Pre-Commit hooks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#typing" class="md-nav__link">
     Typing
   </a>
@@ -499,19 +506,6 @@
   <a href="#formatting" class="md-nav__link">
     Formatting
   </a>
-  
-    <nav class="md-nav" aria-label="Formatting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#pre-commit-hooks" class="md-nav__link">
-    Pre-Commit hooks
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -654,6 +648,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#pre-commit-hooks" class="md-nav__link">
+    Pre-Commit hooks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#typing" class="md-nav__link">
     Typing
   </a>
@@ -664,19 +665,6 @@
   <a href="#formatting" class="md-nav__link">
     Formatting
   </a>
-  
-    <nav class="md-nav" aria-label="Formatting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#pre-commit-hooks" class="md-nav__link">
-    Pre-Commit hooks
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -772,15 +760,8 @@ docker run -ti --rm -v <span class="cp">${</span><span class="n">bids_directory<
 </code></pre></div>
 
 <h2 id="code-style">Code Style<a class="headerlink" href="#code-style" title="Permanent link">&para;</a></h2>
-<h3 id="typing">Typing<a class="headerlink" href="#typing" title="Permanent link">&para;</a></h3>
-<p>Please use <a href="https://mypy.readthedocs.io/en/stable/">type hints</a> on all signatures where reasonable.  This will make sure the code is more readable, can be statically tested for type soundness, and helps fill in the documentation.</p>
-<p>Run the below to check for type errors:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">mypy</span> <span class="n">xnat_tools</span>
-</code></pre></div>
-
-<h3 id="formatting">Formatting<a class="headerlink" href="#formatting" title="Permanent link">&para;</a></h3>
 <h4 id="pre-commit-hooks">Pre-Commit hooks<a class="headerlink" href="#pre-commit-hooks" title="Permanent link">&para;</a></h4>
-<p>This repository has pre-commit hooks configured to enforce formatting.</p>
+<p>This repository has pre-commit hooks configured to enforce typing and formatting.</p>
 <p>To set up the hooks, run </p>
 <div class="codehilite"><pre><span></span><code><span class="err">poetry run pre-commit install</span>
 </code></pre></div>
@@ -790,6 +771,19 @@ docker run -ti --rm -v <span class="cp">${</span><span class="n">bids_directory<
 <div class="codehilite"><pre><span></span><code><span class="err">poetry run pre-commit run --all-files</span>
 </code></pre></div>
 
+<p>The following hooks are set up 
+- <a href="https://github.com/timothycrosley/isort">isort</a> - Sorting imports
+- <a href="https://github.com/ambv/black">black</a> - Formatting
+- <a href="https://gitlab.com/pycqa/flake8">flake8</a> - Linting
+- <a href="https://github.com/pre-commit/mirrors-mypy">mypy</a> - Typing</p>
+<p>Most of these tools are installed as dev dependencies so you can also run them outside of the hooks. More details below</p>
+<h3 id="typing">Typing<a class="headerlink" href="#typing" title="Permanent link">&para;</a></h3>
+<p>Please use <a href="https://mypy.readthedocs.io/en/stable/">type hints</a> on all signatures where reasonable.  This will make sure the code is more readable, can be statically tested for type soundness, and helps fill in the documentation.</p>
+<p>Run the below to check for type errors:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">poetry</span> <span class="n">run</span> <span class="n">mypy</span> <span class="n">xnat_tools</span>
+</code></pre></div>
+
+<h3 id="formatting">Formatting<a class="headerlink" href="#formatting" title="Permanent link">&para;</a></h3>
 <h3 id="black">black<a class="headerlink" href="#black" title="Permanent link">&para;</a></h3>
 <p>The code must conform to <code>black</code>'s standards and this is automatically checked via github actions.  While it is highly recommended to run the pre-commit hooks, you can also run black directly  to automatically fix files with <code>poetry run black .</code> from the root of the <code>xnat_tools</code> directory.</p>
 <h3 id="flake8">flake8<a class="headerlink" href="#flake8" title="Permanent link">&para;</a></h3>
