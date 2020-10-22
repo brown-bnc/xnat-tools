@@ -1,14 +1,12 @@
 import json
-import os
 import logging
-import collections
-import six
-import pydicom
+import os
 import shutil
-
-from six.moves import zip
-from xnat_tools.xnat_utils import get, download
 from collections import defaultdict
+
+import pydicom
+
+from xnat_tools.xnat_utils import download, get
 
 _logger = logging.getLogger(__name__)
 
@@ -37,7 +35,7 @@ def insert_intended_for_fmap(bids_dir, sub_list):
             # makes list of the func files to add into the intended for field
             func_files = [f"{sess}/func/{file}" for file in os.listdir(func_path)]
             nii_files = [i for i in func_files if i.endswith(".nii.gz")]
-            _logger.info(f"List of NII files")
+            _logger.info("List of NII files")
 
             # Open the json files ('r' for read only) as a dictionary
             # Adds the Intended for key
@@ -246,19 +244,24 @@ def scan_contains_dicom(connection, host, session, scanid):
 
 
 def assign_bids_name(
-    connection, host, subject, session, scans, build_dir, bids_session_dir,
+    connection,
+    host,
+    subject,
+    session,
+    scans,
+    build_dir,
+    bids_session_dir,
 ):
     """
-        subject: Subject to process
-        scans: Tuple of scan id and series descriptions
-        build_dir: build director. What is this?
-        study_bids_dir: BIDS directory to copy simlinks to. Typically the RESOURCES/BIDS
+    subject: Subject to process
+    scans: Tuple of scan id and series descriptions
+    build_dir: build director. What is this?
+    study_bids_dir: BIDS directory to copy simlinks to. Typically the RESOURCES/BIDS
     """
 
     for scanid, seriesdesc in scans:
         if not scan_contains_dicom(connection, host, session, scanid):
             continue
-
 
         # BIDS sourcedatadirectory for this scan
         _logger.info(f"bids_session_dir: {bids_session_dir}")
@@ -270,7 +273,8 @@ def assign_bids_name(
             os.mkdir(bids_scan_directory)
         else:
             _logger.warning(
-                f"{bids_scan_directory} already exists. See documentation to understad how xnat_tools handles repeated sequences."
+                f"{bids_scan_directory} already exists. \
+                See documentation to understand behavior for repeated sequences."
             )
 
         filesURL = host + "/data/experiments/%s/scans/%s/resources/DICOM/files" % (

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xnat-tools"
-version = "0.1.0"
+version = "0.1.7"
 description = ""
 authors = ["Isabel Restrepo <isabelrestre@gmail.com>"]
 
@@ -11,6 +11,7 @@ six = "^1.14"
 pydicom = "^1.4.1"
 coloredlogs = "^14.0"
 pytest-mock = "^3.2.0"
+typer = "^0.3.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.3.5"
@@ -18,13 +19,57 @@ python-dotenv = "^0.12.0"
 black = {version = "^19.10b0", allow-prereleases = true}
 flake8 = "^3.8.3"
 responses = "^0.12.0"
+mkdocs = "^1.1.2"
+mkdocs-material = "^5.5.12"
+mkdocstrings = "^0.13.2"
+typer-cli = "^0.0.10"
+mypy = "^0.782"
+mkdocs-versioning = "^0.3.0"
+Commitizen = "^2.4.1"
+pre-commit = "^2.7.1"
 
 [tool.poetry.scripts]
-bids-postprocess ="xnat_tools.bids_postprocess:run"
-xnat-heudiconv = "xnat_tools.run_heudiconv:run"
-xnat-dicom-export = "xnat_tools.dicom_export:run"
-xnat2bids = "xnat_tools.xnat2bids:run"
+bids-postprocess ="xnat_tools.bids_postprocess:main"
+xnat-heudiconv = "xnat_tools.run_heudiconv:main"
+xnat-dicom-export = "xnat_tools.dicom_export:main"
+xnat2bids = "xnat_tools.xnat2bids:main"
 
-[build-system]
-requires = ["poetry>=0.12"]
+[tool.commitizen]
+version = "0.1.7"
+tag_format = "v$version"
+version_files = [
+    "pyproject.toml:version",
+    "xnat_tools/__init__.py"
+]
+
+[tool.flake8]
+max-line-length = 89
+
+[tool.black]
+line-length = 89
+target-version = ['py37']
+exclude = '''
+/(
+    \.git
+  | \.vscode
+  | \.venv
+  | \.mypy_cache
+  | \.pytest_cache
+  | build
+  | dist
+  | site
+)/
+'''
+
+[tool.isort]
+line_length = 89
+multi_line_output = 3
+use_parentheses = true
+include_trailing_comma = true
+force_grid_wrap = 0
+known_third_party = [ "pytest"]
+
+[build-system]		
+requires = ["poetry>=0.12"]		
 build-backend = "poetry.masonry.api"
+

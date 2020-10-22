@@ -1,5 +1,3 @@
-import os
-import shutil
 from xnat_tools.xnat_utils import filter_scans
 
 
@@ -38,7 +36,7 @@ def test_filter_scan_skiplist():
 
 
 def test_filter_scan_seqlist_and_skiplist():
-    """Test filter_scans with both a seqlist and a skiplist. The skiplist should take priority."""
+    """Test filter_scans with both a seqlist and a skiplist. Skiplist takes priority."""
     data = phony_scan_data()
     seqlist = [1, 2, 3, 4, 5]
     skiplist = [2, 4, 6]

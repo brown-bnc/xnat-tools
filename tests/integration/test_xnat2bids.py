@@ -1,10 +1,14 @@
-import subprocess
-import os
 import glob
-import shutil
+import os
 import shlex
-from dotenv import load_dotenv
+import shutil
 
+from dotenv import load_dotenv
+from typer.testing import CliRunner
+
+from xnat_tools.xnat2bids import app
+
+runner = CliRunner()
 load_dotenv()
 
 
@@ -24,15 +28,15 @@ def test_xnat2bids():
 
     os.mkdir(bids_root_dir)
 
-    xnat2bids_cmd = f"xnat2bids --user {xnat_user} --password {xnat_pass} \
-                      --session {session} --session_suffix {session_suffix} \
-                      --bids_root_dir {bids_root_dir} \
-                      --seqlist {' '.join(seqlist)} --skiplist {' '.join(skiplist)} \
-                      -vv"
+    xnat2bids_cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} \
+                      -i {' -i '.join(seqlist)} -s {' -s '.join(skiplist)}"
 
     xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
+    print(xnat2bids_split_cmd)
+    r = runner.invoke(app, xnat2bids_split_cmd)
+    print(r.stdout)
 
-    subprocess.run(xnat2bids_split_cmd)
+    assert r.exit_code == 0
 
     filepath = f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}"
 
@@ -54,38 +58,6 @@ def test_xnat2bids():
 
     for d in export_subdirs:
         for f in os.listdir(d):
-            # print(f)
             dicom_sequence = int(f.split(".")[3])
-            print("------- Dicom sequence:")
-            # print(dicom_sequence)
             assert str(dicom_sequence) in seqlist
             assert str(dicom_sequence) not in skiplist
-
-
-def test_xnat2bids_with_overwrite():
-    """Integration test for xnat2bids executable with overwrite flag"""
-
-    xnat_user = os.environ.get("XNAT_USER", "testuser")
-    xnat_pass = os.environ.get("XNAT_PASS", "")
-    session = os.environ.get("XNAT_SESSION", "")
-    session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "01")
-    bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
-    seqlist = ["1", "2", "3", "6"]
-    skiplist = ["2", "3"]
-
-    # ***************************************************************************
-    # Test for succesfull execution wit overwrite
-    # ***************************************************************************
-    xnat2bids_cmd = f"xnat2bids --user {xnat_user} --password {xnat_pass} \
-                      --session {session} --session_suffix {session_suffix} \
-                      --bids_root_dir {bids_root_dir} \
-                      --seqlist {' '.join(seqlist)} --skiplist {' '.join(skiplist)} \
-                      -vv --overwrite"
-
-    xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
-
-    p = subprocess.run(xnat2bids_split_cmd)
-    assert p.returncode == 0
-
-    # cleanup output -- for debugging coment this out
-    shutil.rmtree(bids_root_dir, ignore_errors=True)
