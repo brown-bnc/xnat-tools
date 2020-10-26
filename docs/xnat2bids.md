@@ -22,7 +22,7 @@ $ xnat2bids [OPTIONS] SESSION BIDS_ROOT_DIR
 * `-f, --bidsmap-file TEXT`: Bidsmap JSON file to correct sequence names  [default: ]
 * `-i, --includeseq INTEGER`: Include this sequence only, can specify multiple times  [default: ]
 * `-s, --skipseq INTEGER`: Exclude this sequence, can be specified multiple times  [default: ]
-* `--log-id TEXT`: ID or suffix to append to logfile, If empty, date is appended  [default: 10-22-2020-15-57-37]
+* `--log-id TEXT`: ID or suffix to append to logfile, If empty, date is appended  [default: 10-26-2020-19-21-23]
 * `-v, --verbose`: Verbose level. Can be specified multiple times to increase verbosity  [default: 0]
 * `--overwrite`: Remove directories where prior results for this session/participant  [default: False]
 * `--cleanup / --no-cleanup`: Remove xnat-export folder and move logs to derivatives/xnat/logs  [default: False]
