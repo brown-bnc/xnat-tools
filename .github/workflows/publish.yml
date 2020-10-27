@@ -31,8 +31,8 @@ jobs:
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
         git add -A
-        git commit -m "docs: Update docs/changelog.md"
-        git push
+        git commit -m "docs: Update docs/changelog.md" || echo "No changes to commit"
+        git push || echo "No changes to push"
     - name: Release to GitHub
       uses: actions/create-release@v1
       env:
