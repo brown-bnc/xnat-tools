@@ -23,6 +23,16 @@ jobs:
       run: |
         echo ::set-env name=VERSION::$(cat pyproject.toml | grep version | head -1 | awk -F: '{ print $1 }'| sed 's/[\",]//g'| tr -d 'version = ')
         echo "VERSION: $VERSION"
+    - name: Copy CHANGELOG to docs and push to remote
+      run: |
+        cp CHANGELOG.md docs/changelog.md
+
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+        git add -A
+        git commit -m "docs: Update docs/changelog.md"
+        git push
     - name: Release to GitHub
       uses: actions/create-release@v1
       env:
