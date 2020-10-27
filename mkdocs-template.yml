@@ -59,5 +59,6 @@ nav:
   - Development:
     - Setting Up: dev_setup.md
     - Code standards: code_standards.md 
-  - Changelog: changelog.md
+  - Changelog: 
+    - All Versions: changelog.md
   - Version Selector: "../"

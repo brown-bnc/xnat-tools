@@ -31,16 +31,13 @@ jobs:
           typer xnat_tools/dicom_export.py utils docs --name xnat-dicom-export --output docs/dicom_export.md
           typer xnat_tools/run_heudiconv.py utils docs --name xnat-heudiconv --output docs/run_heudiconv.md
           typer xnat_tools/bids_postprocess.py utils docs --name bids-postprocess --output docs/bids_postprocess.md
-          cp CHANGELOG.md docs/changelog.md
       - name: Push to remote
         run: |
-          echo "Test push commit to the remote in the workflow" >> test.txt
-
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add -A
-          git commit -m "docs: Update CLI and CHANGELOG.md"
+          git commit -m "docs: Update CLI docs"
           git push
       - name: Sync 
         run: |
