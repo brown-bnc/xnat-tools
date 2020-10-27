@@ -22,7 +22,7 @@ $ xnat-dicom-export [OPTIONS] SESSION BIDS_ROOT_DIR
 * `-f, --bidsmap-file TEXT`: Bidsmap JSON file to correct sequence names  [default: ]
 * `-i, --includeseq INTEGER`: Include this sequence only, can specify multiple times  [default: ]
 * `-s, --skipseq INTEGER`: Exclude this sequence, can specify multiple times  [default: ]
-* `--log-id TEXT`: ID or suffix to append to logfile, If empty, date is appended  [default: 10-27-2020-13-43-12]
+* `--log-id TEXT`: ID or suffix to append to logfile, If empty, date is appended  [default: 10-27-2020-21-00-56]
 * `-v, --verbose`: Verbose level. Can be specified multiple times to increase verbosity  [default: 0]
 * `--overwrite`: Remove directories where prior results for session/participant may exist  [default: False]
 * `--install-completion`: Install completion for the current shell.
