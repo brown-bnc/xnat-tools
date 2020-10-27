@@ -344,13 +344,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#poetry" class="md-nav__link">
-    Poetry
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#pipx" class="md-nav__link">
     PIPX
   </a>
@@ -360,6 +353,13 @@
           <li class="md-nav__item">
   <a href="#pip" class="md-nav__link">
     PIP
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#poetry" class="md-nav__link">
+    Poetry
   </a>
   
 </li>
@@ -611,13 +611,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#poetry" class="md-nav__link">
-    Poetry
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#pipx" class="md-nav__link">
     PIPX
   </a>
@@ -627,6 +620,13 @@
           <li class="md-nav__item">
   <a href="#pip" class="md-nav__link">
     PIP
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#poetry" class="md-nav__link">
+    Poetry
   </a>
   
 </li>
@@ -663,8 +663,32 @@
 <p>You can confirm the tags <a href="https://hub.docker.com/repository/docker/brownbnc/xnat_tools/tags?page=1">here</a></p>
 <h2 id="using-python">Using Python<a class="headerlink" href="#using-python" title="Permanent link">&para;</a></h2>
 <h3 id="prerequisites">Prerequisites:<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
-<p>We first need to install the dcm2niix . This is a dependency of Heudiconv, that doesn't get installed by Heudiconv itself</p>
+<p>We first need to install the dcm2niix . This is a dependency of Heudiconv that doesn't get installed by Heudiconv itself</p>
 <div class="codehilite"><pre><span></span><code><span class="err">brew install dcm2niix</span>
+</code></pre></div>
+
+<h3 id="pipx">PIPX<a class="headerlink" href="#pipx" title="Permanent link">&para;</a></h3>
+<p>Most users only need to interact with the command-line utilities provided by <code>xnat-tools</code>. In this case, we recommend using <code>pipx</code>. Please check their <a href="https://github.com/pipxproject/pipx">installation instructions</a>.</p>
+<p>Once <code>pipx</code> is installed you will need to install Heudiconv and xnat-tools as stand-alone applications as follows:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">pipx</span> <span class="n">install</span> <span class="n">heudiconv</span>
+<span class="n">pipx</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">brown</span><span class="o">-</span><span class="n">bnc</span><span class="o">/</span><span class="n">xnat</span><span class="o">-</span><span class="n">tools</span><span class="o">.</span><span class="n">git</span><span class="err">@</span><span class="n">vdev</span>
+</code></pre></div>
+
+<p>The command above installs the latest tagged release of <code>xnat-tools</code>. If you want to install the development version (main branch) you can run:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">pipx</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">brown</span><span class="o">-</span><span class="n">bnc</span><span class="o">/</span><span class="n">xnat</span><span class="o">-</span><span class="n">tools</span><span class="o">.</span><span class="n">git</span>
+</code></pre></div>
+
+<h3 id="pip">PIP<a class="headerlink" href="#pip" title="Permanent link">&para;</a></h3>
+<ul>
+<li>A Tagged Release</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">brown</span><span class="o">-</span><span class="n">bnc</span><span class="o">/</span><span class="n">xnat</span><span class="o">-</span><span class="n">tools</span><span class="o">.</span><span class="n">git</span><span class="err">@</span><span class="n">vdev</span>
+</code></pre></div>
+
+<ul>
+<li>Development (Master branch)</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">brown</span><span class="o">-</span><span class="n">bnc</span><span class="o">/</span><span class="n">xnat</span><span class="o">-</span><span class="n">tools</span><span class="o">.</span><span class="n">git</span>
 </code></pre></div>
 
 <h3 id="poetry">Poetry<a class="headerlink" href="#poetry" title="Permanent link">&para;</a></h3>
@@ -673,32 +697,7 @@
 </code></pre></div>
 
 <p>or for a tagged release</p>
-<div class="codehilite"><pre><span></span><code><span class="n">poetry</span> <span class="n">add</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">brown</span><span class="o">-</span><span class="n">bnc</span><span class="o">/</span><span class="n">xnat</span><span class="o">-</span><span class="n">tools</span><span class="o">.</span><span class="n">git</span><span class="err">@</span><span class="n">v0</span><span class="o">.</span><span class="mf">1.0</span>
-</code></pre></div>
-
-<p>You can also install xnat_tools using the python package manager of your choice, such as PIPX and PIP</p>
-<h3 id="pipx">PIPX<a class="headerlink" href="#pipx" title="Permanent link">&para;</a></h3>
-<p>If you are using this package in a stand-alone fashion, and you don't want to use Docker, we recommend using pipx. Please check their <a href="https://github.com/pipxproject/pipx">installation instructions</a>.</p>
-<p>Once pipx is installed you install as follows:</p>
-<p>A Tagged Release</p>
-<div class="codehilite"><pre><span></span><code><span class="n">pipx</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">brown</span><span class="o">-</span><span class="n">bnc</span><span class="o">/</span><span class="n">xnat</span><span class="o">-</span><span class="n">tools</span><span class="o">.</span><span class="n">git</span><span class="err">@</span><span class="n">v0</span><span class="o">.</span><span class="mf">1.0</span>
-</code></pre></div>
-
-<p>Development (Master branch)</p>
-<div class="codehilite"><pre><span></span><code><span class="n">pipx</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">brown</span><span class="o">-</span><span class="n">bnc</span><span class="o">/</span><span class="n">xnat</span><span class="o">-</span><span class="n">tools</span><span class="o">.</span><span class="n">git</span>
-</code></pre></div>
-
-<h3 id="pip">PIP<a class="headerlink" href="#pip" title="Permanent link">&para;</a></h3>
-<ul>
-<li>A Tagged Release</li>
-</ul>
-<div class="codehilite"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">brown</span><span class="o">-</span><span class="n">bnc</span><span class="o">/</span><span class="n">xnat</span><span class="o">-</span><span class="n">tools</span><span class="o">.</span><span class="n">git</span><span class="err">@</span><span class="n">v0</span><span class="o">.</span><span class="mf">1.0</span>
-</code></pre></div>
-
-<ul>
-<li>Development (Master branch)</li>
-</ul>
-<div class="codehilite"><pre><span></span><code><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">brown</span><span class="o">-</span><span class="n">bnc</span><span class="o">/</span><span class="n">xnat</span><span class="o">-</span><span class="n">tools</span><span class="o">.</span><span class="n">git</span>
+<div class="codehilite"><pre><span></span><code><span class="n">poetry</span> <span class="n">add</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">brown</span><span class="o">-</span><span class="n">bnc</span><span class="o">/</span><span class="n">xnat</span><span class="o">-</span><span class="n">tools</span><span class="o">.</span><span class="n">git</span><span class="err">@</span><span class="n">vdev</span>
 </code></pre></div>
                 
               
