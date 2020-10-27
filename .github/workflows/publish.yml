@@ -34,6 +34,8 @@ jobs:
         git commit -m "docs: Update docs/changelog.md" || echo "No changes to commit"
         git push || echo "No changes to push"
     - name: Release to GitHub
+      id: release
+      continue-on-error: true
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
