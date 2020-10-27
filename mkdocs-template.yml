@@ -18,6 +18,7 @@ edit_uri: ''
 
 plugins:
   - search
+  - markdownextradata
   - mkdocs-versioning:
       version: ${VERSION}
       version_selection_page: "docs/version_selection.md"
@@ -44,8 +45,9 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github-alt
-      link: 'https://github.com/brown-bnc/xnat-tools'
-
+      link: 'https://github.com/brown-bnc/xnat-tools' 
+  mdvars:
+    version: ${VERSION}
 nav:
   - Getting Started:
     - Overview: index.md

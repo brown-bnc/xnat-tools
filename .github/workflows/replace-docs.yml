@@ -1,0 +1,37 @@
+name: replace docs 
+on: [workflow_dispatch]
+jobs: 
+  replace-docs:
+    runs-on: ubuntu-latest
+    name: 'Rebuilds and publish the latest docs'
+    steps:
+    - name: Check out
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Store VERSION
+      run: |
+        echo ::set-env name=VERSION::$(cat pyproject.toml | grep version | head -1 | awk -F: '{ print $1 }'| sed 's/[\",]//g'| tr -d 'version = ')
+        echo "VERSION: $VERSION"
+    - name: Set up Python 3.7 
+      uses: actions/setup-python@v2 
+      with: 
+        python-version: '3.7.5' 
+    - name: Install dependencies 
+      run: | 
+        python -m pip install --upgrade pip 
+        pip install .
+        pip install mkdocs mkdocs-material mkdocstrings mkdocs-versioning mkdocs-markdownextradata-plugin
+    - name: Set up mkdocs config 
+      run: (envsubst 'v${VERSION}' < mkdocs-template.yml) > mkdocs.yml
+    - name: Sync 
+      run: | 
+        git pull
+        mkdir site
+        mkdocs-versioning sync
+        rm -rf ./site/${VERSION}
+        rm -rf ./site/.git/
+    - name: Build
+      run: mkdocs build
+    - name: Deploy
+      run: mkdocs-versioning -v deploy
