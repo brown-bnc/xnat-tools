@@ -200,6 +200,17 @@
 
       
         
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../changelog/" class="md-tabs__link">
+          Changelog
+        </a>
+      
+    </li>
+  
+
       
         
       
@@ -565,10 +576,36 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Changelog
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Changelog" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        <span class="md-nav__icon md-icon"></span>
+        Changelog
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href="../changelog/" class="md-nav__link">
-      Changelog
+      All Versions
     </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -738,7 +775,7 @@
 </ul>
 <h3 id="comment-styles">Comment styles<a class="headerlink" href="#comment-styles" title="Permanent link">&para;</a></h3>
 <p>Developers should use <a href="https://www.conventionalcommits.org/en/v1.0.0/">Conventional Commits</a>. <a href="https://commitizen-tools.github.io/commitizen/">Commitizen</a> comes installed as a <code>dev</code> dependency via poetry and you can use it to help you format your commit messages. It can also be installed as stand alone CLI or as a plugin on VSCODE.</p>
-<p>We use Commitizen in GitHub Actions to automatically bump the version and update the <a href="CHANGELOG.md">CHANGELOG.md</a> of this package according to the commit messages. Using conventional commits guarantees than Commitizen works appropriately.  </p>
+<p>We use Commitizen in GitHub Actions to automatically bump the version and update the <a href="../changelog/">CHANGELOG.md</a> of this package according to the commit messages. Using conventional commits guarantees than Commitizen works appropriately.  </p>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
 <p>In the future we will add testing as part of CI. For the moment, you'll need to test yourself</p>
 <p><code>pytest</code> is the library used for testing.</p>
@@ -806,7 +843,7 @@ docker run -ti --rm -v <span class="cp">${</span><span class="n">bids_directory<
 <li>docs/dicom_export.md</li>
 <li>docs/run_heudiconv.md</li>
 <li>docs/bids_postprocess.md</li>
-<li>docs/CHANGELOG.md</li>
+<li>docs/changelog.md</li>
 </ul>
 </li>
 </ul>
@@ -881,7 +918,7 @@ docker run -ti --rm -v <span class="cp">${</span><span class="n">bids_directory<
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Changelog
+                All Versions
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
