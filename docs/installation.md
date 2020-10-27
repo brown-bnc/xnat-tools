@@ -15,10 +15,41 @@ You can confirm the tags [here](https://hub.docker.com/repository/docker/brownbn
 
 ### Prerequisites:
 
-We first need to install the dcm2niix . This is a dependency of Heudiconv, that doesn't get installed by Heudiconv itself
+We first need to install the dcm2niix . This is a dependency of Heudiconv that doesn't get installed by Heudiconv itself
 
 ```
 brew install dcm2niix
+```
+
+### PIPX
+
+Most users only need to interact with the command-line utilities provided by `xnat-tools`. In this case, we recommend using `pipx`. Please check their [installation instructions](https://github.com/pipxproject/pipx).
+
+Once `pipx` is installed you will need to install Heudiconv and xnat-tools as stand-alone applications as follows:
+
+```
+pipx install heudiconv
+pipx install git+https://github.com/brown-bnc/xnat-tools.git@v{{ mdvars.version }}
+```
+
+The command above installs the latest tagged release of `xnat-tools`. If you want to install the development version (main branch) you can run:
+
+```
+pipx install git+https://github.com/brown-bnc/xnat-tools.git
+```
+
+### PIP
+
+- A Tagged Release
+
+```
+pip install git+https://github.com/brown-bnc/xnat-tools.git@v{{ mdvars.version }}
+```
+
+- Development (Master branch)
+
+```
+pip install git+https://github.com/brown-bnc/xnat-tools.git
 ```
 
 ### Poetry
@@ -32,40 +63,6 @@ poetry add git+https://github.com/brown-bnc/xnat-tools.git
 or for a tagged release
 
 ```
-poetry add git+https://github.com/brown-bnc/xnat-tools.git@v0.1.0
-```
-
-You can also install xnat_tools using the python package manager of your choice, such as PIPX and PIP
-
-### PIPX
-
-If you are using this package in a stand-alone fashion, and you don't want to use Docker, we recommend using pipx. Please check their [installation instructions](https://github.com/pipxproject/pipx).
-
-Once pipx is installed you install as follows:
-
-A Tagged Release
-
-```
-pipx install git+https://github.com/brown-bnc/xnat-tools.git@v0.1.0
-```
-
-Development (Master branch)
-
-```
-pipx install git+https://github.com/brown-bnc/xnat-tools.git
-```
-
-### PIP
-
-- A Tagged Release
-
-```
-pip install git+https://github.com/brown-bnc/xnat-tools.git@v0.1.0
-```
-
-- Development (Master branch)
-
-```
-pip install git+https://github.com/brown-bnc/xnat-tools.git
+poetry add git+https://github.com/brown-bnc/xnat-tools.git@v{{ mdvars.version }}
 ```
 

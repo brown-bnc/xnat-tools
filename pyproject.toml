@@ -27,6 +27,7 @@ mypy = "^0.782"
 mkdocs-versioning = "^0.3.0"
 Commitizen = "^2.4.1"
 pre-commit = "^2.7.1"
+mkdocs-markdownextradata-plugin = "^0.1.7"
 
 [tool.poetry.scripts]
 bids-postprocess ="xnat_tools.bids_postprocess:main"
