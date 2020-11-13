@@ -3,6 +3,7 @@ import os
 import shlex
 import shutil
 
+import pydicom
 from dotenv import load_dotenv
 from typer.testing import CliRunner
 
@@ -10,6 +11,17 @@ from xnat_tools.xnat2bids import app
 
 runner = CliRunner()
 load_dotenv()
+
+
+def series_idx(f):
+    """Return series index from filename"""
+    ext = f.split(".")[-1]
+    if ext == "dcm":
+        return f.split("-")[1]
+    elif ext == "IMA":
+        return f.split(".")[3]
+    else:
+        return 0
 
 
 def test_xnat2bids():
@@ -20,6 +32,7 @@ def test_xnat2bids():
     session = os.environ.get("XNAT_SESSION", "")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "01")
     bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
+    bidsmap_file = os.environ.get("XNAT_BIDSMAP", "./tests/sanes_sadlum.json")
     seqlist = ["1", "2", "3", "6"]
     skiplist = ["2", "3"]
 
@@ -29,7 +42,8 @@ def test_xnat2bids():
     os.mkdir(bids_root_dir)
 
     xnat2bids_cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} \
-                      -i {' -i '.join(seqlist)} -s {' -s '.join(skiplist)}"
+                      -i {' -i '.join(seqlist)} -s {' -s '.join(skiplist)} \
+                      -f {bidsmap_file}"
 
     xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
     print(xnat2bids_split_cmd)
@@ -57,7 +71,11 @@ def test_xnat2bids():
     export_subdirs = [f.path for f in os.scandir(xnat_export_path) if f.is_dir()]
 
     for d in export_subdirs:
+        series_desc = os.path.basename(d)
         for f in os.listdir(d):
-            dicom_sequence = int(f.split(".")[3])
-            assert str(dicom_sequence) in seqlist
-            assert str(dicom_sequence) not in skiplist
+            dataset = pydicom.dcmread(os.path.join(d, f))
+            idx = series_idx(f)
+            assert str(idx) in seqlist
+            assert str(idx) not in skiplist
+            assert dataset.data_element("ProtocolName").value == series_desc
+            assert dataset.data_element("SeriesDescription").value == series_desc
