@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import shutil
+import warnings
 from collections import defaultdict
 
 import pydicom
@@ -193,15 +194,11 @@ def bidsify_dicom_headers(filename, series_description):
 
     dataset = pydicom.dcmread(filename)
 
-    if "ProtocolName" not in dataset:
-        _logger.warn("Could not find ProtocolName in DICOM header")
-        return
-
     protocol_header = dataset.data_element("ProtocolName").value
     if protocol_header != series_description:
-        _logger.warning(
-            f"Modifying DICOM HEADER ProtocolName from "
-            f"{protocol_header} to {series_description}"
+        warnings.warn(
+            f"Changed DICOM HEADER[ProtocolName]: \
+            {protocol_header} -> {series_description}"
         )
         dataset.data_element("ProtocolName").value = series_description
         dataset.data_element("SeriesDescription").value = series_description
