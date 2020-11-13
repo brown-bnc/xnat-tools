@@ -194,11 +194,18 @@ def bidsify_dicom_headers(filename, series_description):
     dataset = pydicom.dcmread(filename)
 
     if "ProtocolName" not in dataset:
+        _logger.warn("Could not find ProtocolName in DICOM header")
         return
 
-    if dataset.data_element("ProtocolName").value != series_description:
+    protocol_header = dataset.data_element("ProtocolName").value
+    if protocol_header != series_description:
+        _logger.warning(
+            f"Modifying DICOM HEADER ProtocolName from "
+            f"{protocol_header} to {series_description}"
+        )
         dataset.data_element("ProtocolName").value = series_description
         dataset.data_element("SeriesDescription").value = series_description
+        dataset.save_as(filename)
 
 
 def scan_contains_dicom(connection, host, session, scanid):
