@@ -91,19 +91,6 @@ def test_bidsmap_scans_run_plus():
     assert bidsmap_scans(scans) == [("1", "run-01"), ("2", "run-02"), ("3", "run-03")]
 
 
-def test_bidsify_dicom_headers(mocker):
-    """Test bidsify_dicom_headers without ProtocolName field"""
-    dataset = mocker.MagicMock()
-    dataset.__contains__.return_value = False
-
-    dcmread = mocker.patch("pydicom.dcmread")
-    dcmread.return_value = dataset
-
-    bidsify_dicom_headers("filename", "foo")
-
-    assert dataset.data_element.called is False
-
-
 def test_bidsify_dicom_headers_with_protocol_name(mocker):
     """Test bidsify_dicom_headers with ProtocolName match"""
     series_description = "foo"
