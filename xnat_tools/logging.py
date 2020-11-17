@@ -3,6 +3,11 @@ import sys
 
 import coloredlogs
 
+if not sys.warnoptions:
+    import warnings
+
+    warnings.simplefilter("once")
+
 
 def setup_logging(
     logger, logfile: str = "", verbose_level: int = 0, very_verbose: bool = False
@@ -27,4 +32,5 @@ def setup_logging(
         datefmt="%Y-%m-%d %H:%M:%S",
         handlers=handlers,
     )
+    logging.captureWarnings(True)
     coloredlogs.install(level=loglevel, logger=logger)

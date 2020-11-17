@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import shutil
+import warnings
 from collections import defaultdict
 
 import pydicom
@@ -85,7 +86,7 @@ def prepare_export_output_path(
     # Set up working directory
     if overwrite and os.path.exists(session_dir):
         _logger.info("Removing existing xnat-export session directory %s" % session_dir)
-        shutil.rmtree(session_dir, ignore_errors=True)
+        shutil.rmtree(session_dir, ignore_errors=False)
 
     if not os.path.isdir(session_dir):
         _logger.info("Making output xnat-export session directory %s" % session_dir)
@@ -123,7 +124,7 @@ def prepare_heudiconv_output_path(
     # Set up working directory
     if overwrite:
         print("Overwrite - Removing existing heudi session directory %s" % session_dir)
-        shutil.rmtree(session_dir, ignore_errors=True)
+        shutil.rmtree(session_dir, ignore_errors=False)
 
     if not os.path.isdir(heudi_output_dir):
         print("Making output BIDS Session directory %s" % heudi_output_dir)
@@ -193,12 +194,15 @@ def bidsify_dicom_headers(filename, series_description):
 
     dataset = pydicom.dcmread(filename)
 
-    if "ProtocolName" not in dataset:
-        return
-
-    if dataset.data_element("ProtocolName").value != series_description:
+    protocol_header = dataset.data_element("ProtocolName").value
+    if protocol_header != series_description:
+        warnings.warn(
+            f"Changed DICOM HEADER[ProtocolName]: \
+            {protocol_header} -> {series_description}"
+        )
         dataset.data_element("ProtocolName").value = series_description
         dataset.data_element("SeriesDescription").value = series_description
+        dataset.save_as(filename)
 
 
 def scan_contains_dicom(connection, host, session, scanid):

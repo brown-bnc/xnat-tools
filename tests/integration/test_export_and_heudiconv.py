@@ -10,6 +10,8 @@ from xnat_tools.dicom_export import app as export_app
 from xnat_tools.dicom_export import dicom_export
 from xnat_tools.run_heudiconv import app as heudi_app
 
+from .test_xnat2bids import series_idx
+
 load_dotenv()
 runner = CliRunner()
 
@@ -67,15 +69,15 @@ def test_dicom_export():
     assert len(subdirs) == 1
     for d in subdirs:
         for f in os.listdir(d):
-            dicom_sequence = int(f.split(".")[3])
-            assert str(dicom_sequence) == "9"
+            idx = series_idx(f)
+            assert idx == "9"
 
     # ***************************************************************************
     # Test that default overwrite flag is NOT wiping the xnat-export directory
     # Here we test using typer's CLIRunner
     # ***************************************************************************
 
-    cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -i 8 -v"
+    cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -i 7 -v"
 
     split_cmd = shlex.split(cmd)
 
@@ -91,14 +93,14 @@ def test_dicom_export():
 
     for d in subdirs:
         for f in os.listdir(d):
-            dicom_sequence = int(f.split(".")[3])
-            assert str(dicom_sequence) in ["8", "9"]
+            idx = series_idx(f)
+            assert idx in ["7", "9"]
 
     # ***************************************************************************
     # Test that overwrite flag is wiping the xnat-export directory
     # ***************************************************************************
 
-    cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -i 8 -v --overwrite"
+    cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -i 7 -v --overwrite"
 
     split_cmd = shlex.split(cmd)
 
@@ -114,8 +116,8 @@ def test_dicom_export():
 
     for d in subdirs:
         for f in os.listdir(d):
-            dicom_sequence = int(f.split(".")[3])
-            assert str(dicom_sequence) == "8"
+            idx = series_idx(f)
+            assert idx == "7"
 
 
 def test_heudiconv():
@@ -128,7 +130,7 @@ def test_heudiconv():
     bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
 
     # ***************************************************************************
-    # Test for succesfull execution
+    # Test for successful execution
     # ***************************************************************************
     cmd = f"{project} {subject} {session} {bids_root_dir}"
 
@@ -159,7 +161,6 @@ def test_heudiconv():
     # ***************************************************************************
     # Test overwrite is working
     # ***************************************************************************
-
     cmd = f"{project} {subject} {session} {bids_root_dir} --overwrite"
 
     split_cmd = shlex.split(cmd)
@@ -167,5 +168,5 @@ def test_heudiconv():
     print(r.stdout)
     assert r.exit_code == 0
 
-    # cleanup output -- for debugging coment this out
+    # cleanup output -- for debugging comment this out
     shutil.rmtree(bids_root_dir, ignore_errors=True)

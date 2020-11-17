@@ -1,0 +1,30 @@
+[
+  {
+    "series_description": "anat-t2w_acq-loc",
+    "bidsname": "anat-scout_acq-localizer"
+  },
+  {
+    "series_description": "anat-t2w_seq-aascout",
+    "bidsname": "anat-scout_acq-aascout"
+  },
+  {
+    "series_description": "anat-t2w_seq-aascout_MPR_cor",
+    "bidsname": "anat-scout_acq-aascoutMPRcor"
+  },
+  {
+    "series_description": "anat-t2w_seq-aascout_MPR_sag",
+    "bidsname": "anat-scout_acq-aascoutMPRsag"
+  },
+  {
+    "series_description": "anat-t2w_seq-aascout_MPR_tra",
+    "bidsname": "anat-scout_acq-aascoutMPRtra"
+  },
+  {
+    "series_description": "anat-t1w_acq-memprage",
+    "bidsname": "anat-T1w_acq-memprage"
+  },
+  {
+    "series_description": "anat-t1w_acq-memprage",
+    "bidsname": "anat-T1w_acq-memprage"
+  }
+]

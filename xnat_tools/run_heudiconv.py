@@ -84,6 +84,9 @@ def run_heudiconv(
     --dicom_dir_template {export_dir}/sub-{{subject}}/ses-{{session}}/*/*.{dicom_ext} \
     --subjects {subject} --ses {session_suffix}"
 
+    if overwrite:
+        heudi_cmd = heudi_cmd + "--overwrite"
+
     heudi_split_cmd = shlex.split(heudi_cmd)
 
     print(f"Executing Heudiconv command: {heudi_cmd}")
