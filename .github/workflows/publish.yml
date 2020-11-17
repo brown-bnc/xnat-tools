@@ -18,7 +18,8 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
     - name: Store recent changelog changes
       run: |
-        echo "CHANGELOG=$(grep -B10000 -m2 "^## v"  CHANGELOG.md | sed '$d')" >> $GITHUB_ENV
+        CHANGELOG=$(grep -B10000 -m2 "^## v"  CHANGELOG.md | sed '$d')
+        echo "CHANGELOG=$CHANGELOG" >> $GITHUB_ENV
     - name: Store VERSION
       run: |
         echo "VERSION=$(cat pyproject.toml | grep version | head -1 | awk -F: '{ print $1 }'| sed 's/[\",]//g'| tr -d 'version = ')" >> $GITHUB_ENV
