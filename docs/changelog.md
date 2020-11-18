@@ -1,3 +1,14 @@
+## v1.0.1 (2020-11-17)
+
+### Perf
+
+- capture duplicate warnings
+
+### Fix
+
+- **overwrite**: don't ignore errors, and pass flag to heudiconv
+- bring back saving the file after setting DICOM header
+
 ## v1.0.0 (2020-10-22)
 
 ### Refactor
