@@ -60,7 +60,6 @@ jobs:
     - name: Sync 
       run: | 
         git pull
-        mkdir site
         mkdocs-versioning sync
         rm -rf ./site/.git/
     - name: Build
