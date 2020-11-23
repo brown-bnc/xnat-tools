@@ -85,7 +85,7 @@ def run_heudiconv(
     --subjects {subject} --ses {session_suffix}"
 
     if overwrite:
-        heudi_cmd = heudi_cmd + "--overwrite"
+        heudi_cmd = heudi_cmd + " --overwrite"
 
     heudi_split_cmd = shlex.split(heudi_cmd)
 
