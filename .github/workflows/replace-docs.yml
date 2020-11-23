@@ -27,7 +27,6 @@ jobs:
     - name: Sync 
       run: | 
         git pull
-        mkdir site
         mkdocs-versioning sync
         rm -rf ./site/${VERSION}
         rm -rf ./site/.git/
