@@ -123,8 +123,28 @@ def prepare_heudiconv_output_path(
 
     # Set up working directory
     if overwrite:
-        print("Overwrite - Removing existing heudi session directory %s" % session_dir)
-        shutil.rmtree(session_dir, ignore_errors=False)
+        print("Overwrite - Removing heudi session directory %s" % session_dir)
+        shutil.rmtree(session_dir, ignore_errors=True)
+        if os.path.isdir(session_dir):
+            warnings.warn(f"Something went wrong: {session_dir} was not removed")
+
+        heudi_source_dir = os.path.join(heudi_study_dir, "bids/sourcedata")
+        source_subject_dir = os.path.join(heudi_source_dir, subject_prefix)
+        source_session_dir = os.path.join(source_subject_dir, session_prefix)
+        print(
+            "Overwrite - Removing sourcedata session directory %s" % source_session_dir
+        )
+        shutil.rmtree(source_session_dir, ignore_errors=True)
+        if os.path.isdir(source_session_dir):
+            warnings.warn(f"Something went wrong: {source_session_dir} was not removed")
+
+        heudi_hidden_dir = os.path.join(heudi_study_dir, "bids/.heudiconv")
+        hidden_subject_dir = os.path.join(heudi_hidden_dir, subject_prefix.split("-")[1])
+        hidden_session_dir = os.path.join(hidden_subject_dir, session_prefix)
+        print("Overwrite - Removing hidden session directory %s" % hidden_session_dir)
+        shutil.rmtree(hidden_session_dir, ignore_errors=True)
+        if os.path.isdir(hidden_session_dir):
+            warnings.warn(f"Something went wrong: {hidden_session_dir} was not removed")
 
     if not os.path.isdir(heudi_output_dir):
         print("Making output BIDS Session directory %s" % heudi_output_dir)
