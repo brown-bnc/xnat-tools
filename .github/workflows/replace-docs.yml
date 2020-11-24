@@ -28,6 +28,7 @@ jobs:
     - name: Sync 
       run: | 
         git pull
+        mkdir site
         mkdocs-versioning sync
     - name: Clean docs site 
       run: |
