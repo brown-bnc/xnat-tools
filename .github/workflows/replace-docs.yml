@@ -23,12 +23,11 @@ jobs:
         pip install mkdocs mkdocs-material mkdocstrings mkdocs-versioning mkdocs-markdownextradata-plugin
     - name: Set up mkdocs config 
       run: |
-        (envsubst '${env.VERSION}' < mkdocs-template.yml) > mkdocs.yml
+        (envsubst '${VERSION}' < mkdocs-template.yml) > mkdocs.yml
         cat mkdocs.yml
     - name: Sync 
       run: | 
         git pull
-        mkdir site
         mkdocs-versioning sync
     - name: Clean docs site 
       run: |
