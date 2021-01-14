@@ -27,6 +27,9 @@ jobs:
     - name: Copy CHANGELOG to docs and push to remote
       id: commit
       run: |
+        echo "Removing CHANGELOG from docs"
+        rm docs/changelog.md
+        echo "Adding new CHANGELOG to docs"
         cp -f CHANGELOG.md docs/changelog.md
 
         git config --global user.name "github-actions[bot]"
