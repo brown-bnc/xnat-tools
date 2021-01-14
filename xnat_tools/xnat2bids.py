@@ -14,16 +14,12 @@ def xnat2bids(
     session: str = typer.Argument(
         ..., help="XNAT Session ID, that is the Accession # for an experiment."
     ),
-    bids_root_dir: str = typer.Argument(
-        ..., help="Root output directory for exporting the files"
-    ),
+    bids_root_dir: str = typer.Argument(..., help="Root output directory for exporting the files"),
     user: str = typer.Option(None, "-u", "--user", prompt=True, help="XNAT User"),
     password: str = typer.Option(
         None, "-p", "--pass", prompt=True, hide_input=True, help="XNAT Password"
     ),
-    host: str = typer.Option(
-        "https://bnc.brown.edu/xnat", "-h", "--host", help="XNAT'sURL"
-    ),
+    host: str = typer.Option("https://bnc.brown.edu/xnat", "-h", "--host", help="XNAT'sURL"),
     session_suffix: str = typer.Option(
         "01",
         "-S",
@@ -90,7 +86,6 @@ def xnat2bids(
     r = run_heudiconv(
         project,
         subject,
-        session,
         bids_root_dir,
         session_suffix=session_suffix,
         log_id=log_id,

@@ -44,10 +44,10 @@ version_files = [
 ]
 
 [tool.flake8]
-max-line-length = 89
+max-line-length = 100
 
 [tool.black]
-line-length = 89
+line-length = 100
 target-version = ['py37']
 exclude = '''
 /(
@@ -63,7 +63,7 @@ exclude = '''
 '''
 
 [tool.isort]
-line_length = 89
+line_length = 100
 multi_line_output = 3
 use_parentheses = true
 include_trailing_comma = true

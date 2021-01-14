@@ -66,7 +66,7 @@ poetry run pre-commit install
 
 Now, you hooks will run on `git commit`
 
-If you would like to run on all file (not just staged ones), you can run
+If you would like to run on all files (not just staged ones), you can run
 
 ```
 poetry run pre-commit run --all-files

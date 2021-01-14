@@ -58,14 +58,24 @@ def insert_intended_for_fmap(bids_dir, sub_list):
                     _logger.info("Done with re-write")
 
 
-def prepare_bids_prefixes(project, subject, session):
+def path_string_preprocess(proj: str, subj: str, sess: str):
+    """Preprocess study, session and subject strings"""
+
+    proj = proj.lower()
+    subj = subj.lower().replace("_", "").replace("-", "")
+    sess = sess.lower().replace("_", "").replace("-", "")
+
+    return proj, subj, sess
+
+
+def prepare_path_prefixes(project, subject, session):
     # get PI from project name
-    pi_prefix = project.lower().split("_")[0]
+    pi_prefix = project.split("_")[0]
 
     # Paths to export source data in a BIDS friendly way
-    study_prefix = "study-" + project.lower().split("_")[1]
-    subject_prefix = "sub-" + subject.lower().replace("_", "")
-    session_prefix = "ses-" + session.lower().replace("_", "")
+    study_prefix = "study-" + project.split("_")[1]
+    subject_prefix = "sub-" + subject
+    session_prefix = "ses-" + session
 
     return pi_prefix, study_prefix, subject_prefix, session_prefix
 
@@ -95,18 +105,6 @@ def prepare_export_output_path(
     return session_dir
 
 
-def prepare_heudi_prefixes(project, subject, session):
-    # get PI from project name
-    pi_prefix = project.lower().split("_")[0]
-
-    # Paths to export source data in a BIDS friendly way
-    study_prefix = "study-" + project.lower().split("_")[1]
-    subject_prefix = "sub-" + subject.lower().replace("_", "")
-    session_prefix = "ses-" + session.lower().replace("_", "")
-
-    return pi_prefix, study_prefix, subject_prefix, session_prefix
-
-
 def prepare_heudiconv_output_path(
     bids_root_dir,
     pi_prefix,
@@ -131,9 +129,7 @@ def prepare_heudiconv_output_path(
         heudi_source_dir = os.path.join(heudi_study_dir, "bids/sourcedata")
         source_subject_dir = os.path.join(heudi_source_dir, subject_prefix)
         source_session_dir = os.path.join(source_subject_dir, session_prefix)
-        print(
-            "Overwrite - Removing sourcedata session directory %s" % source_session_dir
-        )
+        print("Overwrite - Removing sourcedata session directory %s" % source_session_dir)
         shutil.rmtree(source_session_dir, ignore_errors=True)
         if os.path.isdir(source_session_dir):
             warnings.warn(f"Something went wrong: {source_session_dir} was not removed")
@@ -233,9 +229,7 @@ def scan_contains_dicom(connection, host, session, scanid):
         params={"format": "json"},
     )
 
-    dicomResourceList = [
-        r for r in resp.json()["ResultSet"]["Result"] if r["label"] == "DICOM"
-    ]
+    dicomResourceList = [r for r in resp.json()["ResultSet"]["Result"] if r["label"] == "DICOM"]
 
     # NOTE (BNR): A scan contains multiple resources. A resource can be thought
     #             of as a folder. We only want a single DICOM folder. If we have
@@ -309,14 +303,11 @@ def assign_bids_name(
         r = get(connection, filesURL, params={"format": "json"})
         # Build a dict keyed off file name
         dicomFileDict = {
-            dicom["Name"]: {"URI": host + dicom["URI"]}
-            for dicom in r.json()["ResultSet"]["Result"]
+            dicom["Name"]: {"URI": host + dicom["URI"]} for dicom in r.json()["ResultSet"]["Result"]
         }
 
         # Have to manually add absolutePath with a separate request
-        r = get(
-            connection, filesURL, params={"format": "json", "locator": "absolutePath"}
-        )
+        r = get(connection, filesURL, params={"format": "json", "locator": "absolutePath"})
         for dicom in r.json()["ResultSet"]["Result"]:
             dicomFileDict[dicom["Name"]]["absolutePath"] = dicom["absolutePath"]
 

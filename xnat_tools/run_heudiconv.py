@@ -9,7 +9,11 @@ from subprocess import PIPE, STDOUT, Popen
 
 import typer
 
-from xnat_tools.bids_utils import prepare_heudi_prefixes, prepare_heudiconv_output_path
+from xnat_tools.bids_utils import (
+    path_string_preprocess,
+    prepare_heudiconv_output_path,
+    prepare_path_prefixes,
+)
 
 app = typer.Typer()
 
@@ -18,12 +22,7 @@ app = typer.Typer()
 def run_heudiconv(
     project: str = typer.Argument(..., help="XNAT's Project ID"),
     subject: str = typer.Argument(..., help="XNAT's subject ID"),
-    session: str = typer.Argument(
-        ..., help="XNAT's Session ID, i.e., Accession # for an experiment"
-    ),
-    bids_root_dir: str = typer.Argument(
-        ..., help="Root output directory for exporting the files"
-    ),
+    bids_root_dir: str = typer.Argument(..., help="Root output directory for exporting the files"),
     session_suffix: str = typer.Option(
         "01",
         "-S",
@@ -56,7 +55,9 @@ def run_heudiconv(
         raise ValueError("BIDS Root directory must exist")
 
     # Paths to export source data in a BIDS friendly way
-    pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_heudi_prefixes(
+    project, subject, session_suffix = path_string_preprocess(project, subject, session_suffix)
+
+    pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_path_prefixes(
         project, subject, session_suffix
     )
     heudi_output_dir = prepare_heudiconv_output_path(
@@ -102,9 +103,7 @@ def run_heudiconv(
                 sys.stdout.write(line)
                 file.write(line)
         if p.returncode != 0:
-            raise RuntimeError(
-                "Heudiconv was asked to overwrite files. Try the --overwite flag"
-            )
+            raise RuntimeError("Heudiconv was asked to overwrite files. Try the --overwite flag")
 
     print("Done with Heudiconv BIDS Convesion.")
 
@@ -115,9 +114,7 @@ def run_heudiconv(
         print("Moving XNAT export log to derivatives folder")
 
         # check if directory exists or not yet
-        derivatives_dir = (
-            f"{bids_root_dir}/{pi_prefix}/{study_prefix}/bids/derivatives/xnat/logs"
-        )
+        derivatives_dir = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/bids/derivatives/xnat/logs"
         if not os.path.exists(derivatives_dir):
             os.mkdir(derivatives_dir)
 

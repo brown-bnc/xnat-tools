@@ -9,9 +9,7 @@ if not sys.warnoptions:
     warnings.simplefilter("once")
 
 
-def setup_logging(
-    logger, logfile: str = "", verbose_level: int = 0, very_verbose: bool = False
-):
+def setup_logging(logger, logfile: str = "", verbose_level: int = 0, very_verbose: bool = False):
     """Setup basic logging
 
     Args:
