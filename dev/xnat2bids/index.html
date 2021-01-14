@@ -10,11 +10,11 @@
       
       
       
+      
         <link rel="canonical" href="http://brown-bnc.github.io/xnat-tools/xnat2bids/">
       
-      
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.6">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.2.4">
     
     
       
@@ -22,10 +22,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.6910b76c.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.15aa0b43.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.196e0c26.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.75751829.min.css">
         
           
           
@@ -37,7 +37,7 @@
     
       
         
-        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
         <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
       
@@ -59,6 +59,7 @@
     <body dir="ltr" data-md-color-scheme="" data-md-color-primary="pink" data-md-color-accent="">
       
   
+    
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
@@ -88,18 +89,20 @@
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
     </label>
     <div class="md-header-nav__title" data-md-component="header-title">
-      
-        <div class="md-header-nav__ellipsis">
-          <span class="md-header-nav__topic md-ellipsis">
+      <div class="md-header-nav__ellipsis">
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
             XNAT Tools - dev
           </span>
-          <span class="md-header-nav__topic md-ellipsis">
+        </div>
+        <div class="md-header-nav__topic">
+          <span class="md-ellipsis">
             
               xnat2bids
             
           </span>
         </div>
-      
+      </div>
     </div>
     
       <label class="md-header-nav__button md-icon" for="__search">
@@ -154,19 +157,19 @@
       
         
           
-
-  
-
-<nav class="md-tabs md-tabs--active" aria-label="Tabs" data-md-component="tabs">
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
   <div class="md-tabs__inner md-grid">
     <ul class="md-tabs__list">
       
         
   
   
+
+
+  
+  
+  
     <li class="md-tabs__item">
-      
-      
       <a href=".." class="md-tabs__link">
         Getting Started
       </a>
@@ -177,11 +180,14 @@
         
   
   
+    
+  
+
+
+  
+  
+  
     <li class="md-tabs__item">
-      
-      
-        
-      
       <a href="../usage_overview/" class="md-tabs__link md-tabs__link--active">
         Usage
       </a>
@@ -192,9 +198,12 @@
         
   
   
+
+
+  
+  
+  
     <li class="md-tabs__item">
-      
-      
       <a href="../dev_setup/" class="md-tabs__link">
         Development
       </a>
@@ -205,9 +214,12 @@
         
   
   
+
+
+  
+  
+  
     <li class="md-tabs__item">
-      
-      
       <a href="../changelog/" class="md-tabs__link">
         Changelog
       </a>
@@ -216,6 +228,16 @@
 
       
         
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../" class="md-tabs__link">
+      Version Selector
+    </a>
+  </li>
+
       
     </ul>
   </div>
@@ -226,12 +248,18 @@
         <div class="md-main__inner md-grid">
           
             
-              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="http://brown-bnc.github.io/xnat-tools" title="XNAT Tools - dev" class="md-nav__button md-logo" aria-label="XNAT Tools - dev">
       
@@ -262,9 +290,13 @@
       
 
 
+
+  
   <li class="md-nav__item md-nav__item--nested">
     
-    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" >
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" data-md-state="indeterminate" type="checkbox" id="nav-1" checked>
+    
     <label class="md-nav__link" for="nav-1">
       Getting Started
       <span class="md-nav__icon md-icon"></span>
@@ -282,6 +314,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href=".." class="md-nav__link">
       Overview
@@ -292,6 +325,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -310,12 +344,16 @@
       
       
 
+
   
 
 
+  
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
     <label class="md-nav__link" for="nav-2">
       Usage
       <span class="md-nav__icon md-icon"></span>
@@ -333,6 +371,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../usage_overview/" class="md-nav__link">
       Overview
@@ -343,6 +382,7 @@
           
           
           
+
 
   
 
@@ -366,6 +406,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../dicom_export/" class="md-nav__link">
       xnat-dicom-export
@@ -378,6 +419,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../run_heudiconv/" class="md-nav__link">
       xnat-heudiconv
@@ -388,6 +430,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -407,9 +450,13 @@
       
 
 
+
+  
   <li class="md-nav__item md-nav__item--nested">
     
-    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" >
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" data-md-state="indeterminate" type="checkbox" id="nav-3" checked>
+    
     <label class="md-nav__link" for="nav-3">
       Development
       <span class="md-nav__icon md-icon"></span>
@@ -427,6 +474,7 @@
           
 
 
+
   <li class="md-nav__item">
     <a href="../dev_setup/" class="md-nav__link">
       Setting Up
@@ -437,6 +485,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -456,9 +505,13 @@
       
 
 
+
+  
   <li class="md-nav__item md-nav__item--nested">
     
-    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" >
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" data-md-state="indeterminate" type="checkbox" id="nav-4" checked>
+    
     <label class="md-nav__link" for="nav-4">
       Changelog
       <span class="md-nav__icon md-icon"></span>
@@ -474,6 +527,7 @@
           
           
           
+
 
 
   <li class="md-nav__item">
@@ -493,6 +547,7 @@
       
 
 
+
   <li class="md-nav__item">
     <a href="../../" class="md-nav__link">
       Version Selector
@@ -507,7 +562,8 @@
               </div>
             
             
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
@@ -531,7 +587,7 @@
                 <h1 id="xnat2bids"><code>xnat2bids</code><a class="headerlink" href="#xnat2bids" title="Permanent link">&para;</a></h1>
 <p>Export DICOM images from an XNAT experiment to a BIDS compliant directory</p>
 <p><strong>Usage</strong>:</p>
-<div class="codehilite"><pre><span></span><code><span class="gp">$</span> xnat2bids <span class="o">[</span>OPTIONS<span class="o">]</span> SESSION BIDS_ROOT_DIR
+<div class="codehilite"><pre><span></span><code><span class="gp">$ </span>xnat2bids <span class="o">[</span>OPTIONS<span class="o">]</span> SESSION BIDS_ROOT_DIR
 </code></pre></div>
 
 <p><strong>Arguments</strong>:</p>
@@ -548,7 +604,7 @@
 <li><code>-f, --bidsmap-file TEXT</code>: Bidsmap JSON file to correct sequence names  [default: ]</li>
 <li><code>-i, --includeseq INTEGER</code>: Include this sequence only, can specify multiple times  [default: ]</li>
 <li><code>-s, --skipseq INTEGER</code>: Exclude this sequence, can be specified multiple times  [default: ]</li>
-<li><code>--log-id TEXT</code>: ID or suffix to append to logfile, If empty, date is appended  [default: 11-23-2020-20-27-00]</li>
+<li><code>--log-id TEXT</code>: ID or suffix to append to logfile, If empty, date is appended  [default: 01-14-2021-16-59-54]</li>
 <li><code>-v, --verbose</code>: Verbose level. Can be specified multiple times to increase verbosity  [default: 0]</li>
 <li><code>--overwrite</code>: Remove directories where prior results for this session/participant  [default: False]</li>
 <li><code>--cleanup / --no-cleanup</code>: Remove xnat-export folder and move logs to derivatives/xnat/logs  [default: False]</li>
@@ -635,15 +691,15 @@
       
     </div>
     
-      <script src="../assets/javascripts/vendor.fd16492e.min.js"></script>
-      <script src="../assets/javascripts/bundle.7836ba4d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      <script src="../assets/javascripts/vendor.93c04032.min.js"></script>
+      <script src="../assets/javascripts/bundle.83e5331e.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({
           base: "..",
           features: ['navigation.instant', 'navigation.tabs', 'navigation.expand'],
           search: Object.assign({
-            worker: "../assets/javascripts/worker/search.4ac00218.min.js"
+            worker: "../assets/javascripts/worker/search.8c7e0a7e.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>
