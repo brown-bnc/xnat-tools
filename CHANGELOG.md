@@ -1,3 +1,9 @@
+## v1.0.3 (2021-01-14)
+
+### Fix
+
+- add and abstract string preprojecissing of proj, sub, sess
+
 ## v1.0.2 (2020-11-23)
 
 ### Fix
