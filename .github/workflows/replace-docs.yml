@@ -32,7 +32,6 @@ jobs:
     - name: Clean docs site 
       run: |
         rm -rf ./site/${{ env.VERSION }}
-        rm -rf ./site/'${VERSION}'
         rm -rf ./site/.git/
         ls -la
     - name: Build
