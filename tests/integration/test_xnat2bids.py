@@ -33,7 +33,7 @@ def test_xnat2bids():
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "01")
     bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
     bidsmap_file = os.environ.get("XNAT_BIDSMAP", "./tests/sanes_sadlum.json")
-    seqlist = ["1", "2", "3", "6"]
+    seqlist = ["1", "2", "3", "7"]
     skiplist = ["2", "3"]
 
     if os.path.exists(bids_root_dir):
