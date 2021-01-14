@@ -56,14 +56,9 @@ def test_dicom_export():
     assert p == project
     assert s == subject
 
-    filepath = glob.glob(
-        f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
-    )[0]
+    filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}")[0]
 
-    assert (
-        len(glob.glob(f"{filepath}/*/*.IMA")) > 0
-        or len(glob.glob(f"{filepath}/*/*.dcm")) > 0
-    )
+    assert len(glob.glob(f"{filepath}/*/*.IMA")) > 0 or len(glob.glob(f"{filepath}/*/*.dcm")) > 0
     subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
     assert len(subdirs) == 1
@@ -84,9 +79,7 @@ def test_dicom_export():
     r = runner.invoke(export_app, split_cmd)
     print(r.stdout)
 
-    filepath = glob.glob(
-        f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
-    )[0]
+    filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}")[0]
     subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
     assert len(subdirs) == 2
@@ -107,9 +100,7 @@ def test_dicom_export():
     r = runner.invoke(export_app, split_cmd)
     print(r.stdout)
 
-    filepath = glob.glob(
-        f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
-    )[0]
+    filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}")[0]
     subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
     assert len(subdirs) == 1
@@ -143,8 +134,7 @@ def test_heudiconv():
     assert r.exit_code == 0
 
     assert (
-        len(glob.glob(f"{filepath}/*/*.json")) > 0
-        or len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
+        len(glob.glob(f"{filepath}/*/*.json")) > 0 or len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
     )
 
     # ***************************************************************************

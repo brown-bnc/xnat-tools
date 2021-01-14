@@ -86,9 +86,7 @@ def get_scan_ids(connection, host, session):
         host + "/data/experiments/%s/scans" % session,
         params={"format": "json"},
     )
-    scanRequestResultList = sorted(
-        r.json()["ResultSet"]["Result"], key=lambda x: int(x["ID"])
-    )
+    scanRequestResultList = sorted(r.json()["ResultSet"]["Result"], key=lambda x: int(x["ID"]))
     scanIDList = [scan["ID"] for scan in scanRequestResultList]
     seriesDescList = [
         scan["series_description"] for scan in scanRequestResultList

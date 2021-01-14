@@ -22,8 +22,9 @@ import typer
 from xnat_tools.bids_utils import (
     assign_bids_name,
     bidsmap_scans,
-    prepare_bids_prefixes,
+    path_string_preprocess,
     prepare_export_output_path,
+    prepare_path_prefixes,
 )
 from xnat_tools.logging import setup_logging
 from xnat_tools.xnat_utils import filter_scans, get_project_and_subject_id, get_scan_ids
@@ -37,16 +38,12 @@ def dicom_export(
     session: str = typer.Argument(
         ..., help="XNAT Session ID, that is the Accession # for an experiment."
     ),
-    bids_root_dir: str = typer.Argument(
-        ..., help="Root output directory for exporting the files"
-    ),
+    bids_root_dir: str = typer.Argument(..., help="Root output directory for exporting the files"),
     user: str = typer.Option(None, "-u", "--user", prompt=True, help="XNAT User"),
     password: str = typer.Option(
         None, "-p", "--pass", prompt=True, hide_input=True, help="XNAT Password"
     ),
-    host: str = typer.Option(
-        "https://bnc.brown.edu/xnat", "-h", "--host", help="XNAT'sURL"
-    ),
+    host: str = typer.Option("https://bnc.brown.edu/xnat", "-h", "--host", help="XNAT'sURL"),
     session_suffix: str = typer.Option(
         "01",
         "-S",
@@ -111,7 +108,9 @@ def dicom_export(
 
     project, subject = get_project_and_subject_id(connection, host, session)
 
-    pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_bids_prefixes(
+    project, subject, session_suffix = path_string_preprocess(project, subject, session_suffix)
+
+    pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_path_prefixes(
         project, subject, session_suffix
     )
 

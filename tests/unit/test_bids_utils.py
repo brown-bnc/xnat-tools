@@ -9,8 +9,15 @@ from xnat_tools.bids_utils import (
     bidsify_dicom_headers,
     bidsmap_scans,
     handle_scanner_exceptions,
+    path_string_preprocess,
     scan_contains_dicom,
 )
+
+
+def test_path_string_preprocess():
+    """Unit test to make sure path strings ar in the correct format"""
+
+    assert path_string_preprocess("ABC", "ABC-11_1", "A_b-2") == ("abc", "abc111", "ab2")
 
 
 def test_prepare_export_output_path():

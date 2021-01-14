@@ -47,9 +47,7 @@ def test_postprocessing():
     )
 
     # lazy check for the intendedFor field in one json file
-    json_file = (
-        f"{bids_dir}/sub-9011/ses-01/fmap/sub-9011_ses-01_acq-greAP_phasediff.json"
-    )
+    json_file = f"{bids_dir}/sub-9011/ses-01/fmap/sub-9011_ses-01_acq-greAP_phasediff.json"
 
     with open(json_file, "r") as f:
         data = json.load(f)
