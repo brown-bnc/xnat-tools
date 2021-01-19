@@ -59,7 +59,7 @@ jobs:
         pip install .
         pip install mkdocs mkdocs-material mkdocstrings mkdocs-versioning mkdocs-markdownextradata-plugin
     - name: Set up mkdocs config 
-      run: (envsubst 'v${env.VERSION}' < mkdocs-template.yml) > mkdocs.yml
+      run: (envsubst 'v${VERSION}' < mkdocs-template.yml) > mkdocs.yml
     - name: Sync 
       run: | 
         git pull

@@ -33,6 +33,7 @@ jobs:
       run: |
         rm -rf ./site/${{ env.VERSION }}
         rm -rf ./site/.git/
+        ls -la
     - name: Build
       run: mkdocs build
     - name: Deploy
