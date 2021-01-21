@@ -43,22 +43,22 @@ jobs:
         if: steps.filter.outputs.xnat2bids == 'true'
         run: |
           typer xnat_tools/xnat2bids.py utils docs --name xnat2bids --output docs/xnat2bids.md
-          sed -i -e 's|\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9]\{4\}\)-\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)|current date: MM-DD-YYYY-HH-MM-SS|' docs/xnat2bids.md
+          sed -i -e 's|\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9]\{4\}\)-\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)|current date - MM-DD-YYYY-HH-MM-SS|' docs/xnat2bids.md
       - name: dicom_export CLI docs  
         if: steps.filter.outputs.dicom_export == 'true'
         run: |
           typer xnat_tools/dicom_export.py utils docs --name dicom_export --output docs/dicom_export.md
-          sed -i -e 's|\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9]\{4\}\)-\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)|current date: MM-DD-YYYY-HH-MM-SS|' docs/dicom_export.md
+          sed -i -e 's|\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9]\{4\}\)-\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)|current date - MM-DD-YYYY-HH-MM-SS|' docs/dicom_export.md
       - name: run_heudiconv CLI docs  
         if: steps.filter.outputs.run_heudiconv == 'true'
         run: |
           typer xnat_tools/run_heudiconv.py utils docs --name run_heudiconv --output docs/run_heudiconv.md
-          sed -i -e 's|\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9]\{4\}\)-\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)|current date: MM-DD-YYYY-HH-MM-SS|' docs/run_heudiconv.md
+          sed -i -e 's|\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9]\{4\}\)-\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)|current date - MM-DD-YYYY-HH-MM-SS|' docs/run_heudiconv.md
       - name: bids_postprocess CLI docs  
         if: steps.filter.outputs.bids_postprocess == 'true'
         run: |
           typer xnat_tools/bids_postprocess.py utils docs --name bids_postprocess --output docs/bids_postprocess.md
-          sed -i -e 's|\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9]\{4\}\)-\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)|current date: MM-DD-YYYY-HH-MM-SS|' docs/bids_postprocess.md
+          sed -i -e 's|\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9]\{4\}\)-\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)|current date - MM-DD-YYYY-HH-MM-SS|' docs/bids_postprocess.md
       - name: Push to remote
         run: |
           git config --global user.name "github-actions[bot]"
