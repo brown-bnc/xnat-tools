@@ -59,7 +59,7 @@ jobs:
         run: |
           typer xnat_tools/bids_postprocess.py utils docs --name bids_postprocess --output docs/bids_postprocess.md
           grep  "\-\-log\-id"  docs/bids_postprocess.md | sed -e 's|\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9]\{4\}\)-\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)|current date as MM-DD-YYYY-HH-MM-SS|' >> docs/bids_postprocess.md
-    - name: Push to remote
+      - name: Push to remote
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
