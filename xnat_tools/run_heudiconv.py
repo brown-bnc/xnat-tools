@@ -22,7 +22,7 @@ app = typer.Typer()
 def run_heudiconv(
     project: str = typer.Argument(..., help="XNAT's Project ID"),
     subject: str = typer.Argument(..., help="XNAT's subject ID"),
-    bids_root_dir: str = typer.Argument(..., help="Root output directory for exporting the files"),
+    bids_root_dir: str = typer.Argument(..., help="Root output directory for exporting files"),
     session_suffix: str = typer.Option(
         "01",
         "-S",

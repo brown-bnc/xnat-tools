@@ -49,7 +49,7 @@ def bids_postprocess(
         "-v",
         "--verbose",
         count=True,
-        help="Verbose level. This flag can be specified multiple times to increase verbosity",
+        help="Verbosity level. This flag can be specified multiple times to increase verbosity",
     ),
 ):
     """

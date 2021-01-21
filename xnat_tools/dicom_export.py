@@ -59,13 +59,13 @@ def dicom_export(
         [],
         "-i",
         "--includeseq",
-        help="Include this sequence only, can specify multiple times",
+        help="Include this sequence only, this flag can specify multiple times",
     ),
     skipseq: List[int] = typer.Option(
         [],
         "-s",
         "--skipseq",
-        help="Exclude this sequence, can specify multiple times",
+        help="Exclude this sequence, this flag can specify multiple times",
     ),
     log_id: str = typer.Option(
         datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),

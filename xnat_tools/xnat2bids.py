@@ -35,7 +35,7 @@ def xnat2bids(
         [],
         "-i",
         "--includeseq",
-        help="Include this sequence only, can specify multiple times",
+        help="Include this sequence only, this flag can specify multiple times",
     ),
     skipseq: List[int] = typer.Option(
         [],
@@ -45,14 +45,14 @@ def xnat2bids(
     ),
     log_id: str = typer.Option(
         datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
-        help="ID or suffix to append to logfile, If empty, current date is used",
+        help="ID or suffix to append to logfile. If empty, current date is used",
     ),
     verbose: int = typer.Option(
         0,
         "-v",
         "--verbose",
         count=True,
-        help="Verbose level. Can be specified multiple times to increase verbosity",
+        help="Verbose level. This flag can be specified multiple times to increase verbosity",
     ),
     overwrite: bool = typer.Option(
         False,
