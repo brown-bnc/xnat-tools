@@ -69,7 +69,7 @@ def dicom_export(
     ),
     log_id: str = typer.Option(
         datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
-        help="ID or suffix to append to logfile, If empty, date is appended",
+        help="ID or suffix to append to logfile. If empty, current date is used",
     ),
     verbose: int = typer.Option(
         0,

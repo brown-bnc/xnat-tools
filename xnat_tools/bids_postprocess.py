@@ -32,13 +32,13 @@ def bids_postprocess(
         [],
         "-i",
         "--includesubj",
-        help="Include this participant only, can be specified multiple times",
+        help="Include this participant only, this flag can be specified multiple times",
     ),
     skipsubj: List[str] = typer.Option(
         [],
         "-s",
         "--skipsubj",
-        help="Skip this participant, can be specified multiple times",
+        help="Skip this participant, this flag can be specified multiple times",
     ),
     log_file: str = typer.Option(
         "",
@@ -49,7 +49,7 @@ def bids_postprocess(
         "-v",
         "--verbose",
         count=True,
-        help="Verbose level. Can be specified multiple times to increase verbosity",
+        help="Verbose level. This flag can be specified multiple times to increase verbosity",
     ),
 ):
     """

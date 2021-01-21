@@ -33,7 +33,7 @@ def run_heudiconv(
     ),
     log_id: str = typer.Option(
         datetime.now().strftime("%m-%d-%Y-%H-%M-%S"),
-        help="ID or suffix to append to logfile, If empty, date is appended",
+        help="ID or suffix to append to logfile. If empty, current date is used",
     ),
     overwrite: bool = typer.Option(
         False,
