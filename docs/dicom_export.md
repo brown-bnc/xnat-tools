@@ -1,11 +1,11 @@
-# `xnat-dicom-export`
+# `dicom_export`
 
 Export XNAT DICOM images in an experiment to a BIDS friendly format
 
 **Usage**:
 
 ```console
-$ xnat-dicom-export [OPTIONS] SESSION BIDS_ROOT_DIR
+$ dicom_export [OPTIONS] SESSION BIDS_ROOT_DIR
 ```
 
 **Arguments**:
@@ -22,9 +22,10 @@ $ xnat-dicom-export [OPTIONS] SESSION BIDS_ROOT_DIR
 * `-f, --bidsmap-file TEXT`: Bidsmap JSON file to correct sequence names  [default: ]
 * `-i, --includeseq INTEGER`: Include this sequence only, can specify multiple times  [default: ]
 * `-s, --skipseq INTEGER`: Exclude this sequence, can specify multiple times  [default: ]
-* `--log-id TEXT`: ID or suffix to append to logfile, If empty, date is appended  [default: 01-21-2021-15-04-29]
+* `--log-id TEXT`: ID or suffix to append to logfile. If empty, current date is used  [default: 01-21-2021-16-24-02]
 * `-v, --verbose`: Verbose level. Can be specified multiple times to increase verbosity  [default: 0]
 * `--overwrite`: Remove directories where prior results for session/participant may exist  [default: False]
 * `--install-completion`: Install completion for the current shell.
 * `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 * `--help`: Show this message and exit.
+* `--log-id TEXT`: ID or suffix to append to logfile. If empty, current date is used  [default: current date as MM-DD-YYYY-HH-MM-SS]
