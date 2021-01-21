@@ -31,13 +31,13 @@ def bids_postprocess(
     includesubj: List[str] = typer.Option(
         [],
         "-i",
-        "--includeseq",
+        "--includesubj",
         help="Include this participant only, can be specified multiple times",
     ),
     skipsubj: List[str] = typer.Option(
         [],
         "-s",
-        "--skipseq",
+        "--skipsubj",
         help="Skip this participant, can be specified multiple times",
     ),
     log_file: str = typer.Option(
