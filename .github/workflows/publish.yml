@@ -5,7 +5,7 @@ on:
       - master
 jobs: 
   publish:
-    if: "!startsWith(github.event.head_commit.message, 'ci:|docs:|')"
+    if: "!startsWith(github.event.commits[0].message, 'ci:|docs:|test:|')"
     runs-on: ubuntu-latest
     name: 'Bump version and create changelog with commitizen'
     steps:

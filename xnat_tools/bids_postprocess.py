@@ -31,14 +31,14 @@ def bids_postprocess(
     includesubj: List[str] = typer.Option(
         [],
         "-i",
-        "--includeseq",
-        help="Include this participant only, can be specified multiple times",
+        "--includesubj",
+        help="Include this participant only, this flag can be specified multiple times",
     ),
     skipsubj: List[str] = typer.Option(
         [],
         "-s",
-        "--skipseq",
-        help="Skip this participant, can be specified multiple times",
+        "--skipsubj",
+        help="Skip this participant, this flag can be specified multiple times",
     ),
     log_file: str = typer.Option(
         "",
@@ -49,7 +49,7 @@ def bids_postprocess(
         "-v",
         "--verbose",
         count=True,
-        help="Verbose level. Can be specified multiple times to increase verbosity",
+        help="Verbosity level. This flag can be specified multiple times to increase verbosity",
     ),
 ):
     """
