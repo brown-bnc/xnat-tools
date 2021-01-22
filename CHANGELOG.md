@@ -1,3 +1,9 @@
+## v1.0.5 (2021-01-22)
+
+### Fix
+
+- fixing publish workflow
+
 ## v1.0.4 (2021-01-22)
 
 ### Fix
