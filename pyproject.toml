@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xnat-tools"
-version = "1.0.5"
+version = "1.0.3"
 description = ""
 authors = ["Isabel Restrepo <isabelrestre@gmail.com>"]
 

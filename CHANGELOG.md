@@ -1,15 +1,3 @@
-## v1.0.5 (2021-01-22)
-
-### Fix
-
-- fixing publish workflow
-
-## v1.0.4 (2021-01-22)
-
-### Fix
-
-- make inputs for postprocess CLI consistent with variable names
-
 ## v1.0.3 (2021-01-14)
 
 ### Fix
