@@ -25,20 +25,6 @@ jobs:
     - name: Store VERSION
       run: |
         echo "VERSION=$(cat pyproject.toml | grep version | head -1 | awk -F: '{ print $1 }'| sed 's/[\",]//g'| tr -d 'version = ')" >> $GITHUB_ENV
-    - name: Copy CHANGELOG to docs and push to remote
-      id: commit
-      run: |
-        echo "Updating docs/changelog.md"
-        cat CHANGELOG.md > docs/changelog.md
-
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-        git pull
-        git diff
-        git diff --quiet && git diff --staged --quiet || git commit -am "docs: Update docs/changelog.md"
-        git push
-
     - name: Release to GitHub
       uses: actions/create-release@v1
       env:
