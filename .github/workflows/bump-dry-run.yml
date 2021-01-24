@@ -1,0 +1,18 @@
+name: publish 
+on:
+  push:
+    branches:
+      - master
+jobs: 
+  publish:
+    runs-on: ubuntu-latest
+    name: 'Bump version and create changelog with commitizen'
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Create bump and changelog
+      uses: commitizen-tools/commitizen-action@0.5.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        dry_run: true
