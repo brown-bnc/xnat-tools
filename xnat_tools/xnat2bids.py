@@ -19,7 +19,7 @@ def xnat2bids(
     password: str = typer.Option(
         None, "-p", "--pass", prompt=True, hide_input=True, help="XNAT Password"
     ),
-    host: str = typer.Option("https://bnc.brown.edu/xnat", "-h", "--host", help="XNAT'sURL"),
+    host: str = typer.Option("https://xnat.bnc.brown.edu", "-h", "--host", help="XNAT'sURL"),
     session_suffix: str = typer.Option(
         "01",
         "-S",
