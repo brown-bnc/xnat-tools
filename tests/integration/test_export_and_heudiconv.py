@@ -32,9 +32,9 @@ def test_dicom_export():
     os.mkdir(bids_root_dir)
 
     # ***************************************************************************
-    # Test for succesfull execution
+    # Test for successful execution
     # Here we call the function directly. Note, that at the moment, when calling
-    # the fucntion, the default values are not correct.
+    # the function, the default values are not correct.
     # See https://github.com/tiangolo/typer/issues/106
     # ***************************************************************************
 
@@ -43,7 +43,7 @@ def test_dicom_export():
         bids_root_dir,
         user=xnat_user,
         password=xnat_pass,
-        host="https://bnc.brown.edu/xnat",
+        host="https://xnat.bnc.brown.edu",
         bidsmap_file="",
         session_suffix="01",
         includeseq=[9],
