@@ -6,7 +6,7 @@ docker pull docker pull brownbnc/xnat_tools:<version>
 
 _Version:_
 
-- `latest`: Is the build of master
+- `latest`: Is the build of main
 - `vX.X.X`: Latest tagged stable release
 
 You can confirm the tags [here](https://hub.docker.com/repository/docker/brownbnc/xnat_tools/tags?page=1)
@@ -46,7 +46,7 @@ pipx install git+https://github.com/brown-bnc/xnat-tools.git
 pip install git+https://github.com/brown-bnc/xnat-tools.git@v{{ mdvars.version }}
 ```
 
-- Development (Master branch)
+- Development (Main branch)
 
 ```
 pip install git+https://github.com/brown-bnc/xnat-tools.git

@@ -4,14 +4,14 @@ We welcome issues and pull requests to help improve the xnat-tools model.  We us
 
 When working on xnat-tools, we using a flow a simple flow based on following rules:
 
-1. Use topic/feature branches, no direct commits on master.
-2. Perform tests and code reviews before merges into master, not afterwards.
-3. Everyone starts from master, and targets master.
+1. Use topic/feature branches, no direct commits on main.
+2. Perform tests and code reviews before merges into main, not afterwards.
+3. Everyone starts from main, and targets main.
 4. Commit messages reflect intent.
 
 ### Branches
 
-* `master` is the default branch and where releases are made off. This branch should be in clean/working conditions at all times. This branch is protected and can only be merged from Pull Requests for topic branches
+* `main` is the default branch and where releases are made off. This branch should be in clean/working conditions at all times. This branch is protected and can only be merged from Pull Requests for topic branches
 * topic branches are created for new features, fixes, or really any changes
 
 ### Comment styles
@@ -56,6 +56,9 @@ bids_directory=${PWD}/tests/xnat2bids/ashenhav/study-1222/bids/
 docker run -ti --rm -v ${bids_directory}:/data:ro bids/validator /data
 ```
 
+## Deploying
+
+When 
 
 ## Code Style
 

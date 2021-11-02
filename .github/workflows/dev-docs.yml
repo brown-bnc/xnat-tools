@@ -2,13 +2,13 @@ name: dev-docs
 on:
   push:
     branches-ignore:
-      - master
+      - main
 jobs: 
   build: 
     name: Build and Deploy Documentation 
     runs-on: ubuntu-latest 
     steps: 
-      - name: Checkout Master 
+      - name: Checkout Main 
         uses: actions/checkout@v2 
       - name: Check CLI files that changed
         uses: dorny/paths-filter@v2.2.0
