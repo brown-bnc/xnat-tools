@@ -25,6 +25,8 @@ bump_pattern = "^(break|new|fix|hotfix)"
 bump_map = {"break" = "MAJOR", "new" = "MINOR", "fix" = "PATCH", "hotfix" = "PATCH"}
 ```
 
+When a PR is merged to the main branch, a dry-run of the Commitizen's bump action is run. If indeed a new version is created, you can manually trigger the **publish** workflow to tag a release, commit new docs and build and push the docker image to ghcr.io. 
+
 ## Testing
 
 In the future we will add testing as part of CI. For the moment, you'll need to test yourself
