@@ -836,6 +836,7 @@
 <span class="nv">bump_map</span> <span class="o">=</span> {<span class="s2">&quot;</span><span class="s">break</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">MAJOR</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">new</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">MINOR</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">fix</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">PATCH</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">hotfix</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">PATCH</span><span class="s2">&quot;</span>}
 </code></pre></div>
 
+<p>When a PR is merged to the main branch, a dry-run of the Commitizen's bump action is run. If indeed a new version is created, you can manually trigger the <strong>publish</strong> workflow to tag a release, commit new docs and build and push the docker image to ghcr.io. </p>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
 <p>In the future we will add testing as part of CI. For the moment, you'll need to test yourself</p>
 <p><code>pytest</code> is the library used for testing.</p>
