@@ -111,7 +111,12 @@ def test_bidsify_dicom_headers_with_protocol_name(mocker):
 
     bidsify_dicom_headers("filename", series_description)
 
-    dataset.data_element.assert_any_call("ProtocolName")
+    dataset.data_element.assert_has_calls(
+        [
+            mocker.call("ProtocolName"),
+            mocker.call("SeriesDescription"),
+        ]
+    )
 
 
 def test_bidsify_dicom_headers_with_protocol_name_mismatch(mocker):
@@ -121,8 +126,8 @@ def test_bidsify_dicom_headers_with_protocol_name_mismatch(mocker):
     series_description_mock = mocker.Mock(value="quux")
 
     side_effect = [
-        protocol_name_mock,  # call to check if the ProtocolName
-        series_description_mock,  # call to set SeriesDescription
+        protocol_name_mock,  # call to check the ProtocolName
+        series_description_mock,  # call to check SeriesDescription
         protocol_name_mock,  # call to set the ProtocolName
         series_description_mock,  # call to set SeriesDescription
     ]
