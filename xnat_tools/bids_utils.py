@@ -202,6 +202,10 @@ def handle_scanner_exceptions(match):
     # Handle the mprage rms
     match = match.replace(" RMS", "RMS")
 
+    # Handle diffusion derivatives
+    match = match.replace("_TENSOR", "TENSOR")
+    match = match.replace("_SBRef", "SBRef")
+
     return match
 
 
@@ -211,10 +215,12 @@ def bidsify_dicom_headers(filename, series_description):
     dataset = pydicom.dcmread(filename)
 
     protocol_header = dataset.data_element("ProtocolName").value
+    seriesdesc_header = dataset.data_element("SeriesDescription").value
     if protocol_header != series_description:
         warnings.warn(
-            f"Changed DICOM HEADER[ProtocolName]: \
-            {protocol_header} -> {series_description}"
+            f"Changed DICOM HEADER[ProtocolName and SeriesDescription]: \
+            {protocol_header} -> {series_description} \
+            {seriesdesc_header} -> {series_description}"
         )
         dataset.data_element("ProtocolName").value = series_description
         dataset.data_element("SeriesDescription").value = series_description
