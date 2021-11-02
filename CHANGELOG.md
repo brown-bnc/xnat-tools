@@ -1,3 +1,9 @@
+## v1.0.6 (2021-11-02)
+
+### Fix
+
+- add missing field map derivatives
+
 ## v1.0.5 (2021-05-21)
 
 ### Fix
