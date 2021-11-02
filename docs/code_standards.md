@@ -18,7 +18,12 @@ When working on xnat-tools, we using a flow a simple flow based on following rul
 
 Developers should use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/). [Commitizen](https://commitizen-tools.github.io/commitizen/) comes installed as a `dev` dependency via poetry and you can use it to help you format your commit messages. It can also be installed as stand alone CLI or as a plugin on VSCODE.
 
-We use Commitizen in GitHub Actions to automatically bump the version and update the [CHANGELOG.md](changelog.md) of this package according to the commit messages. Using conventional commits guarantees than Commitizen works appropriately.  
+We use Commitizen in GitHub Actions to automatically bump the version and update the [CHANGELOG.md](changelog.md) of this package according to the commit messages. Using conventional commits guarantees than Commitizen works appropriately.  Notice that only few types of commits trigger a bump. At the moment we use the [default configuration](https://commitizen-tools.github.io/commitizen/customization/) which includes:
+
+```
+bump_pattern = "^(break|new|fix|hotfix)"
+bump_map = {"break" = "MAJOR", "new" = "MINOR", "fix" = "PATCH", "hotfix" = "PATCH"}
+```
 
 ## Testing
 
