@@ -562,6 +562,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#deploying" class="md-nav__link">
+    Deploying
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#code-style" class="md-nav__link">
     Code Style
   </a>
@@ -719,6 +726,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#deploying" class="md-nav__link">
+    Deploying
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#code-style" class="md-nav__link">
     Code Style
   </a>
@@ -805,14 +819,14 @@
 <h2 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">&para;</a></h2>
 <p>When working on xnat-tools, we using a flow a simple flow based on following rules:</p>
 <ol>
-<li>Use topic/feature branches, no direct commits on master.</li>
-<li>Perform tests and code reviews before merges into master, not afterwards.</li>
-<li>Everyone starts from master, and targets master.</li>
+<li>Use topic/feature branches, no direct commits on main.</li>
+<li>Perform tests and code reviews before merges into main, not afterwards.</li>
+<li>Everyone starts from main, and targets main.</li>
 <li>Commit messages reflect intent.</li>
 </ol>
 <h3 id="branches">Branches<a class="headerlink" href="#branches" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>master</code> is the default branch and where releases are made off. This branch should be in clean/working conditions at all times. This branch is protected and can only be merged from Pull Requests for topic branches</li>
+<li><code>main</code> is the default branch and where releases are made off. This branch should be in clean/working conditions at all times. This branch is protected and can only be merged from Pull Requests for topic branches</li>
 <li>topic branches are created for new features, fixes, or really any changes</li>
 </ul>
 <h3 id="comment-styles">Comment styles<a class="headerlink" href="#comment-styles" title="Permanent link">&para;</a></h3>
@@ -842,6 +856,8 @@
 docker run -ti --rm -v <span class="cp">${</span><span class="n">bids_directory</span><span class="cp">}</span>:/data:ro bids/validator /data
 </code></pre></div>
 
+<h2 id="deploying">Deploying<a class="headerlink" href="#deploying" title="Permanent link">&para;</a></h2>
+<p>When </p>
 <h2 id="code-style">Code Style<a class="headerlink" href="#code-style" title="Permanent link">&para;</a></h2>
 <h4 id="pre-commit-hooks">Pre-Commit hooks<a class="headerlink" href="#pre-commit-hooks" title="Permanent link">&para;</a></h4>
 <p>This repository has pre-commit hooks configured to enforce typing and formatting.</p>
