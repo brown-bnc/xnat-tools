@@ -2,7 +2,7 @@ name: bump-dry-run
 on:
   push:
     branches:
-      - master
+      - main
 jobs: 
   dry-run:
     runs-on: ubuntu-latest

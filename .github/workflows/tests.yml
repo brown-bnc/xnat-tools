@@ -5,7 +5,7 @@ jobs:
     name: Run unit tests 
     runs-on: ubuntu-latest 
     steps: 
-      - name: Checkout Master 
+      - name: Checkout Main 
         uses: actions/checkout@v2 
       - name: Set up Python 3.7 
         uses: actions/setup-python@v2 
