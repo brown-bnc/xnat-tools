@@ -2,8 +2,7 @@ name: publish
 on: [workflow_dispatch]
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: brown-bnc/xnat-tools
+  IMAGE_NAME: brownbnc/xnat-tools
 
 jobs: 
   publish:
@@ -36,7 +35,7 @@ jobs:
         draft: false
         prerelease: false
 
-    ## DOCS
+    # DOCS
     - name: Set up Python 3.7 
       uses: actions/setup-python@v2 
       with: 
@@ -68,22 +67,21 @@ jobs:
     - name: Log in to the Container registry
       uses: docker/login-action@v1
       with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        username: ${{ secrets.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Extract metadata (tags, labels) for Docker
       id: meta
       uses: docker/metadata-action@v3
       with:
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        images: ${{ env.IMAGE_NAME }}
         tags: |     
-          type=semver,pattern={{version}},value=v${{ env.VERSION }}
+          type=semver,pattern={{raw}},value=v${{ env.VERSION }}
     
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
       with:
         context: .
-        push: ${{ github.event_name != 'pull_request' }}
+        push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
