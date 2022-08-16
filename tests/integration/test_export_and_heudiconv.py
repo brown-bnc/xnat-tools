@@ -116,14 +116,13 @@ def test_heudiconv():
     executable on the output of xnat-dicom-export"""
     project = os.environ.get("XNAT_PROJECT", "")
     subject = os.environ.get("XNAT_SUBJECT", "")
-    session = os.environ.get("XNAT_SESSION", "")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "01")
     bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
 
     # ***************************************************************************
     # Test for successful execution
     # ***************************************************************************
-    cmd = f"{project} {subject} {session} {bids_root_dir}"
+    cmd = f"{project} {subject} {bids_root_dir}"
 
     split_cmd = shlex.split(cmd)
 
@@ -140,7 +139,7 @@ def test_heudiconv():
     # ***************************************************************************
     # Test for RuntimeError Heudiconv doesn't allow overwrite
     # ***************************************************************************
-    cmd = f"{project} {subject} {session} {bids_root_dir}"
+    cmd = f"{project} {subject} {bids_root_dir}"
 
     split_cmd = shlex.split(cmd)
     r = runner.invoke(heudi_app, split_cmd)
@@ -151,7 +150,7 @@ def test_heudiconv():
     # ***************************************************************************
     # Test overwrite is working
     # ***************************************************************************
-    cmd = f"{project} {subject} {session} {bids_root_dir} --overwrite"
+    cmd = f"{project} {subject} {bids_root_dir} --overwrite"
 
     split_cmd = shlex.split(cmd)
     r = runner.invoke(heudi_app, split_cmd)

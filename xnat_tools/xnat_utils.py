@@ -2,10 +2,10 @@ import getpass
 import logging
 import sys
 
-import requests
-import requests.packages.urllib3
+import requests  # type: ignore
+import urllib3
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 _logger = logging.getLogger(__name__)
 

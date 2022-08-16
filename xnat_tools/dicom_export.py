@@ -16,7 +16,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import List
 
-import requests
+import requests  # type: ignore
 import typer
 
 from xnat_tools.bids_utils import (
