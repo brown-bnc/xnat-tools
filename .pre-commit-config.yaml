@@ -8,16 +8,16 @@ repos:
       hooks:
         - id: black
     - repo: https://gitlab.com/pycqa/flake8
-      rev: 3.9.2
+      rev: 5.0.4
       hooks:
         - id: flake8
           args:
           - "--max-line-length=100"
     - repo: https://github.com/pre-commit/mirrors-mypy
-      rev: "v0.971"  # 2020.10.21
+      rev: "v0.971"
       hooks:
         - id: mypy
           args: [--no-strict-optional, --ignore-missing-imports]
-          additional-dependencies: [types-requests==2.28.8]
+          additional_dependencies: [types-requests==2.28.8]
 default_language_version:
     python: python3
