@@ -204,7 +204,6 @@ def handle_scanner_exceptions(match):
 
     # Handle diffusion derivatives
     match = match.replace("_TENSOR", "TENSOR")
-    match = match.replace("_SBRef", "SBRef")
 
     return match
 

@@ -1,7 +1,7 @@
 import logging
 import sys
 
-import coloredlogs
+import coloredlogs  # type: ignore
 
 if not sys.warnoptions:
     import warnings
@@ -22,7 +22,7 @@ def setup_logging(logger, logfile: str = "", verbose_level: int = 0, very_verbos
     logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
     handlers = [logging.StreamHandler(sys.stdout)]
     if logfile:
-        handlers.append(logging.FileHandler(logfile))
+        handlers.append(logging.FileHandler(logfile))  # type: ignore
 
     logging.basicConfig(
         level=loglevel,
