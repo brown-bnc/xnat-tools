@@ -10,11 +10,10 @@
       
       
       
-      
         <link rel="canonical" href="http://brown-bnc.github.io/xnat-tools/code_standards/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.6">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.4.0">
     
     
       
@@ -22,33 +21,34 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.a57b2b03.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.69437709.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
         
           
           
           <meta name="theme-color" content="#e92063">
         
       
+      
     
     
     
       
         
+        
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
-        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
-    
     
     
       <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
-
 
     
     
@@ -63,7 +63,6 @@
     <body dir="ltr" data-md-color-scheme="" data-md-color-primary="pink" data-md-color-accent="">
   
     
-    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -80,6 +79,7 @@
       
     </div>
     
+    
       
 
 <header class="md-header" data-md-component="header">
@@ -87,11 +87,11 @@
     <a href=".." title="XNAT Tools - dev" class="md-header__button md-logo" aria-label="XNAT Tools - dev" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -113,22 +113,21 @@
     
     
       <label class="md-header__button md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
       </label>
-      
-<div class="md-search" data-md-component="search" role="dialog">
+      <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
         <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
         </button>
       </nav>
       
@@ -148,11 +147,10 @@
     
     
       <div class="md-header__source">
-        
-<a href="https://github.com/brown-bnc/xnat-tools" title="Go to repository" class="md-source" data-md-component="source">
+        <a href="https://github.com/brown-bnc/xnat-tools" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
   </div>
   <div class="md-source__repository">
     brown-bnc/xnat-tools
@@ -260,18 +258,17 @@
     <a href=".." title="XNAT Tools - dev" class="md-nav__button md-logo" aria-label="XNAT Tools - dev" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
 
     </a>
     XNAT Tools - dev
   </label>
   
     <div class="md-nav__source">
-      
-<a href="https://github.com/brown-bnc/xnat-tools" title="Go to repository" class="md-source" data-md-component="source">
+      <a href="https://github.com/brown-bnc/xnat-tools" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
   </div>
   <div class="md-source__repository">
     brown-bnc/xnat-tools
@@ -292,7 +289,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" data-md-state="indeterminate" type="checkbox" id="__nav_1" checked>
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" checked>
       
       
       
@@ -354,7 +351,7 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" data-md-state="indeterminate" type="checkbox" id="__nav_2" checked>
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
       
       
       
@@ -514,7 +511,6 @@
       </a>
       
         
-
 
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
@@ -679,7 +675,6 @@
                   <div class="md-sidebar__inner">
                     
 
-
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -812,10 +807,11 @@
             <article class="md-content__inner md-typeset">
               
                 
-                
-                  <h1>Code standards</h1>
-                
-                <p>We welcome issues and pull requests to help improve the xnat-tools model.  We use the following guidelines to ensure standards are met.</p>
+
+
+  <h1>Code standards</h1>
+
+<p>We welcome issues and pull requests to help improve the xnat-tools model.  We use the following guidelines to ensure standards are met.</p>
 <h2 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">&para;</a></h2>
 <p>When working on xnat-tools, we using a flow a simple flow based on following rules:</p>
 <ol>
@@ -832,8 +828,8 @@
 <h3 id="comment-styles">Comment styles<a class="headerlink" href="#comment-styles" title="Permanent link">&para;</a></h3>
 <p>Developers should use <a href="https://www.conventionalcommits.org/en/v1.0.0/">Conventional Commits</a>. <a href="https://commitizen-tools.github.io/commitizen/">Commitizen</a> comes installed as a <code>dev</code> dependency via poetry and you can use it to help you format your commit messages. It can also be installed as stand alone CLI or as a plugin on VSCODE.</p>
 <p>We use Commitizen in GitHub Actions to automatically bump the version and update the <a href="changelog.md">CHANGELOG.md</a> of this package according to the commit messages. Using conventional commits guarantees than Commitizen works appropriately.  Notice that only few types of commits trigger a bump. At the moment we use the <a href="https://commitizen-tools.github.io/commitizen/customization/">default configuration</a> which includes:</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">bump_pattern</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">^(break|new|fix|hotfix)</span><span class="s2">&quot;</span>
-<span class="nv">bump_map</span> <span class="o">=</span> {<span class="s2">&quot;</span><span class="s">break</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">MAJOR</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">new</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">MINOR</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">fix</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">PATCH</span><span class="s2">&quot;</span>, <span class="s2">&quot;</span><span class="s">hotfix</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">PATCH</span><span class="s2">&quot;</span>}
+<div class="codehilite"><pre><span></span><code><span class="nv">bump_pattern</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;^(break|new|fix|hotfix)&quot;</span><span class="w"></span>
+<span class="nv">bump_map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>{<span class="s2">&quot;break&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;MAJOR&quot;</span>,<span class="w"> </span><span class="s2">&quot;new&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;MINOR&quot;</span>,<span class="w"> </span><span class="s2">&quot;fix&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;PATCH&quot;</span>,<span class="w"> </span><span class="s2">&quot;hotfix&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;PATCH&quot;</span>}<span class="w"></span>
 </code></pre></div>
 
 <p>When a PR is merged to the main branch, a dry-run of the Commitizen's bump action is run. If indeed a new version is created, you can manually trigger the <strong>publish</strong> workflow to tag a release, commit new docs and build and push the docker image to ghcr.io. </p>
@@ -845,7 +841,7 @@
 </code></pre></div>
 
 <p>To run only a file</p>
-<div class="codehilite"><pre><span></span><code><span class="n">poetry</span> <span class="n">run</span> <span class="n">pytest</span> <span class="o">-</span><span class="n">x</span> <span class="o">-</span><span class="n">s</span> <span class="o">-</span><span class="n">o</span> <span class="n">log_cli</span><span class="o">=</span><span class="bp">true</span> <span class="o">--</span><span class="nb">log</span><span class="o">-</span><span class="n">cli</span><span class="o">-</span><span class="n">level</span><span class="o">=</span><span class="n">INFO</span> <span class="n">tests</span><span class="o">/</span><span class="n">integration</span><span class="o">/</span><span class="n">test_export_typer</span><span class="o">.</span><span class="n">py</span>
+<div class="codehilite"><pre><span></span><code><span class="n">poetry</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">pytest</span><span class="w"> </span><span class="o">-</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="n">s</span><span class="w"> </span><span class="o">-</span><span class="n">o</span><span class="w"> </span><span class="n">log_cli</span><span class="o">=</span><span class="bp">true</span><span class="w"> </span><span class="o">--</span><span class="nb">log</span><span class="o">-</span><span class="n">cli</span><span class="o">-</span><span class="n">level</span><span class="o">=</span><span class="n">INFO</span><span class="w"> </span><span class="n">tests</span><span class="o">/</span><span class="n">integration</span><span class="o">/</span><span class="n">test_export_typer</span><span class="o">.</span><span class="n">py</span><span class="w"></span>
 </code></pre></div>
 
 <p><code>-s</code> makes sure that <code>stdout</code> is printed to terminal
@@ -880,7 +876,7 @@ docker run -ti --rm -v <span class="cp">${</span><span class="n">bids_directory<
 <h3 id="typing">Typing<a class="headerlink" href="#typing" title="Permanent link">&para;</a></h3>
 <p>Please use <a href="https://mypy.readthedocs.io/en/stable/">type hints</a> on all signatures where reasonable.  This will make sure the code is more readable, can be statically tested for type soundness, and helps fill in the documentation.</p>
 <p>Run the below to check for type errors:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">poetry</span> <span class="n">run</span> <span class="n">mypy</span> <span class="n">xnat_tools</span>
+<div class="codehilite"><pre><span></span><code><span class="n">poetry</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">mypy</span><span class="w"> </span><span class="n">xnat_tools</span><span class="w"></span>
 </code></pre></div>
 
 <h3 id="formatting">Formatting<a class="headerlink" href="#formatting" title="Permanent link">&para;</a></h3>
@@ -889,11 +885,11 @@ docker run -ti --rm -v <span class="cp">${</span><span class="n">bids_directory<
 <h3 id="flake8">flake8<a class="headerlink" href="#flake8" title="Permanent link">&para;</a></h3>
 <p>The code must not have any egregious linting errors. And others should be minimized as reasonable.</p>
 <p>Check for egregious errors:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">poetry</span> <span class="n">run</span> <span class="n">flake8</span> <span class="n">xnat_tools</span> <span class="o">--</span><span class="n">count</span> <span class="o">--</span><span class="n">select</span><span class="o">=</span><span class="n">E9</span><span class="p">,</span><span class="n">F63</span><span class="p">,</span><span class="n">F7</span><span class="p">,</span><span class="n">F82</span> <span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">source</span> <span class="o">--</span><span class="n">statistics</span>
+<div class="codehilite"><pre><span></span><code><span class="n">poetry</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">flake8</span><span class="w"> </span><span class="n">xnat_tools</span><span class="w"> </span><span class="o">--</span><span class="n">count</span><span class="w"> </span><span class="o">--</span><span class="n">select</span><span class="o">=</span><span class="n">E9</span><span class="p">,</span><span class="n">F63</span><span class="p">,</span><span class="n">F7</span><span class="p">,</span><span class="n">F82</span><span class="w"> </span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">source</span><span class="w"> </span><span class="o">--</span><span class="n">statistics</span><span class="w"></span>
 </code></pre></div>
 
 <p>Check for all warnings:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">poetry</span> <span class="n">run</span> <span class="n">flake8</span> <span class="n">xnat_tools</span> <span class="o">--</span><span class="n">count</span> <span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">zero</span> <span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">complexity</span><span class="o">=</span><span class="mi">12</span> <span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">line</span><span class="o">-</span><span class="n">length</span><span class="o">=</span><span class="mi">88</span> <span class="o">--</span><span class="n">statistics</span>
+<div class="codehilite"><pre><span></span><code><span class="n">poetry</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">flake8</span><span class="w"> </span><span class="n">xnat_tools</span><span class="w"> </span><span class="o">--</span><span class="n">count</span><span class="w"> </span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">zero</span><span class="w"> </span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">complexity</span><span class="o">=</span><span class="mi">12</span><span class="w"> </span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">line</span><span class="o">-</span><span class="n">length</span><span class="o">=</span><span class="mi">88</span><span class="w"> </span><span class="o">--</span><span class="n">statistics</span><span class="w"></span>
 </code></pre></div>
 
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
@@ -911,16 +907,16 @@ docker run -ti --rm -v <span class="cp">${</span><span class="n">bids_directory<
 </li>
 </ul>
 <p>Running the documentation locally (within a Poetry shell or add <code>poetry run</code>)</p>
-<div class="codehilite"><pre><span></span><code><span class="k">export</span> <span class="n">VERSION</span><span class="o">=</span><span class="n">dev</span>
-<span class="p">(</span><span class="n">envsubst</span> <span class="s1">&#39;${VERSION}&#39;</span> <span class="o">&lt;</span> <span class="n">mkdocs</span><span class="o">-</span><span class="n">template</span><span class="o">.</span><span class="n">yml</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">mkdocs</span><span class="o">.</span><span class="n">yml</span>
-<span class="n">mkdir</span> <span class="n">site</span>
-<span class="c1">#bring contents from gh-pages branch</span>
-<span class="n">mkdocs</span><span class="o">-</span><span class="n">versioning</span> <span class="n">sync</span> 
-<span class="c1">#clean dev environment and problematic .git folder</span>
-<span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="o">./</span><span class="n">site</span><span class="o">/</span><span class="n">dev</span><span class="o">/</span>
-<span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="o">./</span><span class="n">site</span><span class="o">/.</span><span class="n">git</span><span class="o">/</span>
-<span class="c1">#build docs</span>
-<span class="n">mkdocs</span> <span class="n">build</span>
+<div class="codehilite"><pre><span></span><code><span class="k">export</span><span class="w"> </span><span class="n">VERSION</span><span class="o">=</span><span class="n">dev</span><span class="w"></span>
+<span class="p">(</span><span class="n">envsubst</span><span class="w"> </span><span class="s1">&#39;${VERSION}&#39;</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">mkdocs</span><span class="o">-</span><span class="n">template</span><span class="o">.</span><span class="n">yml</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">mkdocs</span><span class="o">.</span><span class="n">yml</span><span class="w"></span>
+<span class="n">mkdir</span><span class="w"> </span><span class="n">site</span><span class="w"></span>
+<span class="c1">#bring contents from gh-pages branch</span><span class="w"></span>
+<span class="n">mkdocs</span><span class="o">-</span><span class="n">versioning</span><span class="w"> </span><span class="n">sync</span><span class="w"> </span>
+<span class="c1">#clean dev environment and problematic .git folder</span><span class="w"></span>
+<span class="n">rm</span><span class="w"> </span><span class="o">-</span><span class="n">rf</span><span class="w"> </span><span class="o">./</span><span class="n">site</span><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="w"></span>
+<span class="n">rm</span><span class="w"> </span><span class="o">-</span><span class="n">rf</span><span class="w"> </span><span class="o">./</span><span class="n">site</span><span class="o">/.</span><span class="n">git</span><span class="o">/</span><span class="w"></span>
+<span class="c1">#build docs</span><span class="w"></span>
+<span class="n">mkdocs</span><span class="w"> </span><span class="n">build</span><span class="w"></span>
 </code></pre></div>
 
 <p>To serve:</p>
@@ -932,38 +928,37 @@ docker run -ti --rm -v <span class="cp">${</span><span class="n">bids_directory<
 </code></pre></div>
 
 <p>⚠ After deployment, <code>mkdocs</code> prints</p>
-<div class="codehilite"><pre><span></span><code><span class="p">[</span><span class="n">gh_deploy</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">134</span><span class="p">]:</span> <span class="n">Your</span> <span class="n">documentation</span> <span class="n">should</span> <span class="n">shortly</span> <span class="n">be</span> <span class="n">available</span> <span class="n">at</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">brown</span><span class="o">-</span><span class="n">bnc</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">xnat_tools</span><span class="o">/</span> 
+<div class="codehilite"><pre><span></span><code><span class="p">[</span><span class="n">gh_deploy</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">134</span><span class="p">]:</span><span class="w"> </span><span class="n">Your</span><span class="w"> </span><span class="n">documentation</span><span class="w"> </span><span class="n">should</span><span class="w"> </span><span class="n">shortly</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">available</span><span class="w"> </span><span class="n">at</span><span class="p">:</span><span class="w"> </span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">brown</span><span class="o">-</span><span class="n">bnc</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">xnat_tools</span><span class="o">/</span><span class="w"> </span>
 </code></pre></div>
 
 <p>However, the URL is https://brown-bnc.github.io/xnat-tools/ dash instead of underscore</p>
 <h3 id="documentation-for-console-scripts">Documentation for console scripts<a class="headerlink" href="#documentation-for-console-scripts" title="Permanent link">&para;</a></h3>
 <p>The markdown files for console scripts are generated by the <code>typer-cli</code>. Here is an example of how to call it manually from your Poetry shell i.e. <code>poetry shell</code></p>
-<div class="codehilite"><pre><span></span><code><span class="n">PYTHONPATH</span><span class="o">=&lt;</span><span class="n">path</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">xnat</span><span class="o">-</span><span class="n">tools</span><span class="o">&gt;</span> <span class="n">typer</span> <span class="o">./</span><span class="n">dicom_export</span><span class="o">.</span><span class="n">py</span> <span class="n">utils</span> <span class="n">docs</span> <span class="o">--</span><span class="n">name</span> <span class="n">xnat</span><span class="o">-</span><span class="n">dicom</span><span class="o">-</span><span class="k">export</span> <span class="o">--</span><span class="n">output</span> <span class="o">../</span><span class="n">docs</span><span class="o">/</span><span class="n">dicom_export</span><span class="o">.</span><span class="n">md</span>
+<div class="codehilite"><pre><span></span><code><span class="n">PYTHONPATH</span><span class="o">=&lt;</span><span class="n">path</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">xnat</span><span class="o">-</span><span class="n">tools</span><span class="o">&gt;</span><span class="w"> </span><span class="n">typer</span><span class="w"> </span><span class="o">./</span><span class="n">dicom_export</span><span class="o">.</span><span class="n">py</span><span class="w"> </span><span class="n">utils</span><span class="w"> </span><span class="n">docs</span><span class="w"> </span><span class="o">--</span><span class="n">name</span><span class="w"> </span><span class="n">xnat</span><span class="o">-</span><span class="n">dicom</span><span class="o">-</span><span class="k">export</span><span class="w"> </span><span class="o">--</span><span class="n">output</span><span class="w"> </span><span class="o">../</span><span class="n">docs</span><span class="o">/</span><span class="n">dicom_export</span><span class="o">.</span><span class="n">md</span><span class="w"></span>
 </code></pre></div>
 
 <p>⚠ Remember, these files are updated by CI. While you can update them manually, they will be overwritten in CI according to the latest content</p>
-                
-              
-              
-                
+
+
 
 
               
             </article>
+            
           </div>
         </div>
         
       </main>
       
-        
-<footer class="md-footer">
+        <footer class="md-footer">
   
-    <nav class="md-footer__inner md-grid" aria-label="Footer">
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
         <a href="../dev_setup/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Setting Up" rel="prev">
           <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
           <div class="md-footer__title">
             <div class="md-ellipsis">
@@ -980,30 +975,29 @@ docker run -ti --rm -v <span class="cp">${</span><span class="n">bids_directory<
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
-      <div class="md-footer-copyright">
-        
-        
-          Made with
-          <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-            Material for MkDocs
-          </a>
-        
-        
-      </div>
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
       
-  <div class="md-footer-social">
+        <div class="md-social">
+  
+    
     
       
       
-        
-        
-      
-      <a href="https://github.com/brown-bnc/xnat-tools" target="_blank" rel="noopener" title="github.com" class="md-footer-social__link">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
-      </a>
     
-  </div>
-
+    <a href="https://github.com/brown-bnc/xnat-tools" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+    </a>
+  
+</div>
+      
     </div>
   </div>
 </footer>
@@ -1012,10 +1006,11 @@ docker run -ti --rm -v <span class="cp">${</span><span class="n">bids_directory<
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tabs", "navigation.expand"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.fcfe8b6d.min.js", "version": null}</script>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tabs", "navigation.expand"], "search": "../assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.b1047164.min.js"></script>
+      <script src="../assets/javascripts/bundle.9c69f0bc.min.js"></script>
       
     
   </body>
