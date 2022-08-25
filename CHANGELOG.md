@@ -1,3 +1,9 @@
+## v1.0.7 (2022-08-25)
+
+### Fix
+
+- remove SBREF derivative string matching, now being handled in heudiconv
+
 ## v1.0.6 (2021-11-02)
 
 ### Fix

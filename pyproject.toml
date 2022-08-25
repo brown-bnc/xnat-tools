@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xnat-tools"
-version = "1.0.6"
+version = "1.0.7"
 description = ""
 authors = ["Isabel Restrepo <isabelrestre@gmail.com>"]
 
@@ -37,7 +37,7 @@ xnat-dicom-export = "xnat_tools.dicom_export:main"
 xnat2bids = "xnat_tools.xnat2bids:main"
 
 [tool.commitizen]
-version = "1.0.6"
+version = "1.0.7"
 tag_format = "v$version"
 version_files = [
     "pyproject.toml:version",
