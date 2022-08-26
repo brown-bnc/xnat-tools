@@ -1,6 +1,5 @@
 import getpass
 import logging
-import sys
 
 import requests  # type: ignore
 import urllib3
@@ -27,10 +26,14 @@ def get(connection, url, **kwargs):
     try:
         r = connection.get(url, **kwargs)
         r.raise_for_status()
-    except (requests.ConnectionError, requests.exceptions.RequestException) as e:
-        print("Request Failed")
-        print("    " + str(e))
-        sys.exit(1)
+    except (requests.HTTPError) as e:
+        # Check if HTTPError is of type 'Unauthorized'
+        if e.response.status_code == 401:
+            # Notify user to resolve failed login request.
+            print("Check credentials, or verify valid alias token.")
+
+        raise (e)
+
     return r
 
 

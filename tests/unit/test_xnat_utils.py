@@ -1,4 +1,6 @@
-from xnat_tools.xnat_utils import filter_scans
+import requests  # type: ignore
+
+from xnat_tools.xnat_utils import filter_scans, get
 
 
 def phony_scan_data(scan_count=10):
@@ -61,3 +63,26 @@ def test_filter_scan_seqlist_discontinuity():
     expected_result = [x for x in data if int(x[0]) in seqlist]
 
     assert result == expected_result
+
+
+def test_unauthorized_user_exception_handling():
+    """Test unauthorized user HTTPError response"""
+    host = "https://xnat.bnc.brown.edu"
+    session = "XNAT_E00114"
+    url = f"{host}/data/experiments/{session}"
+
+    user = "bad_user"
+    password = "bad_password"
+
+    connection = requests.Session()
+    connection.verify = True
+    connection.auth = (user, password)
+
+    try:
+        get(
+            connection,
+            url,
+            params={"format": "json", "handler": "values", "columns": "project,subject_ID"},
+        )
+    except (requests.HTTPError) as e:
+        assert e.response.status_code == 401
