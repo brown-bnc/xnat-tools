@@ -184,3 +184,26 @@ def test_unauthorized_user_exception_handling():
         )
     except (requests.HTTPError) as e:
         assert e.response.status_code == 401
+
+
+def test_xnat_reachable_exception_handling():
+    """Test unauthorized user HTTPError response"""
+    host = "https://xnat.bnc.brown.edu"
+    session = "XNAT_BADPROJECT"
+    url = f"{host}/data/experiments/{session}"
+
+    user = os.environ.get("XNAT_USER", "")
+    password = os.environ.get("XNAT_PASS", "")
+
+    connection = requests.Session()
+    connection.verify = True
+    connection.auth = (user, password)
+
+    try:
+        get(
+            connection,
+            url,
+            params={"format": "json", "handler": "values", "columns": "project,subject_ID"},
+        )
+    except (requests.HTTPError) as e:
+        assert e.response.status_code == 404
