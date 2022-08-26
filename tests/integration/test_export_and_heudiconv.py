@@ -3,12 +3,14 @@ import os
 import shlex
 import shutil
 
+import requests  # type: ignore
 from dotenv import load_dotenv
 from typer.testing import CliRunner
 
 from xnat_tools.dicom_export import app as export_app
 from xnat_tools.dicom_export import dicom_export
 from xnat_tools.run_heudiconv import app as heudi_app
+from xnat_tools.xnat_utils import get
 
 from .test_xnat2bids import series_idx
 
@@ -159,3 +161,26 @@ def test_heudiconv():
 
     # cleanup output -- for debugging comment this out
     shutil.rmtree(bids_root_dir, ignore_errors=True)
+
+
+def test_unauthorized_user_exception_handling():
+    """Test unauthorized user HTTPError response"""
+    host = "https://xnat.bnc.brown.edu"
+    session = "XNAT_E00114"
+    url = f"{host}/data/experiments/{session}"
+
+    user = "bad_user"
+    password = "bad_password"
+
+    connection = requests.Session()
+    connection.verify = True
+    connection.auth = (user, password)
+
+    try:
+        get(
+            connection,
+            url,
+            params={"format": "json", "handler": "values", "columns": "project,subject_ID"},
+        )
+    except (requests.HTTPError) as e:
+        assert e.response.status_code == 401

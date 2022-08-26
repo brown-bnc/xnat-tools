@@ -1,7 +1,6 @@
 import getpass
 import logging
 
-import requests  # type: ignore
 import urllib3
 
 urllib3.disable_warnings()
@@ -23,16 +22,8 @@ class XNATPass:
 
 
 def get(connection, url, **kwargs):
-    try:
-        r = connection.get(url, **kwargs)
-        r.raise_for_status()
-    except (requests.ConnectionError, requests.HTTPError) as e:
-        # Check if HTTPError is of type 'Unauthorized'
-        if e.response.status_code == 401:
-            # Notify user to resolve failed login request.
-            print("Check credentials, or verify valid alias token.")
-
-        raise (e)
+    r = connection.get(url, **kwargs)
+    r.raise_for_status()
 
     return r
 
