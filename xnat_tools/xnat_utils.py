@@ -26,7 +26,7 @@ def get(connection, url, **kwargs):
     try:
         r = connection.get(url, **kwargs)
         r.raise_for_status()
-    except (requests.HTTPError) as e:
+    except (requests.ConnectionError, requests.HTTPError) as e:
         # Check if HTTPError is of type 'Unauthorized'
         if e.response.status_code == 401:
             # Notify user to resolve failed login request.
