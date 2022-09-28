@@ -1,8 +1,6 @@
 import getpass
 import logging
-import sys
 
-import requests  # type: ignore
 import urllib3
 
 urllib3.disable_warnings()
@@ -24,13 +22,9 @@ class XNATPass:
 
 
 def get(connection, url, **kwargs):
-    try:
-        r = connection.get(url, **kwargs)
-        r.raise_for_status()
-    except (requests.ConnectionError, requests.exceptions.RequestException) as e:
-        print("Request Failed")
-        print("    " + str(e))
-        sys.exit(1)
+    r = connection.get(url, **kwargs)
+    r.raise_for_status()
+
     return r
 
 
