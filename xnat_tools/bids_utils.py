@@ -34,6 +34,8 @@ def insert_intended_for_fmap(bids_dir, sub_list):
                 os.path.join(fmap_path, f) for f in os.listdir(fmap_path) if f.endswith("json")
             ]
 
+            fmap_acq_files = {get_acquisition_tag(f) for f in fmap_files}
+
             # Initialize boolean variables for funcExists and diffExists
             funcPathExists = os.path.exists(func_path)
             diffPathExists = os.path.exists(dwi_path)
@@ -60,8 +62,9 @@ def insert_intended_for_fmap(bids_dir, sub_list):
                 nii_func_files = [i for i in func_files if i.endswith(".nii.gz")]
                 _logger.info(f"List of func NII files {nii_func_files}")
                 # If there is one field map, with one list of scans, assume correlation and insert.
-                if len(fmap_files) == 1 and funcPathExists ^ diffPathExists:
-                    insert_intendedfor_scans(fmap_files[0], nii_func_files)
+                if len(fmap_acq_files) == 1:
+                    for fmap in fmap_files:
+                        insert_intendedfor_scans(fmap, nii_func_files)
                 else:
                     process_fmap_json_files(bold_fmap_files, nii_func_files)
 
@@ -71,8 +74,9 @@ def insert_intended_for_fmap(bids_dir, sub_list):
                 nii_dwi_files = [i for i in dwi_files if i.endswith(".nii.gz")]
                 _logger.info(f"List of diff NII files {nii_dwi_files}")
                 # If there is one field map, with one list of scans, assume correlation and insert.
-                if len(fmap_files) == 1 and funcPathExists ^ diffPathExists:
-                    insert_intendedfor_scans(fmap_files[0], nii_dwi_files)
+                if len(fmap_acq_files) == 1:
+                    for fmap in fmap_files:
+                        insert_intendedfor_scans(fmap, nii_func_files)
                 else:
                     process_fmap_json_files(diff_fmap_files, nii_dwi_files)
 
@@ -112,13 +116,13 @@ def process_fmap_json_files(fmap_files: list, nii_files: list):
     # we open the file again to write only and
     # dump the dictionary to the files
     if len(fmap_files):
-        if checkFmapAcquistionTags(fmap_files):
+        if check_fmap_acquistion_tags(fmap_files):
             for fmap in fmap_files:
                 insert_intendedfor_scans(fmap, nii_files)
 
 
 # Verify all acquisition tags of a given list match.
-def checkFmapAcquistionTags(fieldmaps: list):
+def check_fmap_acquistion_tags(fieldmaps: list):
     for fmap in fieldmaps:
         acq_tag = get_acquisition_tag(fieldmaps[0].split("_"))
         if acq_tag != get_acquisition_tag(fmap.split("_")):
