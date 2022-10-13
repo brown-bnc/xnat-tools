@@ -29,33 +29,110 @@ def insert_intended_for_fmap(bids_dir, sub_list):
 
             fmap_path = f"{bids_dir}/sub-{subj}/{sess}/fmap"
             func_path = f"{bids_dir}/sub-{subj}/{sess}/func"
-            fmap_files = [os.path.join(fmap_path, f) for f in os.listdir(fmap_path)]
-            json_files = [f for f in fmap_files if f.endswith(".json")]
-            _logger.info(f"List of JSON files to amend {json_files}")
+            dwi_path = f"{bids_dir}/sub-{subj}/{sess}/dwi"
+            fmap_files = [
+                os.path.join(fmap_path, f) for f in os.listdir(fmap_path) if f.endswith("json")
+            ]
 
-            # makes list of the func files to add into the intended for field
-            func_files = [f"{sess}/func/{file}" for file in os.listdir(func_path)]
-            nii_files = [i for i in func_files if i.endswith(".nii.gz")]
-            _logger.info("List of NII files")
+            fmap_acq_files = {get_acquisition_tag(f) for f in fmap_files}
 
-            # Open the json files ('r' for read only) as a dictionary
-            # Adds the Intended for key
-            # Add the func files to the key value
-            # The f.close is a duplication.
-            # f can only be used inside the with "loop"
-            # we open the file again to write only and
-            # dump the dictionary to the files
-            for file in json_files:
-                os.chmod(file, 0o664)
-                with open(file, "r") as f:
-                    _logger.info(f"Processing file {f}")
-                    data = json.load(f)
-                    data["IntendedFor"] = nii_files
-                    f.close
-                with open(file, "w") as f:
-                    json.dump(data, f, indent=4, sort_keys=True)
-                    f.close
-                    _logger.info("Done with re-write")
+            # Initialize boolean variables for funcExists and diffExists
+            funcPathExists = os.path.exists(func_path)
+            diffPathExists = os.path.exists(dwi_path)
+
+            # Separate fmaps into distinct geometries
+            bold_fmap_files = [
+                f
+                for f in fmap_files
+                if get_acquisition_tag(f.split("_")).__contains__("bold") and f.endswith(".json")
+            ]
+            diff_fmap_files = [
+                f
+                for f in fmap_files
+                if get_acquisition_tag(f.split("_")).__contains__("diff") and f.endswith(".json")
+            ]
+
+            # Log JSON file lists
+            _logger.info(f"List of BOLD JSON files to amend {bold_fmap_files}")
+            _logger.info(f"List of DIFF JSON files to amend {diff_fmap_files}")
+
+            # Assemble list of the functional files to add into the intended for field
+            if funcPathExists:
+                func_files = [f"{sess}/func/{file}" for file in os.listdir(func_path)]
+                nii_func_files = [i for i in func_files if i.endswith(".nii.gz")]
+                _logger.info(f"List of func NII files {nii_func_files}")
+                # If there is one field map, with one list of scans, assume correlation and insert.
+                if len(fmap_acq_files) == 1:
+                    for fmap in fmap_files:
+                        insert_intendedfor_scans(fmap, nii_func_files)
+                else:
+                    process_fmap_json_files(bold_fmap_files, nii_func_files)
+
+            # Assemble list of the diffusion files to add into the intended for field
+            if diffPathExists:
+                dwi_files = [f"{sess}/dwi/{file}" for file in os.listdir(dwi_path)]
+                nii_dwi_files = [i for i in dwi_files if i.endswith(".nii.gz")]
+                _logger.info(f"List of diff NII files {nii_dwi_files}")
+                # If there is one field map, with one list of scans, assume correlation and insert.
+                if len(fmap_acq_files) == 1:
+                    for fmap in fmap_files:
+                        insert_intendedfor_scans(fmap, nii_func_files)
+                else:
+                    process_fmap_json_files(diff_fmap_files, nii_dwi_files)
+
+
+# Extract aquisition token from filename
+def get_acquisition_tag(bids_tokens: list):
+    for token in bids_tokens:
+        if token.__contains__("acq"):
+            return token
+    return ""
+
+
+# Insert IntendedFor attribute into json fieldmap file.
+def insert_intendedfor_scans(fmap: str, nii_files: list):
+    os.chmod(fmap, 0o664)
+    with open(fmap, "r") as f:
+        _logger.info(f"Processing file {f}")
+        data = json.load(f)
+        data["IntendedFor"] = nii_files
+        f.close
+    with open(fmap, "w") as f:
+        json.dump(data, f, indent=4, sort_keys=True)
+        f.close
+        _logger.info("Done with re-write")
+
+
+def process_fmap_json_files(fmap_files: list, nii_files: list):
+    # Validates matching acquisition tags before adding
+    # to field map's IntendedFor attribute. If there exists
+    # multiplate scans with varying acquisition tags, log
+    # a warning for the user and stop file processing.
+    # Open the json files ('r' for read only) as a dictionary
+    # Adds the Intended for key
+    # Add the func files to the key value
+    # The f.close is a duplication.
+    # f can only be used inside the with "loop"
+    # we open the file again to write only and
+    # dump the dictionary to the files
+    if len(fmap_files):
+        if check_fmap_acquistion_tags(fmap_files):
+            for fmap in fmap_files:
+                insert_intendedfor_scans(fmap, nii_files)
+
+
+# Verify all acquisition tags of a given list match.
+def check_fmap_acquistion_tags(fieldmaps: list):
+    for fmap in fieldmaps:
+        acq_tag = get_acquisition_tag(fieldmaps[0].split("_"))
+        if acq_tag != get_acquisition_tag(fmap.split("_")):
+            _logger.warning(
+                "Multiple Field Maps With Diferring Acquisition Tags."
+                "Resolve FMAP IntendedFor Ambiguities."
+            )
+
+            return False
+    return True
 
 
 def path_string_preprocess(proj: str, subj: str, sess: str):
@@ -221,8 +298,16 @@ def bidsify_dicom_headers(filename, series_description):
             {protocol_header} -> {series_description} \
             {seriesdesc_header} -> {series_description}"
         )
-        dataset.data_element("ProtocolName").value = series_description
-        dataset.data_element("SeriesDescription").value = series_description
+        # Heudiconv appends derivative tag for SBRef, which is already present
+        # within series_description. To avoid redundant derivative tagging
+        # for SBRef, skip assigning series_description to DICOM ProtocolName.
+        if series_description.__contains__("SBRef"):
+            dataset.data_element("ProtocolName").value = series_description.replace("_SBRef", "")
+            dataset.data_element("SeriesDescription").value = series_description
+        else:
+            dataset.data_element("ProtocolName").value = series_description
+            dataset.data_element("SeriesDescription").value = series_description
+
         dataset.save_as(filename)
 
 
