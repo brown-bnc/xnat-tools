@@ -1,3 +1,13 @@
+## v1.0.8 (2022-10-18)
+
+### Fix
+
+- correct processing and update numpy
+- insert intendedfor scans into fieldmap and handle sbref protocol name
+- manual update of xnat-tools version for poetry
+- populate IntendedFor field map object array, resolve protocol naming for sbref derivative
+- remove SBREF derivative string matching, now being handled in heudiconv
+
 ## v1.0.6 (2021-11-02)
 
 ### Fix
