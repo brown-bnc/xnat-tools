@@ -34,8 +34,6 @@ def insert_intended_for_fmap(bids_dir, sub_list):
                 os.path.join(fmap_path, f) for f in os.listdir(fmap_path) if f.endswith("json")
             ]
 
-            fmap_acq_files = {get_acquisition_tag(f) for f in fmap_files}
-
             # Initialize boolean variables for funcExists and diffExists
             funcPathExists = os.path.exists(func_path)
             diffPathExists = os.path.exists(dwi_path)
@@ -46,11 +44,16 @@ def insert_intended_for_fmap(bids_dir, sub_list):
                 for f in fmap_files
                 if get_acquisition_tag(f.split("_")).__contains__("bold") and f.endswith(".json")
             ]
+
+            fmap_bold_acq_files = {get_acquisition_tag(f.split("_")) for f in bold_fmap_files}
+
             diff_fmap_files = [
                 f
                 for f in fmap_files
                 if get_acquisition_tag(f.split("_")).__contains__("diff") and f.endswith(".json")
             ]
+
+            fmap_diff_acq_files = {get_acquisition_tag(f.split("_")) for f in diff_fmap_files}
 
             # Log JSON file lists
             _logger.info(f"List of BOLD JSON files to amend {bold_fmap_files}")
@@ -62,8 +65,8 @@ def insert_intended_for_fmap(bids_dir, sub_list):
                 nii_func_files = [i for i in func_files if i.endswith(".nii.gz")]
                 _logger.info(f"List of func NII files {nii_func_files}")
                 # If there is one field map, with one list of scans, assume correlation and insert.
-                if len(fmap_acq_files) == 1:
-                    for fmap in fmap_files:
+                if len(fmap_bold_acq_files) == 1:
+                    for fmap in bold_fmap_files:
                         insert_intendedfor_scans(fmap, nii_func_files)
                 else:
                     process_fmap_json_files(bold_fmap_files, nii_func_files)
@@ -74,9 +77,9 @@ def insert_intended_for_fmap(bids_dir, sub_list):
                 nii_dwi_files = [i for i in dwi_files if i.endswith(".nii.gz")]
                 _logger.info(f"List of diff NII files {nii_dwi_files}")
                 # If there is one field map, with one list of scans, assume correlation and insert.
-                if len(fmap_acq_files) == 1:
-                    for fmap in fmap_files:
-                        insert_intendedfor_scans(fmap, nii_func_files)
+                if len(fmap_diff_acq_files) == 1:
+                    for fmap in diff_fmap_files:
+                        insert_intendedfor_scans(fmap, nii_dwi_files)
                 else:
                     process_fmap_json_files(diff_fmap_files, nii_dwi_files)
 
@@ -91,6 +94,13 @@ def get_acquisition_tag(bids_tokens: list):
 
 # Insert IntendedFor attribute into json fieldmap file.
 def insert_intendedfor_scans(fmap: str, nii_files: list):
+    # Open the json files ('r' for read only) as a dictionary
+    # Adds the Intended for key
+    # Add the func files to the key value
+    # The f.close is a duplication.
+    # f can only be used inside the with "loop"
+    # we open the file again to write only and
+    # dump the dictionary to the files
     os.chmod(fmap, 0o664)
     with open(fmap, "r") as f:
         _logger.info(f"Processing file {f}")
@@ -108,13 +118,6 @@ def process_fmap_json_files(fmap_files: list, nii_files: list):
     # to field map's IntendedFor attribute. If there exists
     # multiplate scans with varying acquisition tags, log
     # a warning for the user and stop file processing.
-    # Open the json files ('r' for read only) as a dictionary
-    # Adds the Intended for key
-    # Add the func files to the key value
-    # The f.close is a duplication.
-    # f can only be used inside the with "loop"
-    # we open the file again to write only and
-    # dump the dictionary to the files
     if len(fmap_files):
         if check_fmap_acquistion_tags(fmap_files):
             for fmap in fmap_files:
