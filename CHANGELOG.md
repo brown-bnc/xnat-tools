@@ -1,3 +1,9 @@
+## v1.0.9 (2022-10-27)
+
+### Fix
+
+- **bids_utils.py**: resolve v1_0_8 release bids post-processing bug
+
 ## v1.0.8 (2022-10-18)
 
 ### Fix
