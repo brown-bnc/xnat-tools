@@ -50,14 +50,17 @@ def get_project_and_subject_id(connection, host, session):
     r = get(
         connection,
         host + "/data/experiments/%s" % session,
-        params={"format": "json", "handler": "values", "columns": "project,subject_ID"},
+        params={"format": "json", "handler": "values", "columns": "project,subject_ID,label"},
     )
     sessionValuesJson = r.json()["ResultSet"]["Result"][0]
     project = sessionValuesJson["project"]
     subjectID = sessionValuesJson["subject_ID"]
+    # Session Label must be formatted
+
+    session_suffix = get_session_suffix(sessionValuesJson["label"].split("_")[1])
     print("Project: " + project)
     print("Subject ID: " + subjectID)
-
+    print("Session Suffix:  " + session_suffix)
     r = get(
         connection,
         host + "/data/subjects/%s" % subjectID,
@@ -67,7 +70,26 @@ def get_project_and_subject_id(connection, host, session):
     print("Subject label: " + subject)
     print("------------------------------------------------")
 
-    return project, subject
+    return project, subject, session_suffix
+
+
+def get_session_suffix(session_label: str):
+    # Extract numeric values from session label by looping
+    # through token list of session_label, storing only digits.
+    res = [int(i) for i in list(session_label) if i.isdigit()]
+
+    # Default to "01" if session number is not defined in label.
+    # Otherwise, return session value with correct string format.
+    if len(res) == 0:
+        session_label = "01"
+    elif len(res) > 1:
+        session_label = ""
+        for digit in res:
+            session_label += str(digit)
+    else:
+        session_label = str(res[0])
+
+    return f"{session_label:02}"
 
 
 def get_scan_ids(connection, host, session):

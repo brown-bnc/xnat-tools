@@ -106,7 +106,7 @@ def dicom_export(
     connection.verify = True
     connection.auth = (user, password)
 
-    project, subject = get_project_and_subject_id(connection, host, session)
+    project, subject, session_suffix = get_project_and_subject_id(connection, host, session)
 
     project, subject, session_suffix = path_string_preprocess(project, subject, session_suffix)
 
