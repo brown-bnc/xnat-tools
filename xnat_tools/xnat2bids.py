@@ -21,7 +21,7 @@ def xnat2bids(
     ),
     host: str = typer.Option("https://xnat.bnc.brown.edu", "-h", "--host", help="XNAT'sURL"),
     session_suffix: str = typer.Option(
-        "01",
+        "-1",
         "-S",
         "--session-suffix",
         help="Suffix of the session for BIDS defaults to 01. \
@@ -68,7 +68,7 @@ def xnat2bids(
     Export DICOM images from an XNAT experiment to a BIDS compliant directory
     """
 
-    project, subject = dicom_export(
+    project, subject, session_suffix = dicom_export(
         session,
         bids_root_dir,
         user=user,

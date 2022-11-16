@@ -24,7 +24,7 @@ def run_heudiconv(
     subject: str = typer.Argument(..., help="XNAT's subject ID"),
     bids_root_dir: str = typer.Argument(..., help="Root output directory for exporting files"),
     session_suffix: str = typer.Option(
-        "01",
+        "-1",
         "-S",
         "--session-suffix",
         help="Suffix of the session for BIDS defaults to 01.\
@@ -60,6 +60,7 @@ def run_heudiconv(
     pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_path_prefixes(
         project, subject, session_suffix
     )
+
     heudi_output_dir = prepare_heudiconv_output_path(
         bids_root_dir,
         pi_prefix,

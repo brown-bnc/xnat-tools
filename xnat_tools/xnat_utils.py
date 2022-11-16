@@ -41,7 +41,7 @@ def download(connection, name, pathDict):
     _logger.debug("Downloaded remote file %s." % name)
 
 
-def get_project_and_subject_id(connection, host, session):
+def get_project_subject_session(connection, host, session, session_suffix):
     """Get project ID and subject ID from session JSON
     If calling within XNAT, only session is passed"""
 
@@ -55,9 +55,16 @@ def get_project_and_subject_id(connection, host, session):
     sessionValuesJson = r.json()["ResultSet"]["Result"][0]
     project = sessionValuesJson["project"]
     subjectID = sessionValuesJson["subject_ID"]
-    # Session Label must be formatted
 
-    session_suffix = get_session_suffix(sessionValuesJson["label"].split("_")[1])
+    # If session_suffix == -1, the user has not specified a session value.
+    # Fetch session data from XNAT label (formatted: subj_sess) if exists.
+    # Otherwise, set session label to '01' by default.
+    if session_suffix == "-1":
+        if len(sessionValuesJson["label"].split("_")) == 2:
+            session_suffix = sessionValuesJson["label"].split("_")[1]
+        else:
+            session_suffix = "01"
+
     print("Project: " + project)
     print("Subject ID: " + subjectID)
     print("Session Suffix:  " + session_suffix)
@@ -71,25 +78,6 @@ def get_project_and_subject_id(connection, host, session):
     print("------------------------------------------------")
 
     return project, subject, session_suffix
-
-
-def get_session_suffix(session_label: str):
-    # Extract numeric values from session label by looping
-    # through token list of session_label, storing only digits.
-    res = [int(i) for i in list(session_label) if i.isdigit()]
-
-    # Default to "01" if session number is not defined in label.
-    # Otherwise, return session value with correct string format.
-    if len(res) == 0:
-        session_label = "01"
-    elif len(res) > 1:
-        session_label = ""
-        for digit in res:
-            session_label += str(digit)
-    else:
-        session_label = str(res[0])
-
-    return f"{session_label:02}"
 
 
 def get_scan_ids(connection, host, session):

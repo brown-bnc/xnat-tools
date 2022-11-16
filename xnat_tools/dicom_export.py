@@ -27,7 +27,7 @@ from xnat_tools.bids_utils import (
     prepare_path_prefixes,
 )
 from xnat_tools.logging import setup_logging
-from xnat_tools.xnat_utils import filter_scans, get_project_and_subject_id, get_scan_ids
+from xnat_tools.xnat_utils import filter_scans, get_project_subject_session, get_scan_ids
 
 _logger = logging.getLogger(__name__)
 app = typer.Typer()
@@ -45,7 +45,7 @@ def dicom_export(
     ),
     host: str = typer.Option("https://xnat.bnc.brown.edu", "-h", "--host", help="XNAT's URL"),
     session_suffix: str = typer.Option(
-        "01",
+        "-1",
         "-S",
         "--session-suffix",
         help="Suffix of the session for BIDS defaults to 01. \
@@ -105,8 +105,9 @@ def dicom_export(
     connection = requests.Session()
     connection.verify = True
     connection.auth = (user, password)
-
-    project, subject, session_suffix = get_project_and_subject_id(connection, host, session)
+    project, subject, session_suffix = get_project_subject_session(
+        connection, host, session, session_suffix
+    )
 
     project, subject, session_suffix = path_string_preprocess(project, subject, session_suffix)
 
@@ -150,7 +151,7 @@ def dicom_export(
     connection.delete(f"{host}/data/JSESSION")
     connection.close()
 
-    return project, subject
+    return project, subject, session_suffix
 
 
 def main():
