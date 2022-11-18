@@ -24,9 +24,9 @@ def xnat2bids(
         "-1",
         "-S",
         "--session-suffix",
-        help="Suffix of the session for BIDS defaults to 01. \
-             This will produce a session label of sess-01. \
-             You likely only need to change the default for multi-session studies",
+        help="Session suffix is initially set to -1.\
+              This will signify an unspecified session_suffix and default to sess-01.\
+              For multi-session studies, the session label will be pulled from XNAT",
     ),
     bidsmap_file: str = typer.Option(
         "", "-f", "--bidsmap-file", help="Bidsmap JSON file to correct sequence names"
