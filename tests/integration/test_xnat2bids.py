@@ -29,8 +29,8 @@ def test_xnat2bids():
 
     xnat_user = os.environ.get("XNAT_USER", "")
     xnat_pass = os.environ.get("XNAT_PASS", "")
-    session = os.environ.get("XNAT_SESSION", "")
-    session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "01")
+    session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
+    session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "session1")
     bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
     skiplist = ["6"]
 
@@ -40,7 +40,7 @@ def test_xnat2bids():
     os.mkdir(bids_root_dir)
 
     xnat2bids_cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} \
-                      -s {' -s '.join(skiplist)}"
+        -s {' -s '.join(skiplist)}"
 
     xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
     print(xnat2bids_split_cmd)
@@ -73,5 +73,11 @@ def test_xnat2bids():
             dataset = pydicom.dcmread(os.path.join(d, f))
             idx = series_idx(f)
             assert str(idx) not in skiplist
-            assert dataset.data_element("ProtocolName").value == series_desc
-            assert dataset.data_element("SeriesDescription").value == series_desc
+            if series_desc.__contains__("SBRef"):
+                assert dataset.data_element("ProtocolName").value == series_desc.replace(
+                    "_SBRef", ""
+                )
+                assert dataset.data_element("SeriesDescription").value == series_desc
+            else:
+                dataset.data_element("ProtocolName").value = series_desc
+                dataset.data_element("SeriesDescription").value = series_desc
