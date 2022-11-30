@@ -48,7 +48,7 @@ def dicom_export(
         "-1",
         "-S",
         "--session-suffix",
-        help="Session suffix is initially set to -1.\
+        help="The session_suffix is initially set to -1.\
               This will signify an unspecified session_suffix and default to sess-01.\
               For multi-session studies, the session label will be pulled from XNAT",
     ),
