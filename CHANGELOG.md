@@ -1,3 +1,13 @@
+## v1.0.10 (2022-11-30)
+
+### Fix
+
+- update dev docs
+- update handling session data
+- **pre-commit-config.yaml**: update flake8 location
+- **pre-commit.yml**: update pre-commit action to v3
+- extract session suffix from session label for heudiconv
+
 ## v1.0.9 (2022-10-27)
 
 ### Fix
