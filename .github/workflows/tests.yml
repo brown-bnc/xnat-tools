@@ -1,9 +1,14 @@
 name: tests 
-on: [push]
+on: 
+  pull_request:
+    types: [opened, ready_for_review]
+  push:
+    branches: 
+      - 'main'
 jobs: 
   test: 
-    name: Run unit tests 
-    runs-on: ubuntu-latest 
+    name: Run unit and integration tests 
+    runs-on: self-hosted
     steps: 
       - name: Checkout Main 
         uses: actions/checkout@v2 
@@ -17,4 +22,4 @@ jobs:
           pip install .
           pip install pytest python-dotenv responses
       - name: Test 
-        run: pytest -k unit
+        run: pytest
