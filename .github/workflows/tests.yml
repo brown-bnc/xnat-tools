@@ -23,5 +23,6 @@ jobs:
           python -m pip install --upgrade pip 
           pip install .
           pip install pytest python-dotenv responses
+          brew install dcm2niix
       - name: Test 
         run: pytest -x -s -o log_cli=true --log-cli-level=INFO 
