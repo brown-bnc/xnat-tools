@@ -5,6 +5,9 @@ on:
   push:
     branches: 
       - 'main'
+env:
+  XNAT_USER: '${{secret.XNAT_USER}}'
+  XNAT_PASS: '${{secret.XNAT_PASS}}'
 jobs: 
   test: 
     name: Run unit and integration tests 
@@ -22,4 +25,4 @@ jobs:
           pip install .
           pip install pytest python-dotenv responses
       - name: Test 
-        run: pytest
+        run: pytest -x -s -o log_cli=true --log-cli-level=INFO 
