@@ -5,8 +5,8 @@ on:
     branches: 
       - 'main'
 env:
-  XNAT_USER: '${{secret.XNAT_USER}}'
-  XNAT_PASS: '${{secret.XNAT_PASS}}'
+  XNAT_USER: '${{secrets.XNAT_USER}}'
+  XNAT_PASS: '${{secrets.XNAT_PASS}}'
 jobs: 
   test: 
     name: Run unit and integration tests 
