@@ -4,6 +4,9 @@ jobs:
   test: 
     name: Run unit tests 
     runs-on: ubuntu-latest 
+    env:
+      XNAT_USER: '${{ secrets.XNAT_USER }}'
+      XNAT_PASS: '${{ secrets.XNAT_PASS }}' 
     steps: 
       - name: Checkout Main 
         uses: actions/checkout@v2 
