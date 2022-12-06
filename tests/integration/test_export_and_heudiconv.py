@@ -12,6 +12,8 @@ from xnat_tools.dicom_export import dicom_export
 from xnat_tools.run_heudiconv import app as heudi_app
 from xnat_tools.xnat_utils import get
 
+from .test_xnat2bids import series_idx
+
 load_dotenv()
 runner = CliRunner()
 
@@ -46,7 +48,7 @@ def test_dicom_export():
         host="https://xnat.bnc.brown.edu",
         session_suffix=session_suffix,
         bidsmap_file="",
-        includeseq=[],
+        includeseq=[9],
         skipseq=[],
         log_id="pytest",
         verbose=0,
@@ -62,14 +64,18 @@ def test_dicom_export():
     assert len(glob.glob(f"{filepath}/*/*.IMA")) > 0 or len(glob.glob(f"{filepath}/*/*.dcm")) > 0
     subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
-    assert len(subdirs) == 18
+    assert len(subdirs) == 1
+    for d in subdirs:
+        for f in os.listdir(d):
+            idx = series_idx(f)
+            assert idx == "9"
 
     # ***************************************************************************
     # Test that default overwrite flag is NOT wiping the xnat-export directory
     # Here we test using typer's CLIRunner
     # ***************************************************************************
 
-    cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -v"
+    cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -i 7 -v"
 
     split_cmd = shlex.split(cmd)
 
@@ -79,7 +85,12 @@ def test_dicom_export():
     filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
     subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
-    assert len(subdirs) == 18
+    assert len(subdirs) == 2
+
+    for d in subdirs:
+        for f in os.listdir(d):
+            idx = series_idx(f)
+            assert idx in ["7", "9"]
 
     # # ***************************************************************************
     # # Test that overwrite flag is wiping the xnat-export directory
@@ -101,8 +112,8 @@ def test_dicom_export():
 def test_heudiconv():
     """Integration test for running the run-heudiconv
     executable on the output of xnat-dicom-export"""
-    project = os.environ.get("XNAT_PROJECT", "")
-    subject = os.environ.get("XNAT_SUBJECT", "")
+    project = os.environ.get("XNAT_PROJECT", "bnc_demodat")
+    subject = os.environ.get("XNAT_SUBJECT", "005")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "SESSION1")
     bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
 
