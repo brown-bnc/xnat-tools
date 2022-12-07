@@ -130,7 +130,10 @@ def test_heudiconv():
     try:
         filepath = glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}")[0]
     except Exception:
-        print("Index error at: ", filepath)
+        print(
+            "Index error at: ",
+            glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}"),
+        )
 
     assert r.exit_code == 0
 
