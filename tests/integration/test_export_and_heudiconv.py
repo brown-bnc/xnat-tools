@@ -127,7 +127,11 @@ def test_heudiconv():
     r = runner.invoke(heudi_app, split_cmd)
     print(r.stdout)
 
-    filepath = glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}")[0]
+    try:
+        filepath = glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}")[0]
+    except Exception:
+        print("Index error at: ", filepath)
+
     assert r.exit_code == 0
 
     assert (
@@ -156,7 +160,7 @@ def test_heudiconv():
     assert r.exit_code == 0
 
     # cleanup output -- for debugging comment this out
-    shutil.rmtree(bids_root_dir, ignore_errors=True)
+    # shutil.rmtree(bids_root_dir, ignore_errors=True)
 
 
 def test_unauthorized_user_exception_handling():
