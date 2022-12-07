@@ -114,7 +114,7 @@ def test_heudiconv():
     executable on the output of xnat-dicom-export"""
     project = os.environ.get("XNAT_PROJECT", "bnc_demodat")
     subject = os.environ.get("XNAT_SUBJECT", "005")
-    session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "SESSION1")
+    session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "session1")
     bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
 
     # ***************************************************************************
@@ -130,6 +130,8 @@ def test_heudiconv():
     try:
         filepath = glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}")[0]
     except Exception:
+        cmd = "ls tests/xnat2bids/bnc/study-demodat/bids/sub-005/ses-session1"
+        os.system(cmd)
         print(
             "Index error at: ",
             glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}"),
