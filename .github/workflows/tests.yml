@@ -25,6 +25,6 @@ jobs:
           pip install pytest python-dotenv responses
           sudo apt update
           sudo apt-get update
-          sudo apt-get -y install dcm2niix=v1.0.20190902
+          sudo apt-get -y install dcm2niix
       - name: Test 
         run: pytest -x -s -o log_cli=true --log-cli-level=INFO 
