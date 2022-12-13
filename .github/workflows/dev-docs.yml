@@ -25,7 +25,7 @@ jobs:
             bids_postprocess:
               - 'xnat_tools/bids_postprocess.py'
       - name: Set up Python 3.7 
-        uses: actions/setup-python@v2 
+        uses: actions/setup-python@v4
         with: 
           python-version: '3.7.5' 
       - name: Install dependencies 
