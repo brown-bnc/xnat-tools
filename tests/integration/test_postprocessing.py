@@ -58,5 +58,5 @@ def test_postprocessing():
     shutil.rmtree(bids_root_dir, ignore_errors=True)
 
     # you can locally run bids-validator
-    # bids_directory=${PWD}/tests/xnat2bids//study-1222/bids/
+    # bids_directory=${PWD}/tests/xnat2bids/study-demodat/bids/
     # docker run -ti --rm -v ${bids_directory}:/data:ro bids/validator /data

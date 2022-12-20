@@ -108,6 +108,11 @@ def test_dicom_export():
 
     assert len(subdirs) == 1
 
+    for d in subdirs:
+        for f in os.listdir(d):
+            idx = series_idx(f)
+            assert idx == "10"
+
 
 def test_heudiconv():
     """Integration test for running the run-heudiconv

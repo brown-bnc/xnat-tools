@@ -79,5 +79,5 @@ def test_xnat2bids():
                 )
                 assert dataset.data_element("SeriesDescription").value == series_desc
             else:
-                dataset.data_element("ProtocolName").value = series_desc
-                dataset.data_element("SeriesDescription").value = series_desc
+                assert dataset.data_element("ProtocolName").value == series_desc
+                assert dataset.data_element("SeriesDescription").value == series_desc
