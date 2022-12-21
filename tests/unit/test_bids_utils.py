@@ -8,6 +8,7 @@ from xnat_tools import bids_utils as utils
 from xnat_tools.bids_utils import (
     bidsify_dicom_headers,
     bidsmap_scans,
+    check_fmap_acquistion_tags,
     handle_scanner_exceptions,
     path_string_preprocess,
     scan_contains_dicom,
@@ -281,3 +282,29 @@ def test_scan_contains_dicom_many_file_count():
     connection = requests.Session()
 
     assert scan_contains_dicom(connection, host, session, scanid) is True
+
+
+def test_check_fmap_acquistion_tags():
+
+    fmap_bold_test_set = [
+        "sub-005_ses-session1_acq-boldGRE_magnitude1",
+        "sub-005_ses-session1_acq-boldGRE_magnitude2",
+        "sub-005_ses-session1_acq-boldGRE_phasediff",
+    ]
+
+    fmap_diff_test_set = [
+        "sub-005_ses-session1_acq-diffSE_dir-ap_epi",
+        "sub-005_ses-session1_acq-diffSE_dir-pa_epi",
+    ]
+
+    fmap_differing_acq_tags = [
+        "sub-005_ses-session1_acq-boldGRE_magnitude1",
+        "sub-005_ses-session1_acq-boldGRE_magnitude2",
+        "sub-005_ses-session1_acq-boldGRE_phasediff",
+        "sub-005_ses-session1_acq-diffSE_dir-ap_epi",
+        "sub-005_ses-session1_acq-diffSE_dir-pa_epi",
+    ]
+
+    assert check_fmap_acquistion_tags(fmap_bold_test_set) is True
+    assert check_fmap_acquistion_tags(fmap_diff_test_set) is True
+    assert check_fmap_acquistion_tags(fmap_differing_acq_tags) is False
