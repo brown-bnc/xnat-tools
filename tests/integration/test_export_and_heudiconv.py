@@ -20,12 +20,12 @@ runner = CliRunner()
 
 def test_dicom_export():
     """Integration test for xnat-dicom-export"""
-    xnat_user = os.environ.get("XNAT_USER", "testuser")
+    xnat_user = os.environ.get("XNAT_USER", "")
     xnat_pass = os.environ.get("XNAT_PASS", "")
-    project = os.environ.get("XNAT_PROJECT", "")
-    subject = os.environ.get("XNAT_SUBJECT", "")
-    session = os.environ.get("XNAT_SESSION", "")
-    session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "01")
+    project = os.environ.get("XNAT_PROJECT", "bnc_demodat")
+    subject = os.environ.get("XNAT_SUBJECT", "005")
+    session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
+    session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "-1")
     bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
 
     if os.path.exists(bids_root_dir):
@@ -40,15 +40,15 @@ def test_dicom_export():
     # See https://github.com/tiangolo/typer/issues/106
     # ***************************************************************************
 
-    p, s, = dicom_export(
+    p, s, ss = dicom_export(
         session,
         bids_root_dir,
         user=xnat_user,
         password=xnat_pass,
         host="https://xnat.bnc.brown.edu",
+        session_suffix=session_suffix,
         bidsmap_file="",
-        session_suffix="01",
-        includeseq=[9],
+        includeseq=[10],
         skipseq=[],
         log_id="pytest",
         verbose=0,
@@ -57,8 +57,9 @@ def test_dicom_export():
 
     assert p == project
     assert s == subject
+    assert ss == "session1"
 
-    filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}")[0]
+    filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
 
     assert len(glob.glob(f"{filepath}/*/*.IMA")) > 0 or len(glob.glob(f"{filepath}/*/*.dcm")) > 0
     subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
@@ -67,21 +68,21 @@ def test_dicom_export():
     for d in subdirs:
         for f in os.listdir(d):
             idx = series_idx(f)
-            assert idx == "9"
+            assert idx == "10"
 
     # ***************************************************************************
     # Test that default overwrite flag is NOT wiping the xnat-export directory
     # Here we test using typer's CLIRunner
     # ***************************************************************************
 
-    cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -i 7 -v"
+    cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -i 8 -v"
 
     split_cmd = shlex.split(cmd)
 
     r = runner.invoke(export_app, split_cmd)
     print(r.stdout)
 
-    filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}")[0]
+    filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
     subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
     assert len(subdirs) == 2
@@ -89,20 +90,20 @@ def test_dicom_export():
     for d in subdirs:
         for f in os.listdir(d):
             idx = series_idx(f)
-            assert idx in ["7", "9"]
+            assert idx in ["8", "10"]
 
-    # ***************************************************************************
-    # Test that overwrite flag is wiping the xnat-export directory
-    # ***************************************************************************
+    # # ***************************************************************************
+    # # Test that overwrite flag is wiping the xnat-export directory
+    # # ***************************************************************************
 
-    cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -i 7 -v --overwrite"
+    cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -v -i 10 --overwrite"
 
     split_cmd = shlex.split(cmd)
 
     r = runner.invoke(export_app, split_cmd)
     print(r.stdout)
 
-    filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}")[0]
+    filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
     subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
     assert len(subdirs) == 1
@@ -110,38 +111,47 @@ def test_dicom_export():
     for d in subdirs:
         for f in os.listdir(d):
             idx = series_idx(f)
-            assert idx == "7"
+            assert idx == "10"
 
 
 def test_heudiconv():
     """Integration test for running the run-heudiconv
     executable on the output of xnat-dicom-export"""
-    project = os.environ.get("XNAT_PROJECT", "")
-    subject = os.environ.get("XNAT_SUBJECT", "")
-    session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "01")
+    project = os.environ.get("XNAT_PROJECT", "bnc_demodat")
+    subject = os.environ.get("XNAT_SUBJECT", "005")
+    session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "session1")
     bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
 
     # ***************************************************************************
     # Test for successful execution
     # ***************************************************************************
-    cmd = f"{project} {subject} {bids_root_dir}"
+    cmd = f"{project} {subject} {bids_root_dir} --session-suffix {session_suffix}"
 
     split_cmd = shlex.split(cmd)
 
     r = runner.invoke(heudi_app, split_cmd)
     print(r.stdout)
 
-    filepath = glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}")[0]
+    try:
+        filepath = glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}")[0]
+    except Exception:
+        cmd = "ls tests/xnat2bids/bnc/study-demodat/bids/sub-005/ses-session1"
+        os.system(cmd)
+        print(
+            "Index error at: ",
+            glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}"),
+        )
+
     assert r.exit_code == 0
 
     assert (
         len(glob.glob(f"{filepath}/*/*.json")) > 0 or len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
     )
 
-    # ***************************************************************************
-    # Test for RuntimeError Heudiconv doesn't allow overwrite
-    # ***************************************************************************
-    cmd = f"{project} {subject} {bids_root_dir}"
+    # # ***************************************************************************
+    # # Test for RuntimeError Heudiconv doesn't allow overwrite
+    # # ***************************************************************************
+    cmd = f"{project} {subject} {bids_root_dir} --session-suffix {session_suffix}"
 
     split_cmd = shlex.split(cmd)
     r = runner.invoke(heudi_app, split_cmd)
@@ -149,10 +159,10 @@ def test_heudiconv():
 
     assert r.exit_code == 1
 
-    # ***************************************************************************
-    # Test overwrite is working
-    # ***************************************************************************
-    cmd = f"{project} {subject} {bids_root_dir} --overwrite"
+    # # ***************************************************************************
+    # # Test overwrite is working
+    # # ***************************************************************************
+    cmd = f"{project} {subject} {bids_root_dir} --session-suffix {session_suffix} --overwrite"
 
     split_cmd = shlex.split(cmd)
     r = runner.invoke(heudi_app, split_cmd)
@@ -160,7 +170,7 @@ def test_heudiconv():
     assert r.exit_code == 0
 
     # cleanup output -- for debugging comment this out
-    shutil.rmtree(bids_root_dir, ignore_errors=True)
+    # shutil.rmtree(bids_root_dir, ignore_errors=True)
 
 
 def test_unauthorized_user_exception_handling():
