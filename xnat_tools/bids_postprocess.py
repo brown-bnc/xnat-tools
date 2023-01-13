@@ -1,11 +1,13 @@
 import logging
 import os
-from typing import List
+from typing import Dict, List
 
+import requests  # type: ignore
 import typer
 
 from xnat_tools.bids_utils import insert_intended_for_fmap
 from xnat_tools.logging import setup_logging
+from xnat_tools.xnat_utils import get_project_subject_session
 
 _logger = logging.getLogger(__name__)
 
@@ -14,14 +16,19 @@ app = typer.Typer()
 
 @app.command()
 def bids_postprocess(
-    session: str = typer.Argument(
-        ..., help="XNAT Session ID, that is the Accession # for an experiment."
-    ),
     bids_experiment_dir: str = typer.Argument(
         ..., help="Root output directory for exporting the files"
     ),
+    session: str = typer.Option(
+        "-1", ..., help="XNAT Session ID, that is the Accession # for an experiment."
+    ),
+    user: str = typer.Option(None, "-u", "--user", prompt=True, help="XNAT User"),
+    password: str = typer.Option(
+        None, "-p", "--pass", prompt=True, hide_input=True, help="XNAT Password"
+    ),
+    host: str = typer.Option("https://xnat.bnc.brown.edu", "-h", "--host", help="XNAT's URL"),
     session_suffix: str = typer.Option(
-        "01",
+        "-1",
         "-S",
         "--session-suffix",
         help="Suffix of the session for BIDS defaults to 01. \
@@ -39,6 +46,12 @@ def bids_postprocess(
         "-s",
         "--skipsubj",
         help="Skip this participant, this flag can be specified multiple times",
+    ),
+    skipsess: Dict[str, List[str]] = typer.Option(
+        {},
+        "-ss",
+        "--skipsess",
+        help="Skip this session, this flag can be specified multiple times",
     ),
     log_file: str = typer.Option(
         "",
@@ -59,8 +72,17 @@ def bids_postprocess(
     """
 
     setup_logging(_logger, log_file, verbose_level=verbose)
-
     bids_experiment_dir = os.path.expanduser(bids_experiment_dir)
+    # # Set up session
+    connection = requests.Session()
+    connection.verify = True
+    connection.auth = (user, password)
+
+    if session != "-1":
+        project, subject, session_suffix = get_project_subject_session(
+            connection, "https://xnat.bnc.brown.edu", session, session_suffix
+        )
+        includesubj = [subject]
 
     # Set up working directory
     if not os.access(bids_experiment_dir, os.R_OK):
@@ -81,7 +103,7 @@ def bids_postprocess(
     _logger.info(f"Processing Subjects {includesubj}: ")
     _logger.info("---------------------------------")
 
-    insert_intended_for_fmap(bids_experiment_dir, includesubj)
+    insert_intended_for_fmap(bids_experiment_dir, includesubj, skipsess)
 
 
 def main():

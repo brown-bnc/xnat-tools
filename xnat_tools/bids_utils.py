@@ -12,7 +12,7 @@ from xnat_tools.xnat_utils import download, get
 _logger = logging.getLogger(__name__)
 
 
-def insert_intended_for_fmap(bids_dir, sub_list):
+def insert_intended_for_fmap(bids_dir, sub_list, skip_sess_list):
     """Insert the IntendedFor field to JSON sidecart for fieldmap data"""
 
     for subj in sub_list:
@@ -22,7 +22,15 @@ def insert_intended_for_fmap(bids_dir, sub_list):
         _logger.info(f"Processing participant {subj} at path {subj_path}")
 
         subj_sub_dirs = os.listdir(subj_path)
-        sess_list = [x for x in subj_sub_dirs if x.startswith("ses-")]
+
+        # Create session skip list for matching subject
+        skipsess = []
+        if skip_sess_list != {}:
+            if subj in skip_sess_list.keys():
+                skipsess = [f"ses-{element}" for element in skip_sess_list[subj]]
+
+        sess_list = [x for x in subj_sub_dirs if x.startswith("ses-") and x not in skipsess]
+
         _logger.info(f"List of sessions sub-directories {sess_list}")
 
         for sess in sess_list:
