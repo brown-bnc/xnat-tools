@@ -111,12 +111,12 @@ def test_xnat2bids():
     for json_file in subj_005_session1_fmaps[:4]:
         with open(json_file, "r") as f:
             data = json.load(f)
-            assert data["IntendedFor"] == session1_bold_intendedfor
+            assert sorted(data["IntendedFor"]) == sorted(session1_bold_intendedfor)
             f.close
 
     # Verify session1 diffusion fmaps have ot been processed.
     for json_file in subj_005_session1_fmaps[4:]:
         with open(json_file, "r") as f:
             data = json.load(f)
-            assert data["IntendedFor"] == session1_diff_intendedfor
+            assert sorted(data["IntendedFor"]) == sorted(session1_diff_intendedfor)
             f.close
