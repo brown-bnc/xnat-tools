@@ -8,6 +8,7 @@ from xnat_tools import bids_utils as utils
 from xnat_tools.bids_utils import (
     bidsify_dicom_headers,
     bidsmap_scans,
+    check_fmap_acquistion_tags,
     handle_scanner_exceptions,
     path_string_preprocess,
     scan_contains_dicom,
@@ -281,3 +282,18 @@ def test_scan_contains_dicom_many_file_count():
     connection = requests.Session()
 
     assert scan_contains_dicom(connection, host, session, scanid) is True
+
+
+def test_check_fmap_acquistion_tags():
+    matching_fieldmaps = [
+        "sub-005_ses-01_acq-boldGRE_magnitude1.",
+        "sub-005_ses-01_acq-boldGRE_magnitude2",
+        "sub-005_ses-01_acq-boldGRE_phasediff",
+    ]
+    differing_fieldmaps = [
+        "sub-005_ses-01_acq-boldGRE_magnitude1.",
+        "sub-005_ses-01_acq-boldGRE_magnitude2",
+        "sub-005_ses-01_acq-diffSE_dir-ap_epi",
+    ]
+    assert check_fmap_acquistion_tags(matching_fieldmaps) is True
+    assert check_fmap_acquistion_tags(differing_fieldmaps) is False

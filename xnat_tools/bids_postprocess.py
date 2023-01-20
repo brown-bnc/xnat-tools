@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Dict, List
+from typing import List
 
 import requests  # type: ignore
 import typer
@@ -19,21 +19,18 @@ def bids_postprocess(
     bids_experiment_dir: str = typer.Argument(
         ..., help="Root output directory for exporting the files"
     ),
-    session: str = typer.Option(
-        "-1", ..., help="XNAT Session ID, that is the Accession # for an experiment."
-    ),
     user: str = typer.Option(None, "-u", "--user", prompt=True, help="XNAT User"),
     password: str = typer.Option(
         None, "-p", "--pass", prompt=True, hide_input=True, help="XNAT Password"
     ),
-    host: str = typer.Option("https://xnat.bnc.brown.edu", "-h", "--host", help="XNAT's URL"),
-    session_suffix: str = typer.Option(
-        "-1",
-        "-S",
-        "--session-suffix",
-        help="Suffix of the session for BIDS defaults to 01. \
-        This will produce a session label of sess-01. \
-        You likely only need to change the default for multi-session studies",
+    session: str = typer.Option(
+        "", help="XNAT Session ID, that is the Accession # for an experiment."
+    ),
+    includesess: List[str] = typer.Option(
+        [],
+        "-is",
+        "--includesess",
+        help="Include this session only, this flag can be specified multiple time",
     ),
     includesubj: List[str] = typer.Option(
         [],
@@ -47,12 +44,6 @@ def bids_postprocess(
         "--skipsubj",
         help="Skip this participant, this flag can be specified multiple times",
     ),
-    skipsess: Dict[str, List[str]] = typer.Option(
-        {},
-        "-ss",
-        "--skipsess",
-        help="Skip this session, this flag can be specified multiple times",
-    ),
     log_file: str = typer.Option(
         "",
         help="File to send logs to",
@@ -64,6 +55,12 @@ def bids_postprocess(
         count=True,
         help="Verbosity level. This flag can be specified multiple times to increase verbosity",
     ),
+    overwrite: bool = typer.Option(
+        False,
+        "--overwrite",
+        help="Inititate BIDS post-processing on all subjects located at the specified BIDS \
+            directory, with intent to ovewrite existing data.",
+    ),
 ):
     """
     Script for performing post BIDSIFY processing.
@@ -73,37 +70,43 @@ def bids_postprocess(
 
     setup_logging(_logger, log_file, verbose_level=verbose)
     bids_experiment_dir = os.path.expanduser(bids_experiment_dir)
-    # # Set up session
-    connection = requests.Session()
-    connection.verify = True
-    connection.auth = (user, password)
-
-    if session != "-1":
-        project, subject, session_suffix = get_project_subject_session(
-            connection, "https://xnat.bnc.brown.edu", session, session_suffix
-        )
-        includesubj = [subject]
 
     # Set up working directory
     if not os.access(bids_experiment_dir, os.R_OK):
         raise ValueError("BIDS Experiment directory must exist")
 
-    if includesubj == []:
-        files = os.listdir(bids_experiment_dir)
-        includesubj = [x for x in files if x.startswith("sub-")]
+    if session != "":
+        # # Set up session
+        connection = requests.Session()
+        connection.verify = True
+        connection.auth = (user, password)
 
-    includesubj = [str(x).strip("sub-") for x in includesubj]
+        session_info = get_project_subject_session(
+            connection, "https://xnat.bnc.brown.edu", session, "-1"
+        )
+        includesubj = [session_info[1]]
 
-    skipsubj = [str(x).strip("sub-") for x in skipsubj]
+        insert_intended_for_fmap(
+            bids_experiment_dir, includesubj, session_info[2].lower(), overwrite
+        )
 
-    if skipsubj != []:
-        includesubj = [x for x in includesubj if x not in skipsubj]
+    else:
+        if includesubj == []:
+            files = os.listdir(bids_experiment_dir)
+            includesubj = [x for x in files if x.startswith("sub-")]
 
-    _logger.info("---------------------------------")
-    _logger.info(f"Processing Subjects {includesubj}: ")
-    _logger.info("---------------------------------")
+        includesubj = [str(x).strip("sub-") for x in includesubj]
 
-    insert_intended_for_fmap(bids_experiment_dir, includesubj, skipsess)
+        skipsubj = [str(x).strip("sub-") for x in skipsubj]
+
+        if skipsubj != []:
+            includesubj = [x for x in includesubj if x not in skipsubj]
+
+        _logger.info("---------------------------------")
+        _logger.info(f"Processing Subjects {includesubj}: ")
+        _logger.info("---------------------------------")
+
+        insert_intended_for_fmap(bids_experiment_dir, includesubj, session, overwrite, includesess)
 
 
 def main():

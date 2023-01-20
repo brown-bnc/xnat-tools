@@ -12,7 +12,7 @@ from xnat_tools.xnat_utils import download, get
 _logger = logging.getLogger(__name__)
 
 
-def insert_intended_for_fmap(bids_dir, sub_list, skip_sess_list):
+def insert_intended_for_fmap(bids_dir, sub_list, session="", overwrite=False, sess_list=[]):
     """Insert the IntendedFor field to JSON sidecart for fieldmap data"""
 
     for subj in sub_list:
@@ -23,17 +23,20 @@ def insert_intended_for_fmap(bids_dir, sub_list, skip_sess_list):
 
         subj_sub_dirs = os.listdir(subj_path)
 
-        # Create session skip list for matching subject
-        skipsess = []
-        if skip_sess_list != {}:
-            if subj in skip_sess_list.keys():
-                skipsess = [f"ses-{element}" for element in skip_sess_list[subj]]
-
-        sess_list = [x for x in subj_sub_dirs if x.startswith("ses-") and x not in skipsess]
+        # If a session is provided, only process that session.
+        # If the includesess list is not empty, cocatenate all session
+        # suffixes with "ses-" prefix for the file path.
+        # Otherwise, include all sessions for every subject to be processed.
+        if session != "":
+            sessions = ["ses-" + session]
+        elif sess_list != []:
+            sessions = ["ses-" + x for x in sess_list]
+        else:
+            sessions = [x for x in subj_sub_dirs if x.startswith("ses-")]
 
         _logger.info(f"List of sessions sub-directories {sess_list}")
 
-        for sess in sess_list:
+        for sess in sessions:
 
             fmap_path = f"{bids_dir}/sub-{subj}/{sess}/fmap"
             func_path = f"{bids_dir}/sub-{subj}/{sess}/func"
@@ -75,9 +78,9 @@ def insert_intended_for_fmap(bids_dir, sub_list, skip_sess_list):
                 # If there is one field map, with one list of scans, assume correlation and insert.
                 if len(fmap_bold_acq_files) == 1:
                     for fmap in bold_fmap_files:
-                        insert_intendedfor_scans(fmap, nii_func_files)
+                        insert_intendedfor_scans(fmap, nii_func_files, overwrite)
                 else:
-                    process_fmap_json_files(bold_fmap_files, nii_func_files)
+                    process_fmap_json_files(bold_fmap_files, nii_func_files, overwrite)
 
             # Assemble list of the diffusion files to add into the intended for field
             if diffPathExists:
@@ -87,9 +90,9 @@ def insert_intended_for_fmap(bids_dir, sub_list, skip_sess_list):
                 # If there is one field map, with one list of scans, assume correlation and insert.
                 if len(fmap_diff_acq_files) == 1:
                     for fmap in diff_fmap_files:
-                        insert_intendedfor_scans(fmap, nii_dwi_files)
+                        insert_intendedfor_scans(fmap, nii_dwi_files, overwrite)
                 else:
-                    process_fmap_json_files(diff_fmap_files, nii_dwi_files)
+                    process_fmap_json_files(diff_fmap_files, nii_dwi_files, overwrite)
 
 
 # Extract aquisition token from filename
@@ -101,27 +104,29 @@ def get_acquisition_tag(bids_tokens: list):
 
 
 # Insert IntendedFor attribute into json fieldmap file.
-def insert_intendedfor_scans(fmap: str, nii_files: list):
+def insert_intendedfor_scans(fmap: str, nii_files: list, overwrite: bool):
     # Open the json files ('r' for read only) as a dictionary
-    # Adds the Intended for key
-    # Add the func files to the key value
+    # Adds the Intended for key if IntendeFor does not exist
+    # as a property. Then, add the func files to the key value
+    #
     # The f.close is a duplication.
     # f can only be used inside the with "loop"
     # we open the file again to write only and
     # dump the dictionary to the files
     os.chmod(fmap, 0o664)
-    with open(fmap, "r") as f:
-        _logger.info(f"Processing file {f}")
-        data = json.load(f)
-        data["IntendedFor"] = nii_files
-        f.close
-    with open(fmap, "w") as f:
-        json.dump(data, f, indent=4, sort_keys=True)
-        f.close
-        _logger.info("Done with re-write")
+    with open(fmap, "r") as rf:
+        _logger.info(f"Processing file {rf}")
+        data = json.load(rf)
+        if "IntendedFor" not in data or overwrite:
+            data["IntendedFor"] = nii_files
+            with open(fmap, "w") as wf:
+                json.dump(data, wf, indent=4, sort_keys=True)
+                wf.close
+            _logger.info("Done with re-write")
+        rf.close
 
 
-def process_fmap_json_files(fmap_files: list, nii_files: list):
+def process_fmap_json_files(fmap_files: list, nii_files: list, overwrite: bool):
     # Validates matching acquisition tags before adding
     # to field map's IntendedFor attribute. If there exists
     # multiplate scans with varying acquisition tags, log
@@ -129,7 +134,7 @@ def process_fmap_json_files(fmap_files: list, nii_files: list):
     if len(fmap_files):
         if check_fmap_acquistion_tags(fmap_files):
             for fmap in fmap_files:
-                insert_intendedfor_scans(fmap, nii_files)
+                insert_intendedfor_scans(fmap, nii_files, overwrite)
 
 
 # Verify all acquisition tags of a given list match.

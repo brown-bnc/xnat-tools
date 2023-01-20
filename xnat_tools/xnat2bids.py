@@ -1,8 +1,10 @@
+import glob
 from datetime import datetime
 from typing import List
 
 import typer
 
+from xnat_tools.bids_postprocess import bids_postprocess
 from xnat_tools.dicom_export import dicom_export
 from xnat_tools.run_heudiconv import run_heudiconv
 
@@ -92,6 +94,22 @@ def xnat2bids(
         overwrite=overwrite,
         cleanup=cleanup,
     )
+
+    bids_experiment_dir = glob.glob(f"{bids_root_dir}/*/*/bids")[0]
+
+    bids_postprocess(
+        bids_experiment_dir,
+        user=user,
+        password=password,
+        session="",
+        includesess=[],
+        includesubj=[],
+        skipsubj=[],
+        log_file="",
+        verbose=0,
+        overwrite=False,
+    )
+
     return r
 
 
