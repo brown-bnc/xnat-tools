@@ -87,7 +87,6 @@ def test_xnat2bids():
 
     subj_005_session1_fmaps = [
         f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_phasediff.json",
-        f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_phasediff.json",
         f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_magnitude1.json",
         f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_magnitude2.json",
         f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-diffSE_dir-ap_epi.json",
@@ -107,15 +106,15 @@ def test_xnat2bids():
         "ses-session1/dwi/sub-005_ses-session1_acq-b1500_dir-pa_dwi.nii.gz",
     ]
 
-    # Verify session1 bold fmaps have ot been processed.
-    for json_file in subj_005_session1_fmaps[:4]:
+    # Verify session1 bold fmaps have been processed.
+    for json_file in subj_005_session1_fmaps[:3]:
         with open(json_file, "r") as f:
             data = json.load(f)
             assert sorted(data["IntendedFor"]) == sorted(session1_bold_intendedfor)
             f.close
 
-    # Verify session1 diffusion fmaps have ot been processed.
-    for json_file in subj_005_session1_fmaps[4:]:
+    # Verify session1 diffusion fmaps have been processed.
+    for json_file in subj_005_session1_fmaps[3:]:
         with open(json_file, "r") as f:
             data = json.load(f)
             assert sorted(data["IntendedFor"]) == sorted(session1_diff_intendedfor)
