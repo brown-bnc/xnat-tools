@@ -12,7 +12,13 @@ from xnat_tools.xnat_utils import download, get
 _logger = logging.getLogger(__name__)
 
 
-def insert_intended_for_fmap(bids_dir, sub_list, session="", overwrite=False, sess_list=[]):
+def insert_intended_for_fmap(
+    bids_dir,
+    sub_list,
+    session="",
+    sess_list=[],
+    overwrite=False,
+):
     """Insert the IntendedFor field to JSON sidecart for fieldmap data"""
 
     for subj in sub_list:

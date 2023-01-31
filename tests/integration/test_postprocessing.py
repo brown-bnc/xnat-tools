@@ -2,6 +2,7 @@ import json
 import os
 import shlex
 import shutil
+import typing
 
 from dotenv import load_dotenv
 from typer.testing import CliRunner
@@ -44,7 +45,6 @@ def test_postprocessing():
 
     subj_005_session1_fmaps = [
         f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_phasediff.json",
-        f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_phasediff.json",
         f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_magnitude1.json",
         f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_magnitude2.json",
         f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-diffSE_dir-ap_epi.json",
@@ -52,7 +52,6 @@ def test_postprocessing():
     ]
 
     subj_005_session2_fmaps = [
-        f"{bids_dir}/sub-005/ses-session2/fmap/sub-005_ses-session2_acq-boldGRE_phasediff.json",
         f"{bids_dir}/sub-005/ses-session2/fmap/sub-005_ses-session2_acq-boldGRE_phasediff.json",
         f"{bids_dir}/sub-005/ses-session2/fmap/sub-005_ses-session2_acq-boldGRE_magnitude1.json",
         f"{bids_dir}/sub-005/ses-session2/fmap/sub-005_ses-session2_acq-boldGRE_magnitude2.json",
@@ -62,138 +61,6 @@ def test_postprocessing():
 
     all_fieldmaps = [*subj_005_session1_fmaps, *subj_005_session2_fmaps]
 
-    # Clean IntendedFor keys from all fieldmaps.
-    for json_file in all_fieldmaps:
-        os.chmod(json_file, 0o664)
-        with open(json_file, "r") as f:
-            data = json.load(f)
-            if "IntendedFor" in data:
-                del data["IntendedFor"]
-            f.close
-        with open(json_file, "w") as f:
-            json.dump(data, f, indent=4, sort_keys=True)
-            f.close
-
-    # Process all sessions with no override.
-    bids_postprocess(
-        bids_dir,
-        xnat_user,
-        xnat_pass,
-        session="",
-        includesess=[],
-        includesubj=[],
-        skipsubj=[],
-        log_file="",
-        verbose=0,
-        overwrite=False,
-    )
-
-    # Verify all IntendedFor fields across all fieldmaps have been populated.
-    for json_file in all_fieldmaps:
-        with open(json_file, "r") as f:
-            data = json.load(f)
-            assert data["IntendedFor"] != ""
-            f.close
-
-    # Reset each fieldmap's IntendedFor property to an test string.
-    for json_file in all_fieldmaps:
-        os.chmod(json_file, 0o664)
-        with open(json_file, "r") as f:
-            data = json.load(f)
-            data["IntendedFor"] = "test data"
-            f.close
-        with open(json_file, "w") as f:
-            json.dump(data, f, indent=4, sort_keys=True)
-            f.close
-
-    # Run post-processing with no override.
-    bids_postprocess(
-        bids_dir,
-        xnat_user,
-        xnat_pass,
-        session="",
-        includesess=[],
-        includesubj=[],
-        skipsubj=[],
-        log_file="",
-        verbose=0,
-        overwrite=False,
-    )
-
-    # Verify "test data" has not been overwritten.
-    for json_file in all_fieldmaps:
-        os.chmod(json_file, 0o664)
-        with open(json_file, "r") as f:
-            data = json.load(f)
-            assert data["IntendedFor"] == "test data"
-            f.close
-
-    # Run post-processing with -overwrite .
-    bids_postprocess(
-        bids_dir,
-        xnat_user,
-        xnat_pass,
-        session="",
-        includesess=[],
-        includesubj=[],
-        skipsubj=[],
-        log_file="",
-        verbose=0,
-        overwrite=True,
-    )
-
-    # Verify all IntendedFor fields across all fieldmaps have been populated.
-    for json_file in all_fieldmaps:
-        with open(json_file, "r") as f:
-            data = json.load(f)
-            assert data["IntendedFor"] != "test data"
-            f.close
-
-    # Delete each fieldmap's IntendedFor property.
-    for json_file in all_fieldmaps:
-        os.chmod(json_file, 0o664)
-        with open(json_file, "r") as f:
-            data = json.load(f)
-            if "IntendedFor" in data:
-                del data["IntendedFor"]
-            f.close
-        with open(json_file, "w") as f:
-            json.dump(data, f, indent=4, sort_keys=True)
-            f.close
-
-    # Run post-processing, skipping subject 005.
-    bids_postprocess(
-        bids_dir,
-        xnat_user,
-        xnat_pass,
-        session="",
-        includesess=[],
-        includesubj=[],
-        skipsubj=["005"],
-        log_file="",
-        verbose=0,
-        overwrite=False,
-    )
-
-    for json_file in all_fieldmaps:
-        with open(json_file, "r") as f:
-            data = json.load(f)
-            assert "IntendedFor" not in data
-            f.close
-
-    # Run post-processing with includesubj and includesess.
-    bids_postprocess(
-        bids_dir,
-        xnat_user,
-        xnat_pass,
-        session="",
-        includesess=["session1"],
-        includesubj=["005"],
-        skipsubj=[],
-        log_file="",
-        verbose=0,
-        overwrite=False,
-    )
     session1_bold_intendedfor = [
         "ses-session1/func/sub-005_ses-session1_task-checks_run-02_bold.nii.gz",
         "ses-session1/func/sub-005_ses-session1_task-resting_bold.nii.gz",
@@ -208,38 +75,152 @@ def test_postprocessing():
         "ses-session1/dwi/sub-005_ses-session1_acq-b1500_dir-pa_dwi.nii.gz",
     ]
 
-    # Verify session1 bold fmaps have ot been processed.
-    for json_file in subj_005_session1_fmaps[:4]:
+    # Clean IntendedFor keys from all fieldmaps.
+    cleanIntendedForData(all_fieldmaps)
+
+    # Process all sessions with no override.
+    bids_postprocess(
+        bids_dir,
+        xnat_user,
+        xnat_pass,
+        session="",
+        includesess=[],
+        includesubj=[],
+        skipsubj=[],
+        skipsess=[],
+        log_file="",
+        verbose=0,
+        overwrite=False,
+    )
+
+    # Verify all IntendedFor fields across all fieldmaps have been populated.
+    for json_file in all_fieldmaps:
         with open(json_file, "r") as f:
             data = json.load(f)
-            assert sorted(data["IntendedFor"]) == sorted(session1_bold_intendedfor)
+            assert data["IntendedFor"] != ""
             f.close
 
-    # Verify session1 diffusion fmaps have ot been processed.
-    for json_file in subj_005_session1_fmaps[4:]:
-        with open(json_file, "r") as f:
-            data = json.load(f)
-            assert sorted(data["IntendedFor"]) == sorted(session1_diff_intendedfor)
-            f.close
+    # Reset each fieldmap's IntendedFor property to an test string.
+    updateIntendedForData(all_fieldmaps, "test string")
 
-    # Verify session2 fmap has not been processed.
-    for json_file in subj_005_session2_fmaps:
-        with open(json_file, "r") as f:
-            data = json.load(f)
-            assert "IntendedFor" not in data
-            f.close
+    # Run post-processing with no override.
+    bids_postprocess(
+        bids_dir,
+        xnat_user,
+        xnat_pass,
+        session="",
+        includesess=[],
+        includesubj=[],
+        skipsubj=[],
+        skipsess=[],
+        log_file="",
+        verbose=0,
+        overwrite=False,
+    )
 
-    # Delete each fieldmap's IntendedFor property.
+    # Verify test string data has not been overwritten.
     for json_file in all_fieldmaps:
         os.chmod(json_file, 0o664)
         with open(json_file, "r") as f:
             data = json.load(f)
-            if "IntendedFor" in data:
-                del data["IntendedFor"]
+            assert data["IntendedFor"] == "test string"
             f.close
-        with open(json_file, "w") as f:
-            json.dump(data, f, indent=4, sort_keys=True)
+
+    # Run post-processing with --overwrite.
+    bids_postprocess(
+        bids_dir,
+        xnat_user,
+        xnat_pass,
+        session="",
+        includesess=[],
+        includesubj=[],
+        skipsubj=[],
+        skipsess=[],
+        log_file="",
+        verbose=0,
+        overwrite=True,
+    )
+
+    # Verify all IntendedFor fields across all fieldmaps have been overwritten.
+    for json_file in all_fieldmaps:
+        with open(json_file, "r") as f:
+            data = json.load(f)
+            assert data["IntendedFor"] != "test string"
             f.close
+
+    # Delete each fieldmap's IntendedFor property.
+    cleanIntendedForData(all_fieldmaps)
+
+    # Run post-processing, skipping subject 005.
+    bids_postprocess(
+        bids_dir,
+        xnat_user,
+        xnat_pass,
+        session="",
+        includesess=[],
+        includesubj=[],
+        skipsubj=["005"],
+        skipsess=[],
+        log_file="",
+        verbose=0,
+        overwrite=False,
+    )
+
+    verifySkipped(all_fieldmaps)
+
+    # Run post-processing with includesubj and includesess.
+    bids_postprocess(
+        bids_dir,
+        xnat_user,
+        xnat_pass,
+        session="",
+        includesess=["session1"],
+        includesubj=["005"],
+        skipsubj=[],
+        skipsess=[],
+        log_file="",
+        verbose=0,
+        overwrite=False,
+    )
+
+    # Verify session1 bold fmaps have ot been processed.
+    verifyProcessed(subj_005_session1_fmaps[:3], session1_bold_intendedfor)
+
+    # Verify session1 diffusion fmaps have ot been processed.
+    verifyProcessed(subj_005_session1_fmaps[3:], session1_diff_intendedfor)
+
+    # Verify session2 fmap has not been processed.
+    verifySkipped(subj_005_session2_fmaps)
+
+    # Delete each fieldmap's IntendedFor property.
+    cleanIntendedForData(all_fieldmaps)
+
+    # Run post-processing with includesubj and skipsess.
+    bids_postprocess(
+        bids_dir,
+        xnat_user,
+        xnat_pass,
+        session="",
+        includesess=[],
+        includesubj=["005"],
+        skipsubj=[],
+        skipsess=["session2"],
+        log_file="",
+        verbose=0,
+        overwrite=False,
+    )
+
+    # Verify session1 bold fmaps have been processed.
+    verifyProcessed(subj_005_session1_fmaps[:3], session1_bold_intendedfor)
+
+    # Verify session1 diffusion fmaps have been processed.
+    verifyProcessed(subj_005_session1_fmaps[3:], session1_diff_intendedfor)
+
+    # Verify session2 fmap has not been processed.
+    verifySkipped(subj_005_session2_fmaps)
+
+    # Delete each fieldmap's IntendedFor property.
+    cleanIntendedForData(all_fieldmaps)
 
     # Run bids_postprocess for a single session.
     bids_postprocess(
@@ -250,31 +231,20 @@ def test_postprocessing():
         includesess=[],
         includesubj=[],
         skipsubj=[],
+        skipsess=[],
         log_file="",
         verbose=0,
         overwrite=False,
     )
 
-    # Verify session1 bold fmaps have ot been processed.
-    for json_file in subj_005_session1_fmaps[:4]:
-        with open(json_file, "r") as f:
-            data = json.load(f)
-            assert sorted(data["IntendedFor"]) == sorted(session1_bold_intendedfor)
-            f.close
+    # Verify session1 bold fmaps have been processed.
+    verifyProcessed(subj_005_session1_fmaps[:3], session1_bold_intendedfor)
 
-    # Verify session1 diffusion fmaps have ot been processed.
-    for json_file in subj_005_session1_fmaps[4:]:
-        with open(json_file, "r") as f:
-            data = json.load(f)
-            assert sorted(data["IntendedFor"]) == sorted(session1_diff_intendedfor)
-            f.close
+    # Verify session1 diffusion fmaps have been processed.
+    verifyProcessed(subj_005_session1_fmaps[3:], session1_diff_intendedfor)
 
-    # Verify session2 fmap has not been processed.
-    for json_file in subj_005_session2_fmaps:
-        with open(json_file, "r") as f:
-            data = json.load(f)
-            assert "IntendedFor" not in data
-            f.close
+    # Verify session2 fmaps have not been processed.
+    verifySkipped(subj_005_session2_fmaps)
 
     # cleanup output -- for debugging commsent this out
     shutil.rmtree(bids_root_dir, ignore_errors=True)
@@ -282,3 +252,46 @@ def test_postprocessing():
     # you can locally run bids-validator
     # bids_directory=${PWD}/tests/xnat2bids/study-demodat/bids/
     # docker run -ti --rm -v ${bids_directory}:/data:ro bids/validator /data
+
+
+def cleanIntendedForData(fieldmaps: list):
+    # Delete each fieldmap's IntendedFor property.
+    for json_file in fieldmaps:
+        if os.path.isfile(json_file):
+            os.chmod(json_file, 0o664)
+            with open(json_file, "r") as f:
+                data = json.load(f)
+                if "IntendedFor" in data:
+                    del data["IntendedFor"]
+                f.close
+            with open(json_file, "w") as f:
+                json.dump(data, f, indent=4, sort_keys=True)
+                f.close
+
+
+def updateIntendedForData(fieldmaps: list, testData: typing.Any):
+    for json_file in fieldmaps:
+        os.chmod(json_file, 0o664)
+        with open(json_file, "r") as f:
+            data = json.load(f)
+            data["IntendedFor"] = testData
+            f.close
+        with open(json_file, "w") as f:
+            json.dump(data, f, indent=4, sort_keys=True)
+            f.close
+
+
+def verifySkipped(fieldmaps: list):
+    for json_file in fieldmaps:
+        with open(json_file, "r") as f:
+            data = json.load(f)
+            assert "IntendedFor" not in data
+            f.close
+
+
+def verifyProcessed(fieldmaps: list, testSet: list):
+    for json_file in fieldmaps:
+        with open(json_file, "r") as f:
+            data = json.load(f)
+            assert sorted(data["IntendedFor"]) == sorted(testSet)
+            f.close

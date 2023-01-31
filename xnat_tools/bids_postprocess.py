@@ -28,7 +28,7 @@ def bids_postprocess(
     ),
     includesess: List[str] = typer.Option(
         [],
-        "-is",
+        "-n",
         "--includesess",
         help="Include this session only, this flag can be specified multiple time",
     ),
@@ -42,6 +42,12 @@ def bids_postprocess(
         [],
         "-s",
         "--skipsubj",
+        help="Skip this participant, this flag can be specified multiple times",
+    ),
+    skipsess: List[str] = typer.Option(
+        [],
+        "-k",
+        "--skipsess",
         help="Skip this participant, this flag can be specified multiple times",
     ),
     log_file: str = typer.Option(
@@ -102,11 +108,38 @@ def bids_postprocess(
         if skipsubj != []:
             includesubj = [x for x in includesubj if x not in skipsubj]
 
+        if includesess == []:
+            for subj in includesubj:
+                subj_path = f"{bids_experiment_dir}/sub-{subj}"
+                files = os.listdir(subj_path)
+                includesess = [x for x in files if x.startswith("ses-")]
+
+        includesess = [str(x).replace("ses-", "") for x in includesess]
+
+        skipsess = [str(x).replace("ses-", "") for x in skipsess]
+
+        if skipsess != []:
+            _logger.info("---------------------------------")
+            _logger.info(f"Skipping Sessions {skipsess}: ")
+            _logger.info("---------------------------------")
+
+            includesess = [x for x in includesess if x not in skipsess]
+
         _logger.info("---------------------------------")
         _logger.info(f"Processing Subjects {includesubj}: ")
         _logger.info("---------------------------------")
 
-        insert_intended_for_fmap(bids_experiment_dir, includesubj, session, overwrite, includesess)
+        _logger.info("---------------------------------")
+        _logger.info(f"Processing Sessions {includesess}: ")
+        _logger.info("---------------------------------")
+
+        insert_intended_for_fmap(
+            bids_experiment_dir,
+            includesubj,
+            session,
+            includesess,
+            overwrite,
+        )
 
 
 def main():
