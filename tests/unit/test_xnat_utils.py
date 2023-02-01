@@ -1,4 +1,8 @@
-from xnat_tools.xnat_utils import filter_scans
+import os
+
+import requests  # type: ignore
+
+from xnat_tools.xnat_utils import filter_scans, get_project_subject_session
 
 
 def phony_scan_data(scan_count=10):
@@ -61,3 +65,21 @@ def test_filter_scan_seqlist_discontinuity():
     expected_result = [x for x in data if int(x[0]) in seqlist]
 
     assert result == expected_result
+
+
+def test_fetch_proj_subj_sess():
+    host = "https://xnat.bnc.brown.edu"
+    session = "XNAT_E00152"
+    user = os.environ.get("XNAT_USER", "")
+    password = os.environ.get("XNAT_PASS", "")
+    session_suffix = "-1"
+    connection = requests.Session()
+    connection.verify = True
+    connection.auth = (user, password)
+    project, subject, session_suffix = get_project_subject_session(
+        connection, host, session, session_suffix
+    )
+
+    assert project == "BNC_DEMODAT"
+    assert subject == "005"
+    assert session_suffix == "SESSION2"
