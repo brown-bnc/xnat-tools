@@ -48,7 +48,7 @@ def bids_postprocess(
         [],
         "-k",
         "--skipsess",
-        help="Skip this participant, this flag can be specified multiple times",
+        help="Skip this session, this flag can be specified multiple times",
     ),
     log_file: str = typer.Option(
         "",

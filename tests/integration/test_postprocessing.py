@@ -1,4 +1,5 @@
 import json
+import operator
 import os
 import shlex
 import shutil
@@ -94,11 +95,7 @@ def test_postprocessing():
     )
 
     # Verify all IntendedFor fields across all fieldmaps have been populated.
-    for json_file in all_fieldmaps:
-        with open(json_file, "r") as f:
-            data = json.load(f)
-            assert data["IntendedFor"] != ""
-            f.close
+    check_json_data(all_fieldmaps, "!=", "")
 
     # Reset each fieldmap's IntendedFor property to an test string.
     updateIntendedForData(all_fieldmaps, "test string")
@@ -119,12 +116,7 @@ def test_postprocessing():
     )
 
     # Verify test string data has not been overwritten.
-    for json_file in all_fieldmaps:
-        os.chmod(json_file, 0o664)
-        with open(json_file, "r") as f:
-            data = json.load(f)
-            assert data["IntendedFor"] == "test string"
-            f.close
+    check_json_data(all_fieldmaps, "==", "test string")
 
     # Run post-processing with --overwrite.
     bids_postprocess(
@@ -142,11 +134,7 @@ def test_postprocessing():
     )
 
     # Verify all IntendedFor fields across all fieldmaps have been overwritten.
-    for json_file in all_fieldmaps:
-        with open(json_file, "r") as f:
-            data = json.load(f)
-            assert data["IntendedFor"] != "test string"
-            f.close
+    check_json_data(all_fieldmaps, "!=", "test string")
 
     # Delete each fieldmap's IntendedFor property.
     cleanIntendedForData(all_fieldmaps)
@@ -294,4 +282,14 @@ def verifyProcessed(fieldmaps: list, testSet: list):
         with open(json_file, "r") as f:
             data = json.load(f)
             assert sorted(data["IntendedFor"]) == sorted(testSet)
+            f.close
+
+
+def check_json_data(fieldmaps: list, op: str, value: str):
+    rel_ops = {"==": operator.eq, "!=": operator.ne}
+
+    for json_file in fieldmaps:
+        with open(json_file, "r") as f:
+            data = json.load(f)
+            assert rel_ops[op](data["IntendedFor"], value)
             f.close
