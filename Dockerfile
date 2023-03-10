@@ -14,4 +14,5 @@ RUN curl -fLO "https://github.com/rordenlab/dcm2niix/releases/download/${DCM2NII
 COPY poetry.lock pyproject.toml xnat_tools ./
 COPY xnat_tools/ ./xnat_tools
 
-RUN pip install .
+RUN pip install . 
+RUN pip install bids_validator
