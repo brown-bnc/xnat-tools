@@ -36,7 +36,7 @@ jobs:
         prerelease: false
 
     # DOCS
-    - name: Set up Python 3.7 
+    - name: Set up Python 3.10 
       uses: actions/setup-python@v4
       with:
         python-version-file: '.python-version' # Read python version from a file .python-version

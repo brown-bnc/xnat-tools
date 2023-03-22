@@ -11,10 +11,12 @@ jobs:
   test: 
     name: Run unit and integration tests 
     runs-on: self-hosted
+    container:
+      image: ghcr.io/brown-bnc/xnat-tools:latest
     steps: 
       - name: Checkout Main 
         uses: actions/checkout@v2 
-      - name: Set up Python 3.7 
+      - name: Set up Python 3.10 
         uses: actions/setup-python@v4 
         with:
           python-version-file: '.python-version' # Read python version from a file .python-version
@@ -25,6 +27,6 @@ jobs:
           pip install pytest python-dotenv responses
           sudo apt update
           sudo apt-get update
-          sudo apt-get -y install dcm2niix
+          sudo apt-get -y install dcm2niix 
       - name: Test 
         run: pytest -x -s -o log_cli=true --log-cli-level=INFO 

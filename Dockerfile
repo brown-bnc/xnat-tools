@@ -3,6 +3,13 @@ FROM python:3.10
 ENV POETRY_VERSION=1.0.3
 ENV DCM2NIIX_VERSION=v1.0.20190902
 
+# Install Node.js and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
+    && apt-get install -y nodejs
+
+# Install bids-validator using npm
+RUN npm install -g bids-validator
+
 RUN mkdir -p xnat-tools
 WORKDIR xnat-tools
 
@@ -15,4 +22,3 @@ COPY poetry.lock pyproject.toml xnat_tools ./
 COPY xnat_tools/ ./xnat_tools
 
 RUN pip install . 
-RUN pip install bids_validator
