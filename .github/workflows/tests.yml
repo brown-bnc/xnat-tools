@@ -10,7 +10,7 @@ env:
 jobs: 
   test: 
     name: Run unit and integration tests 
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     container:
       image: ghcr.io/brown-bnc/xnat-tools:latest
     steps: 
