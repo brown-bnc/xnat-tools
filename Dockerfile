@@ -19,7 +19,8 @@ RUN curl -fLO "https://github.com/rordenlab/dcm2niix/releases/download/${DCM2NII
     && mv dcm2niix /usr/bin/ \
     && mv dcm2niibatch /usr/bin/
 
-COPY poetry.lock pyproject.toml xnat_tools ./
-COPY xnat_tools/ ./xnat_tools
+COPY poetry.lock pyproject.toml tests xnat_tools ./
+COPY xnat_tools/ ./xnat_tools 
+COPY tests/ ./tests
 
 RUN pip install . 
