@@ -1,4 +1,3 @@
-#FROM ubuntu
 FROM python:3.10.6
 
 ENV POETRY_VERSION=1.0.3
