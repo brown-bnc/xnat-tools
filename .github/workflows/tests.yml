@@ -15,4 +15,4 @@ jobs:
       image: ghcr.io/brown-bnc/xnat-tools:latest
     steps: 
       - name: Test 
-        run: pytest -x -s -o log_cli=true --log-cli-level=INFO 
+        run: pytest -x -s -o log_cli=true --log-cli-level=INFO tests/integration/test_xnat2bids.py
