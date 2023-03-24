@@ -407,18 +407,19 @@ def assign_bids_name(
                 See documentation to understand behavior for repeated sequences."
             )
 
-        # check the label to figure out which folder xnat has the dicoms stored in (DICOMS or secondary)
+        # check the label to figure out which folder xnat has the dicoms stored
+        # in (DICOMS or secondary)
         resp = get(
             connection,
             host + "/data/experiments/%s/scans/%s/resources" % (session, scanid),
             params={"format": "json"},
         )
-        resourceLabel = (resp.json()["ResultSet"]["Result"][0]["label"])
+        resourceLabel = resp.json()["ResultSet"]["Result"][0]["label"]
 
         filesURL = host + "/data/experiments/%s/scans/%s/resources/%s/files" % (
             session,
             scanid,
-            resourceLabel
+            resourceLabel,
         )
 
         r = get(connection, filesURL, params={"format": "json"})
