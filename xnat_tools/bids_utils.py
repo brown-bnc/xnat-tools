@@ -341,7 +341,7 @@ def scan_contains_dicom(connection, host, session, scanid):
         params={"format": "json"},
     )
 
-    dicomResourceList = [r for r in resp.json()["ResultSet"]["Result"] if r["label"] == "DICOM"]
+    dicomResourceList = [r for r in resp.json()["ResultSet"]["Result"] if r["format"] == "DICOM"]
 
     # NOTE (BNR): A scan contains multiple resources. A resource can be thought
     #             of as a folder. We only want a single DICOM folder. If we have
@@ -407,9 +407,18 @@ def assign_bids_name(
                 See documentation to understand behavior for repeated sequences."
             )
 
-        filesURL = host + "/data/experiments/%s/scans/%s/resources/DICOM/files" % (
+        # check the label to figure out which folder xnat has the dicoms stored in (DICOMS or secondary)
+        resp = get(
+            connection,
+            host + "/data/experiments/%s/scans/%s/resources" % (session, scanid),
+            params={"format": "json"},
+        )
+        resourceLabel = (resp.json()["ResultSet"]["Result"][0]["label"])
+
+        filesURL = host + "/data/experiments/%s/scans/%s/resources/%s/files" % (
             session,
             scanid,
+            resourceLabel
         )
 
         r = get(connection, filesURL, params={"format": "json"})
