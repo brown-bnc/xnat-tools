@@ -7,12 +7,63 @@ on:
 env:
   XNAT_USER: '${{secrets.XNAT_USER}}'
   XNAT_PASS: '${{secrets.XNAT_PASS}}'
-jobs: 
+  REGISTRY: ghcr.io
+  IMAGE_NAME: brown-bnc/xnat-tools
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    outputs:
+      full_image_id: ${{ steps.save_full_image_id.outputs.full_image_id }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log into the container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{major}}.{{minor}}
+
+      # NOTE: We are tapping into json output because tags could become a list if prior step is modified
+      - id: save_full_image_id
+        run: echo "::set-output name=full_image_id::${{ fromJSON(steps.meta.outputs.json).tags[0] }}"
+
+      - name: print_tag
+        run: echo "${{fromJSON(steps.meta.outputs.json).tags[0] }}"
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
+
   test: 
     name: Run unit and integration tests 
+    needs: [docker]
     runs-on: self-hosted
     container:
-      image: ghcr.io/brown-bnc/xnat-tools:latest
+      image: "${{ needs.docker.outputs.full_image_id }}"
     steps: 
       - name: Test 
-        run: pytest -x -s -o log_cli=true --log-cli-level=INFO tests/integration/test_xnat2bids.py
+        run: pytest -x -s -o log_cli=true --log-cli-level=INFO
