@@ -22,4 +22,5 @@ COPY poetry.lock pyproject.toml tests xnat_tools ./
 COPY xnat_tools/ ./xnat_tools 
 COPY tests/ ./tests
 
-RUN pip install . 
+RUN pip install .
+RUN pip install pytest python-dotenv responses
