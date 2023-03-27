@@ -66,6 +66,8 @@ jobs:
       image: "${{ needs.docker.outputs.full_image_id }}"
     steps: 
       - name: List 
-        run: ls
+        run: |
+          ls
+          pwd
       # - name: Test 
       #   run: pytest -x -s -o log_cli=true --log-cli-level=INFO
