@@ -80,9 +80,10 @@ jobs:
     env:
         BIDS_ROOT: '/xnat2bids'
     steps: 
-      - name: Run pytest         
+      - name: Run xnat2bids          
         run: |
           cd /xnat-tools
+          mkdir /xnat2bids/
           xnat2bids XNAT_E00114 ${BIDS_ROOT} -u ${{ env.XNAT_USER }} -p ${{ env.XNAT_PASS }} -s 6 -i 10 
 
       - name: Set up node action
