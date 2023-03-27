@@ -12,6 +12,7 @@ env:
 
 jobs:
   docker:
+    name: Build Docker Image
     runs-on: ubuntu-latest
     outputs:
       full_image_id: ${{ steps.save_full_image_id.outputs.full_image_id }}
@@ -65,9 +66,7 @@ jobs:
     container:
       image: "${{ needs.docker.outputs.full_image_id }}"
     steps: 
-      - name: List 
+      - name: Run pytest  
         run: |
           cd /xnat-tools
-          ls
-          pwd
           pytest -x -s -o log_cli=true --log-cli-level=INFO
