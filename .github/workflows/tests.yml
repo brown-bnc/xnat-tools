@@ -67,7 +67,7 @@ jobs:
     steps: 
       - name: List 
         run: |
-          cd ..
+          cd /xnat-tools
           ls
           pwd
           pytest -x -s -o log_cli=true --log-cli-level=INFO
