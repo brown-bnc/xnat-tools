@@ -86,7 +86,7 @@ jobs:
           xnat2bids XNAT_E00114 ${BIDS_ROOT} -u ${{ XNAT_USER }} -p ${{ XNAT_PASS }} -s 6 -i 10 
 
       - name: Set up node action
-        - uses: actions/setup-node@v3
+        uses: actions/setup-node@v3
           with:
             node-version: 16
 
