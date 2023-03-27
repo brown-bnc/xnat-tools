@@ -83,7 +83,7 @@ jobs:
       - name: Run pytest         
         run: |
           cd /xnat-tools
-          xnat2bids XNAT_E00114 ${BIDS_ROOT} -u ${{ XNAT_USER }} -p ${{ XNAT_PASS }} -s 6 -i 10 
+          xnat2bids XNAT_E00114 ${BIDS_ROOT} -u ${{ env.XNAT_USER }} -p ${{ env.XNAT_PASS }} -s 6 -i 10 
 
       - name: Set up node action
         uses: actions/setup-node@v3
