@@ -67,7 +67,7 @@ jobs:
     steps: 
       - name: List 
         run: |
+          cd ..
           ls
           pwd
-      # - name: Test 
-      #   run: pytest -x -s -o log_cli=true --log-cli-level=INFO
+          pytest -x -s -o log_cli=true --log-cli-level=INFO
