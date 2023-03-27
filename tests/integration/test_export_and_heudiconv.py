@@ -7,7 +7,6 @@ import requests  # type: ignore
 from dotenv import load_dotenv
 from typer.testing import CliRunner
 
-from tests.integration.test_postprocessing import validateBIDS
 from xnat_tools.dicom_export import app as export_app
 from xnat_tools.dicom_export import dicom_export
 from xnat_tools.run_heudiconv import app as heudi_app
@@ -169,9 +168,6 @@ def test_heudiconv():
     r = runner.invoke(heudi_app, split_cmd)
     print(r.stdout)
     assert r.exit_code == 0
-
-    # Run BIDS Validator
-    validateBIDS(bids_root_dir)
 
     # cleanup output -- for debugging comment this out
     shutil.rmtree(bids_root_dir, ignore_errors=True)

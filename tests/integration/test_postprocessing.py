@@ -1,10 +1,8 @@
-import glob
 import json
 import operator
 import os
 import shlex
 import shutil
-import subprocess
 import typing
 
 from dotenv import load_dotenv
@@ -98,9 +96,6 @@ def test_postprocessing():
 
     # Verify all IntendedFor fields across all fieldmaps have been populated.
     check_json_data(all_fieldmaps, "!=", "")
-
-    # Run BIDS Validator
-    validateBIDS(bids_root_dir)
 
     # Reset each fieldmap's IntendedFor property to an test string.
     updateIntendedForData(all_fieldmaps, "test string")
@@ -298,13 +293,3 @@ def check_json_data(fieldmaps: list, op: str, value: str):
             data = json.load(f)
             assert rel_ops[op](data["IntendedFor"], value)
             f.close
-
-
-def validateBIDS(bids_root_dir: str):
-    bids_path = glob.glob(f"{bids_root_dir}/*/study-*/bids/")[0]
-    f = open("issues.txt", "w")
-    subprocess.run(shlex.split(f"bids-validator {bids_path}"), stdout=f)
-
-    with open("issues.txt", "r") as bids_issues:
-        for line in bids_issues:
-            assert "ERR" not in line

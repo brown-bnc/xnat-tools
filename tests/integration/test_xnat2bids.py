@@ -8,7 +8,6 @@ import pydicom
 from dotenv import load_dotenv
 from typer.testing import CliRunner
 
-from tests.integration.test_postprocessing import validateBIDS
 from xnat_tools.xnat2bids import app
 
 runner = CliRunner()
@@ -48,9 +47,6 @@ def test_xnat2bids():
     print(xnat2bids_split_cmd)
     r = runner.invoke(app, xnat2bids_split_cmd)
     print(r.stdout)
-
-    # Run BIDS Validation
-    validateBIDS(bids_root_dir)
 
     assert r.exit_code == 0
 

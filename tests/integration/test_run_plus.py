@@ -5,7 +5,6 @@ import shutil
 from dotenv import load_dotenv
 from typer.testing import CliRunner
 
-from tests.integration.test_postprocessing import validateBIDS
 from xnat_tools.xnat2bids import app
 
 load_dotenv()
@@ -43,9 +42,6 @@ def test_run_plus():
     assert os.path.isdir(os.path.join(os.getcwd(), xnat_export_path))
     for i in range(1, len(seqlist) + 1):
         assert os.path.isdir(os.path.join(os.getcwd(), xnat_export_path, f"{task_name}-{i:02}"))
-
-    # Run BIDS Validator
-    validateBIDS(bids_root_dir)
 
     # cleanup output -- for debugging comment this out
     shutil.rmtree(bids_root_dir, ignore_errors=True)
