@@ -75,7 +75,7 @@ jobs:
     name: Run system test for bids-validator
     needs: [docker]
     runs-on: self-hosted
-    if: {{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/main' }}
     container:
       image: "${{ needs.docker.outputs.full_image_id }}"
     env:
