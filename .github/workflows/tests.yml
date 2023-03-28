@@ -84,8 +84,8 @@ jobs:
         run: |
           cd /xnat-tools
           mkdir /xnat2bids/
-          xnat2bids XNAT_E00114 ${env.BIDS_ROOT} -u ${{ env.XNAT_USER }} -p ${{ env.XNAT_PASS }} -s 6
-          xnat2bids XNAT_E00152 ${env.BIDS_ROOT} -u ${{ env.XNAT_USER }} -p ${{ env.XNAT_PASS }} -s 6
+          xnat2bids XNAT_E00114 ${BIDS_ROOT} -u ${{ env.XNAT_USER }} -p ${{ env.XNAT_PASS }} -s 6
+          xnat2bids XNAT_E00152 ${BIDS_ROOT} -u ${{ env.XNAT_USER }} -p ${{ env.XNAT_PASS }} -s 6
 
       - name: Set up node action
         uses: actions/setup-node@v3
@@ -96,4 +96,4 @@ jobs:
         run: npm install -g bids-validator
 
       - name: Run bids-validator
-        run: bids-validator ${env.BIDS_ROOT}
+        run: bids-validator ${BIDS_ROOT}
