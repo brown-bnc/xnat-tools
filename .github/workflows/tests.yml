@@ -96,4 +96,6 @@ jobs:
         run: npm install -g bids-validator
 
       - name: Run bids-validator
-        run: bids-validator ${BIDS_ROOT}
+        run: 
+          cd /xnat-tools
+          bids-validator ${BIDS_ROOT}
