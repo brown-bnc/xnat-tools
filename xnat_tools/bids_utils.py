@@ -342,7 +342,7 @@ def scan_contains_dicom(connection, host, session, scanid):
     )
 
     dicomResourceList = [r for r in resp.json()["ResultSet"]["Result"] if r["format"] == "DICOM"]
-
+    _logger.debug(f"Found DICOM resources: {dicomResourceList}")
     # NOTE (BNR): A scan contains multiple resources. A resource can be thought
     #             of as a folder. We only want a single DICOM folder. If we have
     #             multiple, something is weird. If we don't have any DICOM
@@ -414,7 +414,12 @@ def assign_bids_name(
             host + "/data/experiments/%s/scans/%s/resources" % (session, scanid),
             params={"format": "json"},
         )
-        resourceLabel = resp.json()["ResultSet"]["Result"][0]["label"]
+
+        dicomResourceList = [
+            r for r in resp.json()["ResultSet"]["Result"] if r["format"] == "DICOM"
+        ]
+        resourceLabel = dicomResourceList[0]["label"]
+        _logger.debug(f"resource label: {resourceLabel}")
 
         filesURL = host + "/data/experiments/%s/scans/%s/resources/%s/files" % (
             session,
