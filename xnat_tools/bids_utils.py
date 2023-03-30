@@ -409,23 +409,26 @@ def assign_bids_name(
 
         # check the label to figure out which folder xnat has the dicoms stored
         # in (DICOMS or secondary)
+        resourcesURL = host + f"/data/experiments/{session}/scans/{scanid}/resources/"
+
         resp = get(
             connection,
-            host + "/data/experiments/%s/scans/%s/resources" % (session, scanid),
+            resourcesURL,
             params={"format": "json"},
         )
 
+        # limit the resources to ones that are DICOM format
         dicomResourceList = [
             r for r in resp.json()["ResultSet"]["Result"] if r["format"] == "DICOM"
         ]
+
+        # check the label of our one DICOM resource
         resourceLabel = dicomResourceList[0]["label"]
         _logger.debug(f"resource label: {resourceLabel}")
 
-        filesURL = host + "/data/experiments/%s/scans/%s/resources/%s/files" % (
-            session,
-            scanid,
-            resourceLabel,
-        )
+        # the DICOM file path is determined by the "label" xnat has applied to that
+        # resource
+        filesURL = resourcesURL + "%s/files" % (resourceLabel,)
 
         r = get(connection, filesURL, params={"format": "json"})
         # Build a dict keyed off file name
