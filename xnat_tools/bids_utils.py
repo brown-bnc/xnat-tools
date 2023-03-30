@@ -47,15 +47,21 @@ def insert_intended_for_fmap(
             fmap_path = f"{bids_dir}/sub-{subj}/{sess}/fmap"
             func_path = f"{bids_dir}/sub-{subj}/{sess}/func"
             dwi_path = f"{bids_dir}/sub-{subj}/{sess}/dwi"
+
+            # Initialize boolean variables for fmapExists, funcExists, and diffExists
+            fmapPathExists = os.path.exists(fmap_path)
+            funcPathExists = os.path.exists(func_path)
+            diffPathExists = os.path.exists(dwi_path)
+
+            # Don't do anything if this session doesn't contain a fieldmap folder
+            if not fmapPathExists:
+                continue
+
+            # Separate fmaps into distinct geometries
             fmap_files = [
                 os.path.join(fmap_path, f) for f in os.listdir(fmap_path) if f.endswith("json")
             ]
 
-            # Initialize boolean variables for funcExists and diffExists
-            funcPathExists = os.path.exists(func_path)
-            diffPathExists = os.path.exists(dwi_path)
-
-            # Separate fmaps into distinct geometries
             bold_fmap_files = [
                 f
                 for f in fmap_files
