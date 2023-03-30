@@ -3,13 +3,6 @@ FROM python:3.10.6
 ENV POETRY_VERSION=1.0.3
 ENV DCM2NIIX_VERSION=v1.0.20190902
 
-# Install Node.js and npm
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
-    && apt-get install -y nodejs
-
-# Install bids-validator using npm
-RUN npm install -g bids-validator
-
 RUN mkdir -p xnat-tools
 WORKDIR xnat-tools
 
