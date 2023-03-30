@@ -341,8 +341,8 @@ def scan_contains_dicom(connection, host, session, scanid):
         params={"format": "json"},
     )
 
-    dicomResourceList = [r for r in resp.json()["ResultSet"]["Result"] if r["label"] == "DICOM"]
-
+    dicomResourceList = [r for r in resp.json()["ResultSet"]["Result"] if r["format"] == "DICOM"]
+    _logger.debug(f"Found DICOM resources: {dicomResourceList}")
     # NOTE (BNR): A scan contains multiple resources. A resource can be thought
     #             of as a folder. We only want a single DICOM folder. If we have
     #             multiple, something is weird. If we don't have any DICOM
@@ -407,10 +407,28 @@ def assign_bids_name(
                 See documentation to understand behavior for repeated sequences."
             )
 
-        filesURL = host + "/data/experiments/%s/scans/%s/resources/DICOM/files" % (
-            session,
-            scanid,
+        # check the label to figure out which folder xnat has the dicoms stored
+        # in (DICOMS or secondary)
+        resourcesURL = host + f"/data/experiments/{session}/scans/{scanid}/resources/"
+
+        resp = get(
+            connection,
+            resourcesURL,
+            params={"format": "json"},
         )
+
+        # limit the resources to ones that are DICOM format
+        dicomResourceList = [
+            r for r in resp.json()["ResultSet"]["Result"] if r["format"] == "DICOM"
+        ]
+
+        # check the label of our one DICOM resource
+        resourceLabel = dicomResourceList[0]["label"]
+        _logger.debug(f"resource label: {resourceLabel}")
+
+        # the DICOM file path is determined by the "label" xnat has applied to that
+        # resource
+        filesURL = resourcesURL + "%s/files" % (resourceLabel,)
 
         r = get(connection, filesURL, params={"format": "json"})
         # Build a dict keyed off file name

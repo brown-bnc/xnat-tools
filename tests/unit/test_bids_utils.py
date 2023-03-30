@@ -170,6 +170,7 @@ def test_scan_contains_dicom_no_dicom():
                 {
                     "file_count": "10",
                     "label": "NOTDICOM",
+                    "format": "NOTDICOM",
                 }
             ],
         }
@@ -195,10 +196,12 @@ def test_scan_contains_dicom_many_dicom():
                 {
                     "file_count": "10",
                     "label": "DICOM",
+                    "format": "DICOM",
                 },
                 {
                     "file_count": "20",
                     "label": "DICOM",
+                    "format": "DICOM",
                 },
             ],
         }
@@ -223,6 +226,7 @@ def test_scan_contains_dicom_empty_file_count():
             "Result": [
                 {
                     "label": "DICOM",
+                    "format": "DICOM",
                 }
             ],
         }
@@ -248,6 +252,7 @@ def test_scan_contains_dicom_zero_file_count():
                 {
                     "file_count": "0",
                     "label": "DICOM",
+                    "format": "DICOM",
                 }
             ],
         }
@@ -273,6 +278,7 @@ def test_scan_contains_dicom_many_file_count():
                 {
                     "file_count": "10",
                     "label": "DICOM",
+                    "format": "DICOM",
                 }
             ],
         }
