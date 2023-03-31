@@ -28,14 +28,14 @@ def test_postprocessing():
 
     os.mkdir(bids_root_dir)
 
-    xnat2bids_cmd = f"{subj5_session} {bids_root_dir} -u {xnat_user} -p {xnat_pass}"
+    xnat2bids_cmd = f"{subj5_session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -s 6"
 
     xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
 
     r = runner.invoke(xnat2bids_app, xnat2bids_split_cmd)
     print(r.stdout)
 
-    xnat2bids_cmd = f"{subj5_session2} {bids_root_dir} -u {xnat_user} -p {xnat_pass}"
+    xnat2bids_cmd = f"{subj5_session2} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -s 6"
 
     xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
 

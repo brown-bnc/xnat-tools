@@ -170,7 +170,7 @@ def test_heudiconv():
     assert r.exit_code == 0
 
     # cleanup output -- for debugging comment this out
-    # shutil.rmtree(bids_root_dir, ignore_errors=True)
+    shutil.rmtree(bids_root_dir, ignore_errors=True)
 
 
 def test_unauthorized_user_exception_handling():
