@@ -1,3 +1,23 @@
+## v1.1.0 (2023-04-05)
+
+### Feat
+
+- support physio data export
+- **test_xnat_utils.py**: update unit tests to check get_project_subject_session function for multisession data
+
+### Fix
+
+- check if fmap folder exists before bids_postprocess
+- remove redundant resourcesURL specification
+- limit filesURL to DICOM format files
+- test_bids_utils includes label field
+- update bids_postprocess to support single or multiple session selection for IntendedFor mapping, implement overwrite flag, and incorporate into xnat2bids pipeline
+
+### Refactor
+
+- refactor test utility function and documentation
+- update bids postprocessing to suppost skipping one or multiple sessions
+
 ## v1.0.10 (2022-11-30)
 
 ### Fix
