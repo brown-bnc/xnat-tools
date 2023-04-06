@@ -1,3 +1,9 @@
+## v1.1.1 (2023-04-06)
+
+### Fix
+
+- **xnat2bids.py**: provide correct path for bids experiment directory
+
 ## v1.1.0 (2023-04-05)
 
 ### Feat
