@@ -106,7 +106,7 @@ def run_heudiconv(
         if p.returncode != 0:
             raise RuntimeError("Heudiconv was asked to overwrite files. Try the --overwite flag")
 
-    print("Done with Heudiconv BIDS Convesion.")
+    print("Done with Heudiconv BIDS Conversion.")
 
     if cleanup:
         print("Removing XNAT export.")

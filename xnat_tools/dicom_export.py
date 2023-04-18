@@ -98,6 +98,10 @@ def dicom_export(
             bidsmap = json.load(f)
 
     # Set up working directory
+    if not os.path.exists(bids_root_dir):
+        os.makedirs(bids_root_dir)
+
+    # Set up working directory
     if not os.access(bids_root_dir, os.R_OK):
         raise ValueError(f"BIDS Root directory must exist: {bids_root_dir}")
 
