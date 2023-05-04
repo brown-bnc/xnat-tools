@@ -3,10 +3,8 @@ from typing import List
 
 import typer
 
-from xnat_tools.bids_postprocess import bids_postprocess
-from xnat_tools.bids_utils import prepare_path_prefixes
+from xnat_tools.dcm2bids import dcm2bids
 from xnat_tools.dicom_export import dicom_export
-from xnat_tools.run_heudiconv import run_heudiconv
 
 app = typer.Typer()
 
@@ -65,57 +63,50 @@ def xnat2bids(
         False,
         help="Remove xnat-export folder and move logs to derivatives/xnat/logs",
     ),
+    skip_export: bool = typer.Option(
+        False,
+        help="Skip DICOM Export, while only running BIDS conversion",
+    ),
+    export_only: bool = typer.Option(
+        False,
+        help="Run DICOM Export without subsequent BIDS conversion",
+    ),
 ):
     """
     Export DICOM images from an XNAT experiment to a BIDS compliant directory
     """
 
-    project, subject, session_suffix = dicom_export(
-        session,
-        bids_root_dir,
-        user=user,
-        password=password,
-        host=host,
-        session_suffix=session_suffix,
-        bidsmap_file=bidsmap_file,
-        includeseq=includeseq,
-        skipseq=skipseq,
-        log_id=log_id,
-        verbose=verbose,
-        overwrite=overwrite,
-    )
+    if not skip_export:
+        project, subject, session_suffix = dicom_export(
+            session,
+            bids_root_dir,
+            user=user,
+            password=password,
+            host=host,
+            session_suffix=session_suffix,
+            bidsmap_file=bidsmap_file,
+            includeseq=includeseq,
+            skipseq=skipseq,
+            log_id=log_id,
+            verbose=verbose,
+            overwrite=overwrite,
+        )
 
-    r = run_heudiconv(
-        project,
-        subject,
-        bids_root_dir,
-        session_suffix=session_suffix,
-        log_id=log_id,
-        overwrite=overwrite,
-        cleanup=cleanup,
-    )
+    if not export_only:
+        r = dcm2bids(
+            project,
+            subject,
+            bids_root_dir,
+            session,
+            user=user,
+            password=password,
+            session_suffix=session_suffix,
+            log_id=log_id,
+            overwrite=overwrite,
+            cleanup=cleanup,
+        )
 
-    pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_path_prefixes(
-        project, subject, session
-    )
-
-    bids_experiment_dir = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/bids"
-
-    bids_postprocess(
-        bids_experiment_dir,
-        user=user,
-        password=password,
-        session="",
-        includesess=[session_suffix],
-        includesubj=[subject],
-        skipsubj=[],
-        skipsess=[],
-        log_file="",
-        verbose=0,
-        overwrite=False,
-    )
-
-    return r
+    return True if export_only else r
 
 
 def main():
