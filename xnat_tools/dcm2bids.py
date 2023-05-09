@@ -63,7 +63,7 @@ def dcm2bids(
         bids_experiment_dir,
         user=user,
         password=password,
-        session="",
+        session=session,
         includesess=[session_suffix],
         includesubj=[subject],
         skipsubj=[],

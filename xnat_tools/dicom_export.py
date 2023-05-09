@@ -16,7 +16,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import List
 
-import requests  # type: ignore
 import typer
 
 from xnat_tools.bids_utils import (
@@ -27,7 +26,12 @@ from xnat_tools.bids_utils import (
     prepare_path_prefixes,
 )
 from xnat_tools.logging import setup_logging
-from xnat_tools.xnat_utils import filter_scans, get_project_subject_session, get_scan_ids
+from xnat_tools.xnat_utils import (
+    establish_connection,
+    filter_scans,
+    get_project_subject_session,
+    get_scan_ids,
+)
 
 _logger = logging.getLogger(__name__)
 app = typer.Typer()
@@ -102,9 +106,7 @@ def dicom_export(
         raise ValueError(f"BIDS Root directory must exist: {bids_root_dir}")
 
     # Set up session
-    connection = requests.Session()
-    connection.verify = True
-    connection.auth = (user, password)
+    connection = establish_connection(user, password)
     project, subject, session_suffix = get_project_subject_session(
         connection, host, session, session_suffix
     )

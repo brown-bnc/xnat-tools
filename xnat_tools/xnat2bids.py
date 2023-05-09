@@ -5,6 +5,7 @@ import typer
 
 from xnat_tools.dcm2bids import dcm2bids
 from xnat_tools.dicom_export import dicom_export
+from xnat_tools.xnat_utils import establish_connection, get_project_subject_session
 
 app = typer.Typer()
 
@@ -61,14 +62,17 @@ def xnat2bids(
     ),
     cleanup: bool = typer.Option(
         False,
+        "--cleanup",
         help="Remove xnat-export folder and move logs to derivatives/xnat/logs",
     ),
     skip_export: bool = typer.Option(
         False,
+        "--skip-export",
         help="Skip DICOM Export, while only running BIDS conversion",
     ),
     export_only: bool = typer.Option(
         False,
+        "--export-only",
         help="Run DICOM Export without subsequent BIDS conversion",
     ),
 ):
@@ -77,6 +81,7 @@ def xnat2bids(
     """
 
     if not skip_export:
+
         project, subject, session_suffix = dicom_export(
             session,
             bids_root_dir,
@@ -93,6 +98,13 @@ def xnat2bids(
         )
 
     if not export_only:
+
+        if "project" not in locals():
+            conn = establish_connection(user, password)
+            project, subject, session_suffix = get_project_subject_session(
+                conn, host, session, session_suffix
+            )
+
         r = dcm2bids(
             project,
             subject,

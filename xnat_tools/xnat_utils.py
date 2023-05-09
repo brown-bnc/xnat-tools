@@ -1,6 +1,7 @@
 import getpass
 import logging
 
+import requests  # type: ignore
 import urllib3
 
 urllib3.disable_warnings()
@@ -39,6 +40,13 @@ def download(connection, name, pathDict):
 
             f.write(block)
     _logger.debug("Downloaded remote file %s." % name)
+
+
+def establish_connection(user, password):
+    connection = requests.Session()
+    connection.verify = True
+    connection.auth = (user, password)
+    return connection
 
 
 def get_project_subject_session(connection, host, session, session_suffix):

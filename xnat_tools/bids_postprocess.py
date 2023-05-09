@@ -2,12 +2,11 @@ import logging
 import os
 from typing import List
 
-import requests  # type: ignore
 import typer
 
 from xnat_tools.bids_utils import insert_intended_for_fmap
 from xnat_tools.logging import setup_logging
-from xnat_tools.xnat_utils import get_project_subject_session
+from xnat_tools.xnat_utils import establish_connection, get_project_subject_session
 
 _logger = logging.getLogger(__name__)
 
@@ -82,19 +81,17 @@ def bids_postprocess(
         raise ValueError("BIDS Experiment directory must exist")
 
     if session != "":
-        # # Set up session
-        connection = requests.Session()
-        connection.verify = True
-        connection.auth = (user, password)
+        # Set up session
+        connection = establish_connection(user, password)
 
         session_info = get_project_subject_session(
             connection, "https://xnat.bnc.brown.edu", session, "-1"
         )
         includesubj = [session_info[1]]
 
-        insert_intended_for_fmap(
-            bids_experiment_dir, includesubj, session_info[2].lower(), overwrite
-        )
+        session_suffix = session_info[2].lower()
+
+        insert_intended_for_fmap(bids_experiment_dir, includesubj, session_suffix, overwrite)
 
     else:
         if includesubj == []:
@@ -112,7 +109,7 @@ def bids_postprocess(
             for subj in includesubj:
                 subj_path = f"{bids_experiment_dir}/sub-{subj}"
                 files = os.listdir(subj_path)
-                includesess = [x for x in files if x.startswith("ses-")]
+                includesess = [x.lower() for x in files if x.startswith("ses-")]
 
         includesess = [str(x).replace("ses-", "") for x in includesess]
 
@@ -123,7 +120,7 @@ def bids_postprocess(
             _logger.info(f"Skipping Sessions {skipsess}: ")
             _logger.info("---------------------------------")
 
-            includesess = [x for x in includesess if x not in skipsess]
+            includesess = [x.lower() for x in includesess if x not in skipsess]
 
         _logger.info("---------------------------------")
         _logger.info(f"Processing Subjects {includesubj}: ")

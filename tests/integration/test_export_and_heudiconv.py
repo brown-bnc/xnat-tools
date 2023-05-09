@@ -10,7 +10,7 @@ from typer.testing import CliRunner
 from xnat_tools.dicom_export import app as export_app
 from xnat_tools.dicom_export import dicom_export
 from xnat_tools.run_heudiconv import app as heudi_app
-from xnat_tools.xnat_utils import get
+from xnat_tools.xnat_utils import establish_connection, get
 
 from .test_xnat2bids import series_idx
 
@@ -182,9 +182,7 @@ def test_unauthorized_user_exception_handling():
     user = "bad_user"
     password = "bad_password"
 
-    connection = requests.Session()
-    connection.verify = True
-    connection.auth = (user, password)
+    connection = establish_connection(user, password)
 
     try:
         get(
@@ -205,9 +203,7 @@ def test_xnat_reachable_exception_handling():
     user = os.environ.get("XNAT_USER", "")
     password = os.environ.get("XNAT_PASS", "")
 
-    connection = requests.Session()
-    connection.verify = True
-    connection.auth = (user, password)
+    connection = establish_connection(user, password)
 
     try:
         get(

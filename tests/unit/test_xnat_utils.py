@@ -1,8 +1,6 @@
 import os
 
-import requests  # type: ignore
-
-from xnat_tools.xnat_utils import filter_scans, get_project_subject_session
+from xnat_tools.xnat_utils import establish_connection, filter_scans, get_project_subject_session
 
 
 def phony_scan_data(scan_count=10):
@@ -73,9 +71,7 @@ def test_fetch_proj_subj_sess():
     user = os.environ.get("XNAT_USER", "")
     password = os.environ.get("XNAT_PASS", "")
     session_suffix = "-1"
-    connection = requests.Session()
-    connection.verify = True
-    connection.auth = (user, password)
+    connection = establish_connection(user, password)
     project, subject, session_suffix = get_project_subject_session(
         connection, host, session, session_suffix
     )
