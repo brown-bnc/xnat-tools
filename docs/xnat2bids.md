@@ -26,6 +26,8 @@ $ xnat2bids [OPTIONS] SESSION BIDS_ROOT_DIR
 * `-v, --verbose`: Verbose level. This flag can be specified multiple times to increase verbosity  [default: 0]
 * `--overwrite`: Remove directories where prior results for this session/participant
 * `--cleanup / --no-cleanup`: Remove xnat-export folder and move logs to derivatives/xnat/logs  [default: no-cleanup]
+* `--skip-export / --no-skip-export`: Skip DICOM Export, while only running BIDS conversion  [default: no-skip-export]
+* `--export-only / --no-export-only`: Run DICOM Export without subsequent BIDS conversion  [default: no-export-only]
 * `--install-completion`: Install completion for the current shell.
 * `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 * `--help`: Show this message and exit.
