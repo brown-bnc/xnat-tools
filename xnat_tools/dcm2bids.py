@@ -59,8 +59,6 @@ def dcm2bids(
 
     bids_experiment_dir = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/bids"
 
-    print(bids_experiment_dir)
-
     bids_postprocess(
         bids_experiment_dir,
         user=user,

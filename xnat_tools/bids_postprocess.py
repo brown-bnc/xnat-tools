@@ -4,7 +4,7 @@ from typing import List
 
 import typer
 
-from xnat_tools.bids_utils import insert_intended_for_fmap
+from xnat_tools.bids_utils import insert_intended_for_fmap, path_string_preprocess
 from xnat_tools.logging import setup_logging
 from xnat_tools.xnat_utils import establish_connection, get_project_subject_session
 
@@ -84,12 +84,15 @@ def bids_postprocess(
         # Set up session
         connection = establish_connection(user, password)
 
-        session_info = get_project_subject_session(
+        project, subject, session_suffix = get_project_subject_session(
             connection, "https://xnat.bnc.brown.edu", session, "-1"
         )
+
+        session_info = path_string_preprocess(project, subject, session_suffix)
+
         includesubj = [session_info[1]]
 
-        session_suffix = session_info[2].lower()
+        session_suffix = session_info[2]
 
         insert_intended_for_fmap(bids_experiment_dir, includesubj, session_suffix, overwrite)
 
@@ -109,7 +112,7 @@ def bids_postprocess(
             for subj in includesubj:
                 subj_path = f"{bids_experiment_dir}/sub-{subj}"
                 files = os.listdir(subj_path)
-                includesess = [x.lower() for x in files if x.startswith("ses-")]
+                includesess = [x for x in files if x.startswith("ses-")]
 
         includesess = [str(x).replace("ses-", "") for x in includesess]
 
@@ -120,7 +123,7 @@ def bids_postprocess(
             _logger.info(f"Skipping Sessions {skipsess}: ")
             _logger.info("---------------------------------")
 
-            includesess = [x.lower() for x in includesess if x not in skipsess]
+            includesess = [x for x in includesess if x not in skipsess]
 
         _logger.info("---------------------------------")
         _logger.info(f"Processing Subjects {includesubj}: ")
