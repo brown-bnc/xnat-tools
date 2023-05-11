@@ -121,7 +121,7 @@ def dicom_export(
     logs_dir = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/logs"
 
     if not os.path.exists(logs_dir):
-        os.makedirs(logs_dir)
+        os.makedirs(logs_dir, exist_ok=True)
 
     setup_logging(_logger, f"{logs_dir}/export-{log_id}.log", verbose_level=verbose)
 
