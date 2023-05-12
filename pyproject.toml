@@ -32,9 +32,6 @@ responses = "^0.21.0"
 # typer-cli = "^0.0.10"
 
 [tool.poetry.scripts]
-bids-postprocess ="xnat_tools.bids_postprocess:main"
-xnat-heudiconv = "xnat_tools.run_heudiconv:main"
-xnat-dicom-export = "xnat_tools.dicom_export:main"
 xnat2bids = "xnat_tools.xnat2bids:main"
 
 [tool.commitizen]

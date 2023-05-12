@@ -25,7 +25,9 @@ $ xnat2bids [OPTIONS] SESSION BIDS_ROOT_DIR
 * `--log-id TEXT`: ID or suffix to append to logfile. If empty, current date is used  [default: current date - MM-DD-YYYY-HH-MM-SS]
 * `-v, --verbose`: Verbose level. This flag can be specified multiple times to increase verbosity  [default: 0]
 * `--overwrite`: Remove directories where prior results for this session/participant
-* `--cleanup / --no-cleanup`: Remove xnat-export folder and move logs to derivatives/xnat/logs  [default: no-cleanup]
+* `--cleanup`: Remove xnat-export folder and move logs to derivatives/xnat/logs
+* `--skip-export`: Skip DICOM Export, while only running BIDS conversion
+* `--export-only`: Run DICOM Export without subsequent BIDS conversion
 * `--install-completion`: Install completion for the current shell.
 * `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 * `--help`: Show this message and exit.

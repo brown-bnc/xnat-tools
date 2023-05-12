@@ -2,12 +2,11 @@ import logging
 import os
 from typing import List
 
-import requests  # type: ignore
 import typer
 
-from xnat_tools.bids_utils import insert_intended_for_fmap
+from xnat_tools.bids_utils import insert_intended_for_fmap, path_string_preprocess
 from xnat_tools.logging import setup_logging
-from xnat_tools.xnat_utils import get_project_subject_session
+from xnat_tools.xnat_utils import establish_connection, get_project_subject_session
 
 _logger = logging.getLogger(__name__)
 
@@ -82,19 +81,20 @@ def bids_postprocess(
         raise ValueError("BIDS Experiment directory must exist")
 
     if session != "":
-        # # Set up session
-        connection = requests.Session()
-        connection.verify = True
-        connection.auth = (user, password)
+        # Set up session
+        connection = establish_connection(user, password)
 
-        session_info = get_project_subject_session(
+        project, subject, session_suffix = get_project_subject_session(
             connection, "https://xnat.bnc.brown.edu", session, "-1"
         )
+
+        session_info = path_string_preprocess(project, subject, session_suffix)
+
         includesubj = [session_info[1]]
 
-        insert_intended_for_fmap(
-            bids_experiment_dir, includesubj, session_info[2].lower(), overwrite
-        )
+        session_suffix = session_info[2]
+
+        insert_intended_for_fmap(bids_experiment_dir, includesubj, session_suffix, overwrite)
 
     else:
         if includesubj == []:
