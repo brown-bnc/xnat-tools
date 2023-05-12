@@ -1,3 +1,20 @@
+## v1.2.0 (2023-05-12)
+
+### Feat
+
+- **xnat2bids.py**: add modular function dcm2bids for bids conversion pipeline
+
+### Fix
+
+- **dicom_export**: add exist_ok to makedirs to resolve synchronization issue
+- add path preprocessing for project and subject data
+- check bids_experiment_dir path in github runner
+- fetch project and subject data when running with --skip-export
+
+### Refactor
+
+- **pyproject.toml**: remove xnat-dicom-export, xnat-heudiconv, bids_postprocess, and xnat-dcm2bids from pyproject
+
 ## v1.1.1 (2023-04-06)
 
 ### Fix
