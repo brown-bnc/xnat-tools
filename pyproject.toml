@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xnat-tools"
-version = "1.2.0"
+version = "1.2.1"
 description = ""
 authors = ["Isabel Restrepo <isabelrestre@gmail.com>"]
 
@@ -35,7 +35,7 @@ responses = "^0.21.0"
 xnat2bids = "xnat_tools.xnat2bids:main"
 
 [tool.commitizen]
-version = "1.2.0"
+version = "1.2.1"
 tag_format = "v$version"
 version_files = [
     "pyproject.toml:version",

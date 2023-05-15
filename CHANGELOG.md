@@ -1,3 +1,9 @@
+## v1.2.1 (2023-05-15)
+
+### Fix
+
+- **bids_utils.py**: add exist_ok param to makedirs
+
 ## v1.2.0 (2023-05-12)
 
 ### Feat
