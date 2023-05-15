@@ -205,7 +205,7 @@ def prepare_export_output_path(
 
     if not os.path.isdir(session_dir):
         _logger.info("Making output xnat-export session directory %s" % session_dir)
-        os.makedirs(session_dir)
+        os.makedirs(session_dir, exist_ok=True)
 
     return session_dir
 
@@ -249,7 +249,7 @@ def prepare_heudiconv_output_path(
 
     if not os.path.isdir(heudi_output_dir):
         print("Making output BIDS Session directory %s" % heudi_output_dir)
-        os.makedirs(heudi_output_dir)
+        os.makedirs(heudi_output_dir, exist_ok=True)
 
     return heudi_output_dir
 
