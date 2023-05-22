@@ -6,6 +6,7 @@ import typer
 from xnat_tools.bids_utils import path_string_preprocess
 from xnat_tools.dcm2bids import dcm2bids
 from xnat_tools.dicom_export import dicom_export
+from xnat_tools.physio_convert import physio_convert
 from xnat_tools.xnat_utils import establish_connection, get_project_subject_session
 
 app = typer.Typer()
@@ -121,6 +122,8 @@ def xnat2bids(
             overwrite=overwrite,
             cleanup=cleanup,
         )
+
+        physio_convert(project, subject, bids_root_dir, session_suffix)
 
     return True if export_only else r
 
