@@ -379,10 +379,36 @@ def scan_contains_dicom(connection, host, session, scanid):
     return True
 
 
+def download_resources(connection, host, session, bids_session_dir):
+    r = get(
+        connection,
+        host + "/data/experiments/%s/files" % session,
+        params={"format": "json"},
+    )
+
+    # Build dictionary of format { filename: (pathURI, collectionType) } for every resource
+    resourceFileDict = {
+        resource["Name"]: ({"URI": host + resource["URI"]}, resource["collection"])
+        for resource in r.json()["ResultSet"]["Result"]
+    }
+
+    resourceFileList = list(resourceFileDict.items())
+
+    # Download Resources
+    for name, resourceDetails in resourceFileList:
+        _logger.info("Downloading files")
+        pathURI = resourceDetails[0]
+        collection = resourceDetails[1]
+        bids_scan_directory = os.path.join(bids_session_dir, collection)
+        os.makedirs(bids_scan_directory, exist_ok=True)
+        os.chdir(bids_scan_directory)
+        print(name, resourceDetails[0])
+        download(connection, name, pathURI)
+
+
 def assign_bids_name(
     connection,
     host,
-    subject,
     session,
     scans,
     build_dir,
@@ -394,6 +420,7 @@ def assign_bids_name(
     build_dir: build director. What is this?
     study_bids_dir: BIDS directory to copy simlinks to. Typically the RESOURCES/BIDS
     """
+    # Build a dict keyed off file name
 
     for scanid, seriesdesc in scans:
         if not scan_contains_dicom(connection, host, session, scanid):
