@@ -402,7 +402,6 @@ def download_resources(connection, host, session, bids_session_dir):
         bids_scan_directory = os.path.join(bids_session_dir, collection)
         os.makedirs(bids_scan_directory, exist_ok=True)
         os.chdir(bids_scan_directory)
-        print(name, resourceDetails[0])
         download(connection, name, pathURI)
 
 
