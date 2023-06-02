@@ -95,8 +95,6 @@ def physio_convert(
         raise ValueError("BIDS Root directory must exist")
 
     # # Paths to export source data in a BIDS friendly way
-    # project, subject, session_suffix = path_string_preprocess(project, subject, session_suffix)
-
     pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_path_prefixes(
         project, subject, session_suffix
     )
