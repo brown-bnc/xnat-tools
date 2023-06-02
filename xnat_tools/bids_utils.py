@@ -6,6 +6,8 @@ import warnings
 from collections import defaultdict
 
 import pydicom
+from mne.io import read_raw_brainvision
+from mne_bids import BIDSPath, write_raw_bids
 
 from xnat_tools.xnat_utils import download, get
 
@@ -402,7 +404,6 @@ def download_resources(connection, host, session, bids_session_dir):
         bids_scan_directory = os.path.join(bids_session_dir, collection)
         os.makedirs(bids_scan_directory, exist_ok=True)
         os.chdir(bids_scan_directory)
-        print(name, resourceDetails[0])
         download(connection, name, pathURI)
 
 
@@ -491,3 +492,40 @@ def assign_bids_name(
         os.chdir(build_dir)
         _logger.info("Done.")
         _logger.info("---------------------------------")
+
+
+def run_mne_eeg2bids(
+    bids_root_dir,
+    subject,
+    session_suffix,
+    pi_prefix,
+    study_prefix,
+    subject_prefix,
+    bids_experiment_dir,
+):
+    # Build path to exported eeg resource data
+    eeg_data_path = (
+        f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/"
+        f"{subject_prefix}/ses-{session_suffix}/eeg/"
+    )
+
+    # Find BrainVision header file
+    for file_name in os.listdir(eeg_data_path):
+        if file_name.endswith(".vhdr"):
+            vdhr_file = os.path.join(eeg_data_path, file_name)
+            break
+
+    # Fetch EEG data via MNE's IO function for BrainVision
+    raw = read_raw_brainvision(vdhr_file)
+
+    # Allow MNE to construct BIDS Path with available session data
+    bids_path = BIDSPath(
+        subject=subject,
+        session=session_suffix,
+        root=f"{bids_experiment_dir}/eeg",
+        task="resting",
+        check=False,
+    )
+
+    # Ouput EEG-BIDS data to defined path
+    write_raw_bids(raw, bids_path, overwrite=True)

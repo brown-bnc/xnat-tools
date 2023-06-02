@@ -3,7 +3,7 @@ from datetime import datetime
 import typer
 
 from xnat_tools.bids_postprocess import bids_postprocess
-from xnat_tools.bids_utils import prepare_path_prefixes
+from xnat_tools.bids_utils import prepare_path_prefixes, run_mne_eeg2bids
 from xnat_tools.run_heudiconv import run_heudiconv
 
 app = typer.Typer()
@@ -71,6 +71,16 @@ def dcm2bids(
         log_file="",
         verbose=0,
         overwrite=False,
+    )
+
+    run_mne_eeg2bids(
+        bids_root_dir,
+        subject,
+        session_suffix,
+        pi_prefix,
+        study_prefix,
+        subject_prefix,
+        bids_experiment_dir,
     )
 
     return r
