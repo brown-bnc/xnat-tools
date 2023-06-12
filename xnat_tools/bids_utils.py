@@ -382,7 +382,7 @@ def scan_contains_dicom(connection, host, session, scanid):
 def download_resources(connection, host, session, bids_session_dir):
     r = get(
         connection,
-        host + "/data/experiments/%s/files" % session,
+        f"{host}/data/experiments/{session}/files",
         params={"format": "json"},
     )
 
@@ -396,13 +396,12 @@ def download_resources(connection, host, session, bids_session_dir):
 
     # Download Resources
     for name, resourceDetails in resourceFileList:
-        _logger.info("Downloading files")
+        _logger.info(f"Downloading files: {name}")
         pathURI = resourceDetails[0]
         collection = resourceDetails[1]
         bids_scan_directory = os.path.join(bids_session_dir, collection)
         os.makedirs(bids_scan_directory, exist_ok=True)
         os.chdir(bids_scan_directory)
-        print(name, resourceDetails[0])
         download(connection, name, pathURI)
 
 
