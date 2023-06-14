@@ -9,7 +9,7 @@ _Version:_
 - `latest`: Is the build of main
 - `vX.X.X`: Latest tagged stable release
 
-You can confirm the tags [here](https://hub.docker.com/repository/docker/brownbnc/xnat-tools/tags?page=1)
+You can confirm the tags [here](https://hub.docker.com/r/brownbnc/xnat-tools/tags)
 
 ## Using Python
 
