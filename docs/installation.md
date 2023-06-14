@@ -1,7 +1,7 @@
 ## Using Docker
 
 ```
-docker pull docker pull brownbnc/xnat_tools:<version>
+docker pull brownbnc/xnat_tools:<version>
 ```
 
 _Version:_
