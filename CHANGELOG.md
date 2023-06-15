@@ -1,3 +1,15 @@
+## v1.3.0 (2023-06-15)
+
+### Feat
+
+- **installation.md**: update docs with feat change type to trigger bump version action
+
+### Fix
+
+- **installation.md**: fix tags url
+
+## v1.2.2 (2023-06-14)
+
 ## v1.2.1 (2023-05-15)
 
 ### Fix
