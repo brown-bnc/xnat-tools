@@ -10,23 +10,27 @@
       
       
       
-        <link rel="canonical" href="http://brown-bnc.github.io/xnat-tools/">
+        <link rel="canonical" href="http://brown-bnc.github.io/xnat-tools/dicom_export/">
       
       
+        <link rel="prev" href="../xnat2bids/">
       
-      <link rel="icon" href="assets/images/favicon.png">
+      
+        <link rel="next" href="../run_heudiconv/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.18">
     
     
       
-        <title>XNAT Tools - Version Page</title>
+        <title>xnat-dicom-export - XNAT Tools - 1.4.0</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.26e3688c.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.26e3688c.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ecc896b0.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ecc896b0.min.css">
       
       
 
@@ -42,9 +46,9 @@
       
     
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -69,7 +73,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#welcome-to-xnat-tools" class="md-skip">
+        <a href="#dicom_export" class="md-skip">
           Skip to content
         </a>
       
@@ -83,7 +87,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="XNAT Tools - Version Page" class="md-header__button md-logo" aria-label="XNAT Tools - Version Page" data-md-component="logo">
+    <a href=".." title="XNAT Tools - 1.4.0" class="md-header__button md-logo" aria-label="XNAT Tools - 1.4.0" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -96,13 +100,13 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            XNAT Tools - Version Page
+            XNAT Tools - 1.4.0
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              xnat-dicom-export
             
           </span>
         </div>
@@ -176,15 +180,51 @@
         
   
   
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
     
   
 
 
-  <li class="md-tabs__item">
-    <a href="." class="md-tabs__link md-tabs__link--active">
-      Home
-    </a>
-  </li>
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../usage_overview/" class="md-tabs__link md-tabs__link--active">
+        Usage
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../dev_setup/" class="md-tabs__link">
+        Development
+      </a>
+    </li>
+  
 
       
         
@@ -193,212 +233,8 @@
 
 
   <li class="md-tabs__item">
-    <a href="dev/" class="md-tabs__link">
-      dev
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.4.0/" class="md-tabs__link">
-      1.4.0
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.3.0/" class="md-tabs__link">
-      1.3.0
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.2.1/" class="md-tabs__link">
-      1.2.1
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.2.0/" class="md-tabs__link">
-      1.2.0
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.1.1/" class="md-tabs__link">
-      1.1.1
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.1.0/" class="md-tabs__link">
-      1.1.0
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.0.9/" class="md-tabs__link">
-      1.0.9
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.0.8/" class="md-tabs__link">
-      1.0.8
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.0.7/" class="md-tabs__link">
-      1.0.7
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.0.6/" class="md-tabs__link">
-      1.0.6
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.0.5/" class="md-tabs__link">
-      1.0.5
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.0.4/" class="md-tabs__link">
-      1.0.4
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.0.3/" class="md-tabs__link">
-      1.0.3
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.0.2/" class="md-tabs__link">
-      1.0.2
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.0.10/" class="md-tabs__link">
-      1.0.10
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.0.1/" class="md-tabs__link">
-      1.0.1
-    </a>
-  </li>
-
-      
-        
-  
-  
-
-
-  <li class="md-tabs__item">
-    <a href="1.0.0/" class="md-tabs__link">
-      1.0.0
+    <a href="../" class="md-tabs__link">
+      Version Selector
     </a>
   </li>
 
@@ -424,13 +260,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="XNAT Tools - Version Page" class="md-nav__button md-logo" aria-label="XNAT Tools - Version Page" data-md-component="logo">
+    <a href=".." title="XNAT Tools - 1.4.0" class="md-nav__button md-logo" aria-label="XNAT Tools - 1.4.0" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
 
     </a>
-    XNAT Tools - Version Page
+    XNAT Tools - 1.4.0
   </label>
   
     <div class="md-nav__source">
@@ -453,6 +289,128 @@
 
   
   
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+        
+      
+      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_1" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+          Getting Started
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          Getting Started
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          Usage
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Usage
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage_overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xnat2bids/" class="md-nav__link">
+        xnat2bids
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
     
   
   
@@ -464,10 +422,110 @@
         
       
       
-      <a href="." class="md-nav__link md-nav__link--active">
-        Home
+      <a href="./" class="md-nav__link md-nav__link--active">
+        xnat-dicom-export
       </a>
       
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../run_heudiconv/" class="md-nav__link">
+        xnat-heudiconv
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bids_postprocess/" class="md-nav__link">
+        bids-postprocess
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+        
+      
+      <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          Development
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Development
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev_setup/" class="md-nav__link">
+        Setting Up
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../code_standards/" class="md-nav__link">
+        Code standards
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -480,263 +538,8 @@
   
   
     <li class="md-nav__item">
-      <a href="dev/" class="md-nav__link">
-        dev
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.4.0/" class="md-nav__link">
-        1.4.0
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.3.0/" class="md-nav__link">
-        1.3.0
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.2.1/" class="md-nav__link">
-        1.2.1
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.2.0/" class="md-nav__link">
-        1.2.0
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.1.1/" class="md-nav__link">
-        1.1.1
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.1.0/" class="md-nav__link">
-        1.1.0
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.0.9/" class="md-nav__link">
-        1.0.9
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.0.8/" class="md-nav__link">
-        1.0.8
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.0.7/" class="md-nav__link">
-        1.0.7
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.0.6/" class="md-nav__link">
-        1.0.6
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.0.5/" class="md-nav__link">
-        1.0.5
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.0.4/" class="md-nav__link">
-        1.0.4
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.0.3/" class="md-nav__link">
-        1.0.3
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.0.2/" class="md-nav__link">
-        1.0.2
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.0.10/" class="md-nav__link">
-        1.0.10
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.0.1/" class="md-nav__link">
-        1.0.1
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="1.0.0/" class="md-nav__link">
-        1.0.0
+      <a href="../" class="md-nav__link">
+        Version Selector
       </a>
     </li>
   
@@ -775,9 +578,33 @@
                   
 
 
-<h1 id="welcome-to-xnat-tools">Welcome to xnat-tools<a class="headerlink" href="#welcome-to-xnat-tools" title="Permanent link">&para;</a></h1>
-<p>XNAT tools is maintained by members of the <a href="https://brown-bnc.github.io">Behavioral Neuroimaging Core</a> at Brown University. This package facilitates the export and conversion of data stored in Brown's XNAT platform, to the BIDS format. The optimal way to install and run this package depends on your computation environment. We outline all the possibilities.</p>
-<p>We maintain documentation for all of our stable releases as well as our development code. Please select the version of the documentation/package to get started.</p>
+<h1 id="dicom_export"><code>dicom_export</code><a class="headerlink" href="#dicom_export" title="Permanent link">&para;</a></h1>
+<p>Export XNAT DICOM images in an experiment to a BIDS friendly format</p>
+<p><strong>Usage</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="gp">$ </span>dicom_export<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>SESSION<span class="w"> </span>BIDS_ROOT_DIR
+</code></pre></div>
+
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>SESSION</code>: XNAT Session ID, that is the Accession # for an experiment.  [required]</li>
+<li><code>BIDS_ROOT_DIR</code>: Root output directory for exporting the files  [required]</li>
+</ul>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>-u, --user TEXT</code>: XNAT User</li>
+<li><code>-p, --pass TEXT</code>: XNAT Password</li>
+<li><code>-h, --host TEXT</code>: XNAT's URL  [default: https://xnat.bnc.brown.edu]</li>
+<li><code>-S, --session-suffix TEXT</code>: The session_suffix is initially set to -1.              This will signify an unspecified session_suffix and default to sess-01.              For multi-session studies, the session label will be pulled from XNAT  [default: -1]</li>
+<li><code>-f, --bidsmap-file TEXT</code>: Bidsmap JSON file to correct sequence names</li>
+<li><code>-i, --includeseq INTEGER</code>: Include this sequence only, this flag can specify multiple times</li>
+<li><code>-s, --skipseq INTEGER</code>: Exclude this sequence, this flag can specify multiple times</li>
+<li><code>--log-id TEXT</code>: ID or suffix to append to logfile. If empty, current date is used  [default: current date - MM-DD-YYYY-HH-MM-SS]</li>
+<li><code>-v, --verbose</code>: Verbose level. Can be specified multiple times to increase verbosity  [default: 0]</li>
+<li><code>--overwrite</code>: Remove directories where prior results for session/participant may exist</li>
+<li><code>--install-completion</code>: Install completion for the current shell.</li>
+<li><code>--show-completion</code>: Show completion for the current shell, to copy it or customize the installation.</li>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
 
 
 
@@ -830,10 +657,10 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.instant", "navigation.tabs", "navigation.expand"], "search": "assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tabs", "navigation.expand"], "search": "../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.220ee61c.min.js"></script>
+      <script src="../assets/javascripts/bundle.220ee61c.min.js"></script>
       
     
   </body>
