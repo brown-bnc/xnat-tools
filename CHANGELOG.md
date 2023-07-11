@@ -1,3 +1,9 @@
+## v1.4.0 (2023-07-11)
+
+### Feat
+
+- integrate BIDS conversion of physio data
+
 ## v1.3.0 (2023-06-15)
 
 ### Feat
