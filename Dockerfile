@@ -8,8 +8,7 @@ WORKDIR xnat-tools
 
 RUN curl -fLO "https://github.com/rordenlab/dcm2niix/releases/download/${DCM2NIIX_VERSION}/dcm2niix_lnx.zip" \
     && unzip dcm2niix_lnx.zip \
-    && mv dcm2niix /usr/bin/ \
-    && mv dcm2niibatch /usr/bin/
+    && mv dcm2niix /usr/bin/ 
 
 COPY poetry.lock pyproject.toml tests xnat_tools ./
 COPY xnat_tools/ ./xnat_tools 
