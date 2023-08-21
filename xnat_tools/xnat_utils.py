@@ -112,14 +112,18 @@ def get_scan_ids(connection, host, session):
 
 def filter_scans(scans, seqlist=[], skiplist=[]):
     """Filters the scans based on the sequence list and the skip list"""
-    print("SKIP LIST: ", skiplist)
+
     if not seqlist and not skiplist:
         return scans
 
     if not seqlist:
         desired_scans = scans
     else:
-        desired_scans = [scan for scan in scans if int(scan[0]) in seqlist]
+        desired_scans = [
+            scan
+            for scan in scans
+            if int(scan[0]) in seqlist or str(get_acquisition_label(scan[1].split("_"))) in seqlist
+        ]
 
     desired_scans = [
         scan
