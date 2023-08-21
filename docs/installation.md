@@ -1,7 +1,7 @@
 ## Using Docker
 
 ```
-docker pull docker pull brownbnc/xnat_tools:<version>
+docker pull brownbnc/xnat-tools:<version>
 ```
 
 _Version:_
@@ -9,7 +9,7 @@ _Version:_
 - `latest`: Is the build of main
 - `vX.X.X`: Latest tagged stable release
 
-You can confirm the tags [here](https://hub.docker.com/repository/docker/brownbnc/xnat_tools/tags?page=1)
+You can confirm the tags [here](https://hub.docker.com/r/brownbnc/xnat-tools/tags)
 
 ## Using Python
 
