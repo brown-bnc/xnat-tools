@@ -522,7 +522,7 @@ def run_mne_eeg2bids(
     bids_path = BIDSPath(
         subject=subject,
         session=session_suffix,
-        root=f"{bids_experiment_dir}/eeg",
+        root=f"{bids_experiment_dir}",
         task="resting",
         check=False,
     )
