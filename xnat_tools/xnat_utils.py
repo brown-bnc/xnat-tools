@@ -112,6 +112,7 @@ def get_scan_ids(connection, host, session):
 
 def filter_scans(scans, seqlist=[], skiplist=[]):
     """Filters the scans based on the sequence list and the skip list"""
+    print("SKIP LIST: ", skiplist)
     if not seqlist and not skiplist:
         return scans
 
@@ -120,6 +121,19 @@ def filter_scans(scans, seqlist=[], skiplist=[]):
     else:
         desired_scans = [scan for scan in scans if int(scan[0]) in seqlist]
 
-    desired_scans = [scan for scan in desired_scans if int(scan[0]) not in skiplist]
+    desired_scans = [
+        scan
+        for scan in desired_scans
+        if int(scan[0]) not in skiplist
+        and str(get_acquisition_label(scan[1].split("_"))) not in skiplist
+    ]
 
     return desired_scans
+
+
+# Extract aquisition token from filename
+def get_acquisition_label(bids_tokens: list):
+    for token in bids_tokens:
+        if token.__contains__("acq"):
+            return token.strip("acq-")
+    return ""
