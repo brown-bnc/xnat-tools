@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 import typer
@@ -73,14 +74,20 @@ def dcm2bids(
         overwrite=False,
     )
 
-    run_mne_eeg2bids(
-        bids_root_dir,
-        subject,
-        session_suffix,
-        pi_prefix,
-        study_prefix,
-        subject_prefix,
-        bids_experiment_dir,
+    # Build path to exported eeg data
+    eeg_data_path = (
+        f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/"
+        f"{subject_prefix}/ses-{session_suffix}/eeg/"
     )
+
+    # Convert EEG data to BIDS if present
+    if os.path.isdir(eeg_data_path):
+
+        run_mne_eeg2bids(
+            subject,
+            session_suffix,
+            bids_experiment_dir,
+            eeg_data_path,
+        )
 
     return r

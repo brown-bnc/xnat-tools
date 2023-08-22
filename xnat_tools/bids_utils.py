@@ -495,19 +495,11 @@ def assign_bids_name(
 
 
 def run_mne_eeg2bids(
-    bids_root_dir,
     subject,
     session_suffix,
-    pi_prefix,
-    study_prefix,
-    subject_prefix,
     bids_experiment_dir,
+    eeg_data_path,
 ):
-    # Build path to exported eeg resource data
-    eeg_data_path = (
-        f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/"
-        f"{subject_prefix}/ses-{session_suffix}/eeg/"
-    )
 
     # Find BrainVision header file
     for file_name in os.listdir(eeg_data_path):
