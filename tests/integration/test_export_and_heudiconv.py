@@ -48,7 +48,7 @@ def test_dicom_export():
         host="https://xnat.bnc.brown.edu",
         session_suffix=session_suffix,
         bidsmap_file="",
-        includeseq=[10],
+        includeseq=["10"],
         skipseq=[],
         log_id="pytest",
         verbose=0,
