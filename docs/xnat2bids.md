@@ -20,8 +20,8 @@ $ xnat2bids [OPTIONS] SESSION BIDS_ROOT_DIR
 * `-h, --host TEXT`: XNAT'sURL  [default: https://xnat.bnc.brown.edu]
 * `-S, --session-suffix TEXT`: The session_suffix is initially set to -1.              This will signify an unspecified session_suffix and default to sess-01.              For multi-session studies, the session label will be pulled from XNAT  [default: -1]
 * `-f, --bidsmap-file TEXT`: Bidsmap JSON file to correct sequence names
-* `-i, --includeseq INTEGER`: Include this sequence only, this flag can specify multiple times
-* `-s, --skipseq INTEGER`: Exclude this sequence, can be specified multiple times
+* `-i, --includeseq TEXT`: Include this sequence only, this flag can specify multiple times
+* `-s, --skipseq TEXT`: Exclude this sequence, can be specified multiple times
 * `--log-id TEXT`: ID or suffix to append to logfile. If empty, current date is used  [default: current date - MM-DD-YYYY-HH-MM-SS]
 * `-v, --verbose`: Verbose level. This flag can be specified multiple times to increase verbosity  [default: 0]
 * `--overwrite`: Remove directories where prior results for this session/participant
