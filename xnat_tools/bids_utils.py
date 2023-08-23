@@ -396,15 +396,19 @@ def download_resources(connection, host, session, bids_session_dir):
 
     resourceFileList = list(resourceFileDict.items())
 
+    build_dir = os.getcwd()
     # Download Resources
     for name, resourceDetails in resourceFileList:
         _logger.info("Downloading files")
         pathURI = resourceDetails[0]
         collection = resourceDetails[1]
         bids_scan_directory = os.path.join(bids_session_dir, collection)
-        os.makedirs(bids_scan_directory, exist_ok=True)
+        if not (os.path.isdir(bids_scan_directory)):
+            os.mkdir(bids_scan_directory)
+
         os.chdir(bids_scan_directory)
         download(connection, name, pathURI)
+        os.chdir(build_dir)
 
 
 def assign_bids_name(
