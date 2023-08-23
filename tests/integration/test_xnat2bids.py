@@ -262,12 +262,12 @@ def test_xnat2bids_eeg():
     bids_dir = glob.glob("tests/xnat2bids/*/study-*/bids")[0]
 
     subj_bncmethods_ses_01_eeg = [
-        f"{bids_dir}/sub-bncmethods_ses-01_task-resting_eeg.eeg",
-        f"{bids_dir}/sub-bncmethods_ses-01_task-resting_eeg.json",
-        f"{bids_dir}/sub-bncmethods_ses-01_task-resting_eeg.vhdr",
-        f"{bids_dir}/sub-bncmethods_ses-01_task-resting_eeg.vmrk",
-        f"{bids_dir}/sub-bncmethods_ses-01_task-resting_events.json",
-        f"{bids_dir}/sub-bncmethods_ses-01_task-resting_events.tsv",
+        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-resting_eeg.eeg",
+        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-resting_eeg.json",
+        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-resting_eeg.vhdr",
+        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-resting_eeg.vmrk",
+        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-resting_events.json",
+        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-resting_events.tsv",
     ]
 
     # Verify session1 diffusion fmaps have been processed.
