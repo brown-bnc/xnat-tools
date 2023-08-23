@@ -120,16 +120,13 @@ def filter_scans(scans, seqlist=[], skiplist=[]):
         desired_scans = scans
     else:
         desired_scans = [
-            scan
-            for scan in scans
-            if int(scan[0]) in seqlist or str(get_acquisition_label(scan[1].split("_"))) in seqlist
+            scan for scan in scans if str(scan[0]) in seqlist or str(scan[1]) in seqlist
         ]
 
     desired_scans = [
         scan
         for scan in desired_scans
-        if int(scan[0]) not in skiplist
-        and str(get_acquisition_label(scan[1].split("_"))) not in skiplist
+        if str(scan[0]) not in skiplist and str(scan[1]) not in skiplist
     ]
 
     return desired_scans

@@ -59,13 +59,13 @@ def dicom_export(
     bidsmap_file: str = typer.Option(
         "", "-f", "--bidsmap-file", help="Bidsmap JSON file to correct sequence names"
     ),
-    includeseq: List[int] = typer.Option(
+    includeseq: List[str] = typer.Option(
         [],
         "-i",
         "--includeseq",
         help="Include this sequence only, this flag can specify multiple times",
     ),
-    skipseq: List[int] = typer.Option(
+    skipseq: List[str] = typer.Option(
         [],
         "-s",
         "--skipseq",
