@@ -519,7 +519,7 @@ def run_mne_eeg2bids(
         subject=subject,
         session=session_suffix,
         root=f"{bids_experiment_dir}",
-        task="resting",
+        task="todo",
         check=False,
     )
 
