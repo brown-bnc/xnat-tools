@@ -130,11 +130,3 @@ def filter_scans(scans, seqlist=[], skiplist=[]):
     ]
 
     return desired_scans
-
-
-# Extract aquisition token from filename
-def get_acquisition_label(bids_tokens: list):
-    for token in bids_tokens:
-        if token.__contains__("acq"):
-            return token.strip("acq-")
-    return ""
