@@ -6,6 +6,8 @@ import warnings
 from collections import defaultdict
 
 import pydicom
+from mne.io import read_raw_brainvision
+from mne_bids import BIDSPath, write_raw_bids
 
 from xnat_tools.xnat_utils import download, get
 
@@ -404,10 +406,39 @@ def scan_contains_dicom(connection, host, session, scanid):
     return True
 
 
+def download_resources(connection, host, session, bids_session_dir):
+    r = get(
+        connection,
+        f"{host}/data/experiments/{session}/files",
+        params={"format": "json"},
+    )
+
+    # Build dictionary of format { filename: (pathURI, collectionType) } for every resource
+    resourceFileDict = {
+        resource["Name"]: ({"URI": host + resource["URI"]}, resource["collection"])
+        for resource in r.json()["ResultSet"]["Result"]
+    }
+
+    resourceFileList = list(resourceFileDict.items())
+
+    build_dir = os.getcwd()
+    # Download Resources
+    for name, resourceDetails in resourceFileList:
+        _logger.info(f"Downloading files: {name}")
+        pathURI = resourceDetails[0]
+        collection = resourceDetails[1]
+        bids_scan_directory = os.path.join(bids_session_dir, collection)
+        if not (os.path.isdir(bids_scan_directory)):
+            os.mkdir(bids_scan_directory)
+
+        os.chdir(bids_scan_directory)
+        download(connection, name, pathURI)
+        os.chdir(build_dir)
+
+
 def assign_bids_name(
     connection,
     host,
-    subject,
     session,
     scans,
     build_dir,
@@ -419,6 +450,7 @@ def assign_bids_name(
     build_dir: build director. What is this?
     study_bids_dir: BIDS directory to copy simlinks to. Typically the RESOURCES/BIDS
     """
+    # Build a dict keyed off file name
 
     for scanid, seriesdesc in scans:
         if not scan_contains_dicom(connection, host, session, scanid):
@@ -490,3 +522,32 @@ def assign_bids_name(
         os.chdir(build_dir)
         _logger.info("Done.")
         _logger.info("---------------------------------")
+
+
+def run_mne_eeg2bids(
+    subject,
+    session_suffix,
+    bids_experiment_dir,
+    eeg_data_path,
+):
+
+    # Find BrainVision header file
+    for file_name in os.listdir(eeg_data_path):
+        if file_name.endswith(".vhdr"):
+            vdhr_file = os.path.join(eeg_data_path, file_name)
+            break
+
+    # Fetch EEG data via MNE's IO function for BrainVision
+    raw = read_raw_brainvision(vdhr_file)
+
+    # Allow MNE to construct BIDS Path with available session data
+    bids_path = BIDSPath(
+        subject=subject,
+        session=session_suffix,
+        root=f"{bids_experiment_dir}",
+        task="todo",
+        check=False,
+    )
+
+    # Ouput EEG-BIDS data to defined path
+    write_raw_bids(raw, bids_path, overwrite=True)

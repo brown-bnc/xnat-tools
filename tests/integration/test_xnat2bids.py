@@ -221,3 +221,55 @@ def test_xnat2bids_skip_export():
             data = json.load(f)
             assert sorted(data["IntendedFor"]) == sorted(session1_diff_intendedfor)
             f.close
+
+
+def test_xnat2bids_eeg():
+    """Integration test for xnat2bids executable converting EEG data to BIDS"""
+
+    xnat_user = os.environ.get("XNAT_USER", "")
+    xnat_pass = os.environ.get("XNAT_PASS", "")
+    session = os.environ.get("XNAT_SESSION", "XNAT_E00474")
+    session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "01")
+    bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
+    skiplist = ["6"]
+
+    if os.path.exists(bids_root_dir):
+        shutil.rmtree(bids_root_dir, ignore_errors=True)
+
+    os.mkdir(bids_root_dir)
+
+    xnat2bids_cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} \
+        -s {' -s '.join(skiplist)}"
+
+    xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
+    print(xnat2bids_split_cmd)
+    r = runner.invoke(app, xnat2bids_split_cmd)
+    print(r.stdout)
+
+    assert r.exit_code == 0
+
+    filepath = f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}"
+
+    # ***************************************************************************
+    # Test for successful execution
+    # ***************************************************************************
+    assert len(glob.glob(f"{filepath}/*/*.json")) > 0
+    assert len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
+
+    # ***************************************************************************
+    # Test for successful BIDS conversion of EEG data
+    # ***************************************************************************
+    bids_dir = glob.glob("tests/xnat2bids/*/study-*/bids")[0]
+
+    subj_bncmethods_ses_01_eeg = [
+        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-todo_eeg.eeg",
+        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-todo_eeg.json",
+        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-todo_eeg.vhdr",
+        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-todo_eeg.vmrk",
+        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-todo_events.json",
+        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-todo_events.tsv",
+    ]
+
+    # Verify session1 diffusion fmaps have been processed.
+    for eeg_file in subj_bncmethods_ses_01_eeg:
+        assert os.path.isfile(eeg_file)

@@ -21,6 +21,7 @@ import typer
 from xnat_tools.bids_utils import (
     assign_bids_name,
     bidsmap_scans,
+    download_resources,
     path_string_preprocess,
     prepare_export_output_path,
     prepare_path_prefixes,
@@ -139,10 +140,12 @@ def dicom_export(
     scans = filter_scans(scans, seqlist=includeseq, skiplist=skipseq)
     scans = bidsmap_scans(scans, bidsmap)
 
+    # Download resources
+    download_resources(connection, host, session, export_session_dir)
+
     assign_bids_name(
         connection,
         host,
-        subject,
         session,
         scans,
         build_dir,
