@@ -1,9 +1,10 @@
+import os
 from datetime import datetime
 
 import typer
 
 from xnat_tools.bids_postprocess import bids_postprocess
-from xnat_tools.bids_utils import prepare_path_prefixes
+from xnat_tools.bids_utils import prepare_path_prefixes, run_mne_eeg2bids
 from xnat_tools.run_heudiconv import run_heudiconv
 
 app = typer.Typer()
@@ -72,5 +73,21 @@ def dcm2bids(
         verbose=0,
         overwrite=False,
     )
+
+    # Build path to exported eeg data
+    eeg_data_path = (
+        f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/"
+        f"{subject_prefix}/ses-{session_suffix}/eeg/"
+    )
+
+    # Convert EEG data to BIDS if present
+    if os.path.isdir(eeg_data_path):
+
+        run_mne_eeg2bids(
+            subject,
+            session_suffix,
+            bids_experiment_dir,
+            eeg_data_path,
+        )
 
     return r
