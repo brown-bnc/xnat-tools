@@ -1,6 +1,10 @@
 import os
 
+from dotenv import load_dotenv
+
 from xnat_tools.xnat_utils import establish_connection, filter_scans, get_project_subject_session
+
+load_dotenv()
 
 
 def phony_scan_data(scan_count=10):
@@ -18,10 +22,10 @@ def test_filter_scans():
 def test_filter_scan_seqlist():
     """Test filter_scans with a seqlist"""
     data = phony_scan_data()
-    seqlist = [2, 4, 6]
+    seqlist = ["2", "4", "6"]
 
     result = filter_scans(data, seqlist=seqlist)
-    expected_result = [x for x in data if int(x[0]) in seqlist]
+    expected_result = [x for x in data if str(x[0]) in seqlist]
 
     assert result == expected_result
 
@@ -29,10 +33,10 @@ def test_filter_scan_seqlist():
 def test_filter_scan_skiplist():
     """Test filter_scans with a skiplist"""
     data = phony_scan_data()
-    skiplist = [2, 4, 6]
+    skiplist = ["2", "4", "6"]
 
     result = filter_scans(data, skiplist=skiplist)
-    expected_result = [x for x in data if int(x[0]) not in skiplist]
+    expected_result = [x for x in data if str(x[0]) not in skiplist]
 
     assert result == expected_result
 
@@ -40,11 +44,11 @@ def test_filter_scan_skiplist():
 def test_filter_scan_seqlist_and_skiplist():
     """Test filter_scans with both a seqlist and a skiplist. Skiplist takes priority."""
     data = phony_scan_data()
-    seqlist = [1, 2, 3, 4, 5]
-    skiplist = [2, 4, 6]
+    seqlist = ["1", "2", "3", "4", "5"]
+    skiplist = ["2", "4", "6"]
 
     result = filter_scans(data, seqlist=seqlist, skiplist=skiplist)
-    expected_result = [x for x in data if int(x[0]) in set(seqlist) - set(skiplist)]
+    expected_result = [x for x in data if str(x[0]) in set(seqlist) - set(skiplist)]
 
     assert result == expected_result
 
@@ -57,10 +61,10 @@ def test_filter_scan_seqlist_discontinuity():
     #  [(1, "Scan 1"), (3, "Scan 3"), ...]
     del data[1]
 
-    seqlist = [1, 2, 4]
+    seqlist = ["1", "2", "4"]
 
     result = filter_scans(data, seqlist=seqlist)
-    expected_result = [x for x in data if int(x[0]) in seqlist]
+    expected_result = [x for x in data if str(x[0]) in seqlist]
 
     assert result == expected_result
 
