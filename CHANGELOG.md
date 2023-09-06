@@ -1,3 +1,28 @@
+## v1.5.0 (2023-09-06)
+
+### Feat
+
+- check if eeg data exported before conversion
+- **bids_utils.py**: eeg bids data assigned to bids experiment directory
+- run_mne_eeg2bids function to convert brainvision data to bids standard
+- export session level resources, specifically for eeg data
+- add part-mag and -phase to BIDS names
+- **xnat_utils.py**: include sequence by name
+- **xnat_utils.py**: allow sequences to be skipped by name
+
+### Fix
+
+- **bids_utils.py**: make default task for eeg data todo
+- **bids_utils.py**: update download resources to handle non-absolute bids experiment paths
+- changes type of skip / include list to str
+
+### Refactor
+
+- **bids_utils.py**: refactor request string and add resource name to logging
+- **xnat_utils.py**: deleting unused function
+
+## v1.4.1 (2023-08-16)
+
 ## v1.4.0 (2023-07-11)
 
 ### Feat
