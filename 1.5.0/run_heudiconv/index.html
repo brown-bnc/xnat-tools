@@ -10,22 +10,28 @@
       
       
       
+        <link rel="canonical" href="http://brown-bnc.github.io/xnat-tools/run_heudiconv/">
       
       
+        <link rel="prev" href="../dicom_export/">
       
-      <link rel="icon" href="/xnat-tools/assets/images/favicon.png">
+      
+        <link rel="next" href="../bids_postprocess/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.8">
     
     
       
-        <title>XNAT Tools - Version Page</title>
+        <title>xnat-heudiconv - XNAT Tools - 1.5.0</title>
       
     
     
-      <link rel="stylesheet" href="/xnat-tools/assets/stylesheets/main.046329b4.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.046329b4.min.css">
       
         
-        <link rel="stylesheet" href="/xnat-tools/assets/stylesheets/palette.85d0ee34.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.85d0ee34.min.css">
       
       
 
@@ -44,9 +50,9 @@
       
     
     
-      <link rel="stylesheet" href="/xnat-tools/assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("/xnat-tools/",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -70,6 +76,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#run_heudiconv" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -80,7 +91,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/xnat-tools/." title="XNAT Tools - Version Page" class="md-header__button md-logo" aria-label="XNAT Tools - Version Page" data-md-component="logo">
+    <a href=".." title="XNAT Tools - 1.5.0" class="md-header__button md-logo" aria-label="XNAT Tools - 1.5.0" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
@@ -94,13 +105,13 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            XNAT Tools - Version Page
+            XNAT Tools - 1.5.0
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              xnat-heudiconv
             
           </span>
         </div>
@@ -179,16 +190,55 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/." class="md-tabs__link">
+    
+    
+      <li class="md-tabs__item">
+        <a href=".." class="md-tabs__link">
+          
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
         
+  
   
     
   
-  Home
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../usage_overview/" class="md-tabs__link">
+          
+  
+  Usage
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../dev_setup/" class="md-tabs__link">
+          
+  
+  Development
+
+        </a>
+      </li>
+    
   
 
       
@@ -197,335 +247,12 @@
   
   
     <li class="md-tabs__item">
-      <a href="/xnat-tools/dev/" class="md-tabs__link">
+      <a href="../../" class="md-tabs__link">
         
   
     
   
-  dev
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.5.0/" class="md-tabs__link">
-        
-  
-    
-  
-  1.5.0
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.4.1/" class="md-tabs__link">
-        
-  
-    
-  
-  1.4.1
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.4.0/" class="md-tabs__link">
-        
-  
-    
-  
-  1.4.0
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.3.0/" class="md-tabs__link">
-        
-  
-    
-  
-  1.3.0
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.2.1/" class="md-tabs__link">
-        
-  
-    
-  
-  1.2.1
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.2.0/" class="md-tabs__link">
-        
-  
-    
-  
-  1.2.0
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.1.1/" class="md-tabs__link">
-        
-  
-    
-  
-  1.1.1
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.1.0/" class="md-tabs__link">
-        
-  
-    
-  
-  1.1.0
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.0.9/" class="md-tabs__link">
-        
-  
-    
-  
-  1.0.9
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.0.8/" class="md-tabs__link">
-        
-  
-    
-  
-  1.0.8
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.0.7/" class="md-tabs__link">
-        
-  
-    
-  
-  1.0.7
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.0.6/" class="md-tabs__link">
-        
-  
-    
-  
-  1.0.6
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.0.5/" class="md-tabs__link">
-        
-  
-    
-  
-  1.0.5
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.0.4/" class="md-tabs__link">
-        
-  
-    
-  
-  1.0.4
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.0.3/" class="md-tabs__link">
-        
-  
-    
-  
-  1.0.3
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.0.2/" class="md-tabs__link">
-        
-  
-    
-  
-  1.0.2
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.0.10/" class="md-tabs__link">
-        
-  
-    
-  
-  1.0.10
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.0.1/" class="md-tabs__link">
-        
-  
-    
-  
-  1.0.1
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="/xnat-tools/1.0.0/" class="md-tabs__link">
-        
-  
-    
-  
-  1.0.0
+  Version Selector
 
       </a>
     </li>
@@ -554,13 +281,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/xnat-tools/." title="XNAT Tools - Version Page" class="md-nav__button md-logo" aria-label="XNAT Tools - Version Page" data-md-component="logo">
+    <a href=".." title="XNAT Tools - 1.5.0" class="md-nav__button md-logo" aria-label="XNAT Tools - 1.5.0" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
 
     </a>
-    XNAT Tools - Version Page
+    XNAT Tools - 1.5.0
   </label>
   
     <div class="md-nav__source">
@@ -582,16 +309,316 @@
   
   
   
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_1" >
+        
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
     <li class="md-nav__item">
-      <a href="/xnat-tools/." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Home
+    Overview
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Usage
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Usage
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage_overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xnat2bids/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    xnat2bids
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dicom_export/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    xnat-dicom-export
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    xnat-heudiconv
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bids_postprocess/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    bids-postprocess
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dev_setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Setting Up
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../code_standards/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code standards
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -602,372 +629,11 @@
   
   
     <li class="md-nav__item">
-      <a href="/xnat-tools/dev/" class="md-nav__link">
+      <a href="../../" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    dev
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.5.0/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.5.0
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.4.1/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.4.1
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.4.0/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.4.0
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.3.0/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.3.0
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.2.1/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.2.1
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.2.0/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.2.0
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.1.1/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.1.1
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.1.0/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.1.0
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.0.9/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.0.9
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.0.8/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.0.8
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.0.7/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.0.7
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.0.6/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.0.6
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.0.5/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.0.5
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.0.4/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.0.4
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.0.3/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.0.3
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.0.2/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.0.2
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.0.10/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.0.10
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.0.1/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.0.1
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/xnat-tools/1.0.0/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    1.0.0
+    Version Selector
   </span>
   
 
@@ -993,6 +659,8 @@
   
   
   
+    
+  
   
 </nav>
                   </div>
@@ -1004,8 +672,37 @@
             <div class="md-content" data-md-component="content">
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+
+<h1 id="run_heudiconv"><code>run_heudiconv</code><a class="headerlink" href="#run_heudiconv" title="Permanent link">&para;</a></h1>
+<p>Run Heudiconv</p>
+<p><strong>Usage</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="gp">$ </span>run_heudiconv<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>PROJECT<span class="w"> </span>SUBJECT<span class="w"> </span>BIDS_ROOT_DIR
+</code></pre></div>
+
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li><code>PROJECT</code>: XNAT's Project ID  [required]</li>
+<li><code>SUBJECT</code>: XNAT's subject ID  [required]</li>
+<li><code>BIDS_ROOT_DIR</code>: Root output directory for exporting files  [required]</li>
+</ul>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>-S, --session-suffix TEXT</code>: The session_suffix is initially set to -1.              This will signify an unspecified session_suffix and default to sess-01.              For multi-session studies, the session label will be pulled from XNAT  [default: -1]</li>
+<li><code>--log-id TEXT</code>: ID or suffix to append to logfile. If empty, current date is used  [default: current date - MM-DD-YYYY-HH-MM-SS]</li>
+<li><code>--overwrite / --no-overwrite</code>: Remove directories where prior results for session/participant may exist  [default: no-overwrite]</li>
+<li><code>--cleanup / --no-cleanup</code>: Remove xnat-export folder and move logs to derivatives/xnat/logs  [default: no-cleanup]</li>
+<li><code>--install-completion</code>: Install completion for the current shell.</li>
+<li><code>--show-completion</code>: Show completion for the current shell, to copy it or customize the installation.</li>
+<li><code>--help</code>: Show this message and exit.</li>
+</ul>
+
+
+
+
+
+                
               </article>
             </div>
           
@@ -1052,10 +749,10 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "/xnat-tools/", "features": ["navigation.instant", "navigation.tabs", "navigation.expand"], "search": "/xnat-tools/assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tabs", "navigation.expand"], "search": "../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="/xnat-tools/assets/javascripts/bundle.dff1b7c8.min.js"></script>
+      <script src="../assets/javascripts/bundle.dff1b7c8.min.js"></script>
       
     
   </body>
