@@ -1,4 +1,3 @@
-import glob
 import os
 from datetime import datetime
 
@@ -45,47 +44,21 @@ def dcm2bids(
     ),
 ):
 
+    r = run_heudiconv(
+        project,
+        subject,
+        bids_root_dir,
+        session_suffix=session_suffix,
+        log_id=log_id,
+        overwrite=overwrite,
+        cleanup=cleanup,
+    )
+
     pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_path_prefixes(
         project, subject, session
     )
 
     bids_experiment_dir = f"{bids_root_dir}/{pi_prefix}/{study_prefix}/bids"
-
-    # Build path to exported data
-    xnat_data_path = (
-        f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/"
-        f"{subject_prefix}/ses-{session_suffix}/"
-    )
-
-    # Build path to exported eeg data
-    eeg_data_path = f"{xnat_data_path}/eeg/"
-    eeg_data = os.path.isdir(eeg_data_path)
-
-    if len(glob.glob(xnat_data_path + "/*/*.dcm")) == 0:
-        # if we have no DICOMs, allow it as long as there is an eeg directory
-        if eeg_data:
-            r = True
-        else:
-            raise RuntimeError("No DICOM files found to convert to BIDS format")
-    else:
-        r = run_heudiconv(
-            project,
-            subject,
-            bids_root_dir,
-            session_suffix=session_suffix,
-            log_id=log_id,
-            overwrite=overwrite,
-            cleanup=cleanup,
-        )
-
-    # Convert EEG data to BIDS if present
-    if eeg_data:
-        run_mne_eeg2bids(
-            subject,
-            session_suffix,
-            bids_experiment_dir,
-            eeg_data_path,
-        )
 
     bids_postprocess(
         bids_experiment_dir,
@@ -100,5 +73,21 @@ def dcm2bids(
         verbose=0,
         overwrite=False,
     )
+
+    # Build path to exported eeg data
+    eeg_data_path = (
+        f"{bids_root_dir}/{pi_prefix}/{study_prefix}/xnat-export/"
+        f"{subject_prefix}/ses-{session_suffix}/eeg/"
+    )
+
+    # Convert EEG data to BIDS if present
+    if os.path.isdir(eeg_data_path):
+
+        run_mne_eeg2bids(
+            subject,
+            session_suffix,
+            bids_experiment_dir,
+            eeg_data_path,
+        )
 
     return r
