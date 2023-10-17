@@ -531,23 +531,47 @@ def run_mne_eeg2bids(
     eeg_data_path,
 ):
 
-    # Find BrainVision header file
+    # Find BrainVision header file, extract BIDS key-value pairs from file name
     for file_name in os.listdir(eeg_data_path):
         if file_name.endswith(".vhdr"):
-            vdhr_file = os.path.join(eeg_data_path, file_name)
-            break
+            vhdr_file = os.path.join(eeg_data_path, file_name)
+            file_prefix = file_name.split(".")[0]
+            bids_keyval_dict = dict(
+                keyval.split("-") for keyval in file_prefix.split("_") if "-" in keyval
+            )
 
-    # Fetch EEG data via MNE's IO function for BrainVision
-    raw = read_raw_brainvision(vdhr_file)
+            params = {}
+            # these are the arguments allowed by the BIDSPath function
+            possible_bids_keys = dict(
+                task="task",
+                acq="acquisition",
+                run="run",
+                proc="processing",
+                rec="recording",
+                space="space",
+                split="split",
+                desc="description",
+            )
+            for k in possible_bids_keys:
+                if k in bids_keyval_dict:
+                    if k in ["run", "split"]:
+                        params[possible_bids_keys[k]] = int(bids_keyval_dict[k])
+                    else:
+                        params[possible_bids_keys[k]] = bids_keyval_dict[k]
 
-    # Allow MNE to construct BIDS Path with available session data
-    bids_path = BIDSPath(
-        subject=subject,
-        session=session_suffix,
-        root=f"{bids_experiment_dir}",
-        task="todo",
-        check=False,
-    )
+            if "task" not in bids_keyval_dict:
+                params["task"] = "todo"
 
-    # Ouput EEG-BIDS data to defined path
-    write_raw_bids(raw, bids_path, overwrite=True)
+            # Fetch EEG data via MNE's IO function for BrainVision
+            raw = read_raw_brainvision(vhdr_file)
+
+            # Allow MNE to construct BIDS Path with available session data
+            bids_path = BIDSPath(
+                subject=subject,
+                session=session_suffix,
+                root=f"{bids_experiment_dir}",
+                **params,
+            )
+
+            # Ouput EEG-BIDS data to defined path
+            write_raw_bids(raw, bids_path, overwrite=True)
