@@ -1,3 +1,13 @@
+## v1.6.0 (2023-10-18)
+
+### Feat
+
+- inherit bids keys in EEG file naming
+
+### Fix
+
+- update dcm2bids to allow eeg-only sessions
+
 ## v1.5.0 (2023-09-06)
 
 ### Feat
