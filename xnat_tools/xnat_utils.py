@@ -64,18 +64,8 @@ def get_project_subject_session(connection, host, session, session_suffix):
     project = sessionValuesJson["project"]
     subjectID = sessionValuesJson["subject_ID"]
 
-    # If session_suffix == -1, the user has not specified a session value.
-    # Fetch session data from XNAT label (formatted: subj_sess) if exists.
-    # Otherwise, set session label to '01' by default.
-    if session_suffix == "-1":
-        if len(sessionValuesJson["label"].split("_")) == 2:
-            session_suffix = sessionValuesJson["label"].split("_")[1]
-        else:
-            session_suffix = "01"
-
     print("Project: " + project)
     print("Subject ID: " + subjectID)
-    print("Session Suffix:  " + session_suffix)
     r = get(
         connection,
         host + "/data/subjects/%s" % subjectID,
@@ -83,6 +73,19 @@ def get_project_subject_session(connection, host, session, session_suffix):
     )
     subject = r.json()["ResultSet"]["Result"][0]["label"]
     print("Subject label: " + subject)
+
+    # If session_suffix == -1, the user has not specified a session value.
+    # Fetch session data from XNAT label (formatted: subj_sess) if exists.
+    # Otherwise, set session label to '01' by default.
+    if session_suffix == "-1":
+        if (len(sessionValuesJson["label"].split("_")) > 1) and (
+            (subject + "_") in sessionValuesJson["label"]
+        ):
+            session_suffix = sessionValuesJson["label"].split(subject + "_")[-1]
+        else:
+            session_suffix = "01"
+    print("Session Suffix:  " + session_suffix)
+
     print("------------------------------------------------")
 
     return project, subject, session_suffix
