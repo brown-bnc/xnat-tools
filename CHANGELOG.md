@@ -1,3 +1,9 @@
+## v1.6.1 (2023-11-07)
+
+### Fix
+
+- extract session number when underscore in subID
+
 ## v1.6.0 (2023-10-18)
 
 ### Feat
