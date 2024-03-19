@@ -25,6 +25,7 @@ from xnat_tools.bids_utils import (
     path_string_preprocess,
     prepare_export_output_path,
     prepare_path_prefixes,
+    validate_frame_counts,
 )
 from xnat_tools.logging import setup_logging
 from xnat_tools.xnat_utils import (
@@ -87,6 +88,11 @@ def dicom_export(
         False,
         "--overwrite",
         help="Remove directories where prior results for session/participant may exist",
+    ),
+    validate_frames: List[str] = typer.Option(
+        [],
+        "--validate_frames",
+        help="Validate the frame counts of all acquisitons of provided task types.",
     ),
 ):
 
@@ -151,6 +157,9 @@ def dicom_export(
         build_dir,
         export_session_dir,
     )
+
+    for task_type in validate_frames:
+        validate_frame_counts(scans, task_type, export_session_dir)
 
     # Close connection(I don't think this works)
     connection.delete(f"{host}/data/JSESSION")
