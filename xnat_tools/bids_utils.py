@@ -573,22 +573,6 @@ def assign_bids_name(
         _logger.info("---------------------------------")
 
 
-def validate_frame_count(dicomFileList):
-    firstAcquisition = dicomFileList[0][0]
-    lastAcquisition = dicomFileList[-1][0]
-
-    firstAcqFrameCount = pydicom.dcmread(firstAcquisition)[0x0028, 0x0008].value
-    lastAcqFrameCount = pydicom.dcmread(lastAcquisition)[0x0028, 0x0008].value
-
-    if firstAcqFrameCount != lastAcqFrameCount:
-        if os.path.exists(lastAcquisition):
-            os.remove(lastAcquisition)
-            print("REMOVING LAST ACQUISITION: ", lastAcquisition)
-    #    if os.path.exists(firstAcquisition):
-    #         os.remove(firstAcquisition)
-    #         print("REMOVING ACQUISITION", firstAcquisition)
-
-
 def run_mne_eeg2bids(
     subject,
     session_suffix,
