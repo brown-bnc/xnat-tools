@@ -28,6 +28,7 @@ $ xnat2bids [OPTIONS] SESSION BIDS_ROOT_DIR
 * `--cleanup`: Remove xnat-export folder and move logs to derivatives/xnat/logs
 * `--skip-export`: Skip DICOM Export, while only running BIDS conversion
 * `--export-only`: Run DICOM Export without subsequent BIDS conversion
+* `--validate_frames TEXT`: Validate the frame counts of all acquisitons of provided task types.
 * `--install-completion`: Install completion for the current shell.
 * `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 * `--help`: Show this message and exit.
