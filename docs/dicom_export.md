@@ -25,7 +25,7 @@ $ dicom_export [OPTIONS] SESSION BIDS_ROOT_DIR
 * `--log-id TEXT`: ID or suffix to append to logfile. If empty, current date is used  [default: current date - MM-DD-YYYY-HH-MM-SS]
 * `-v, --verbose`: Verbose level. Can be specified multiple times to increase verbosity  [default: 0]
 * `--overwrite`: Remove directories where prior results for session/participant may exist
-* `--validate_frames TEXT`: Validate the frame counts of all acquisitons of provided task types.
+* `--validate_frames`: Validate the frame counts of all acquisitons of bold sequences.
 * `--install-completion`: Install completion for the current shell.
 * `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 * `--help`: Show this message and exit.
