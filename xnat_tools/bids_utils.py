@@ -453,10 +453,10 @@ def read_dicom_frame_count(file_path: str) -> int:
     return dicom.get((0x0028, 0x0008), None)
 
 
-def validate_frame_counts(scans: list, task_type: str, bids_session_dir: str) -> None:
+def validate_frame_counts(scans: list, bids_session_dir: str) -> None:
 
     for _, series_desc in scans:
-        if f"task-{task_type}" in series_desc:
+        if "func" in series_desc:
             bids_scan_dir = os.path.join(bids_session_dir, series_desc)
 
             with os.scandir(bids_scan_dir) as entries:

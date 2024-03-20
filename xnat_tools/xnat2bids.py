@@ -77,8 +77,8 @@ def xnat2bids(
         "--export-only",
         help="Run DICOM Export without subsequent BIDS conversion",
     ),
-    validate_frames: List[str] = typer.Option(
-        [],
+    validate_frames: bool = typer.Option(
+        False,
         "--validate_frames",
         help="Validate the frame counts of all acquisitons of provided task types.",
     ),

@@ -89,10 +89,10 @@ def dicom_export(
         "--overwrite",
         help="Remove directories where prior results for session/participant may exist",
     ),
-    validate_frames: List[str] = typer.Option(
-        [],
+    validate_frames: bool = typer.Option(
+        False,
         "--validate_frames",
-        help="Validate the frame counts of all acquisitons of provided task types.",
+        help="Validate the frame counts of all acquisitons of bold sequences.",
     ),
 ):
 
@@ -158,8 +158,8 @@ def dicom_export(
         export_session_dir,
     )
 
-    for task_type in validate_frames:
-        validate_frame_counts(scans, task_type, export_session_dir)
+    if validate_frames:
+        validate_frame_counts(scans, export_session_dir)
 
     # Close connection(I don't think this works)
     connection.delete(f"{host}/data/JSESSION")

@@ -53,6 +53,7 @@ def test_dicom_export():
         log_id="pytest",
         verbose=0,
         overwrite=False,
+        validate_frames=False,
     )
 
     assert p == project
