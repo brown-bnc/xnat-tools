@@ -80,7 +80,11 @@ def xnat2bids(
     validate_frames: bool = typer.Option(
         False,
         "--validate_frames",
-        help="Validate the frame counts of all acquisitons of provided task types.",
+        help=(
+            "Validate the frame counts of all acquisitions of functional bold sequences. "
+            "If the final acquisition does not contain the expected number of slices, "
+            "the associated DICOM file will be deleted."
+        ),
     ),
 ):
     """

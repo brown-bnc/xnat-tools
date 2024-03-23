@@ -92,7 +92,10 @@ def dicom_export(
     validate_frames: bool = typer.Option(
         False,
         "--validate_frames",
-        help="Validate the frame counts of all acquisitons of bold sequences.",
+        help=(
+            "Validate frame counts for all BOLD sequence acquisitions. "
+            "Deletes the DICOM file if the final acquisition lacks expected slices."
+        ),
     ),
 ):
 

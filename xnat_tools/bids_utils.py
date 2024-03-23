@@ -482,6 +482,9 @@ def validate_frame_counts(scans: list, bids_session_dir: str) -> None:
                     last_file_path = os.path.join(bids_scan_dir, dicom_files[-1])
 
                     if os.path.exists(last_file_path):
+                        _logger.info(
+                            f"Detected discrepant frame counts. Removing DICOM: {last_file_path}"
+                        )
                         os.remove(last_file_path)
 
 
