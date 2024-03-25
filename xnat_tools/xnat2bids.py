@@ -77,6 +77,15 @@ def xnat2bids(
         "--export-only",
         help="Run DICOM Export without subsequent BIDS conversion",
     ),
+    validate_frames: bool = typer.Option(
+        False,
+        "--validate_frames",
+        help=(
+            "Validate the frame counts of all acquisitions of functional bold sequences. "
+            "If the final acquisition does not contain the expected number of slices, "
+            "the associated DICOM file will be deleted."
+        ),
+    ),
 ):
     """
     Export DICOM images from an XNAT experiment to a BIDS compliant directory
@@ -97,6 +106,7 @@ def xnat2bids(
             log_id=log_id,
             verbose=verbose,
             overwrite=overwrite,
+            validate_frames=validate_frames,
         )
 
     if not export_only:

@@ -25,6 +25,7 @@ from xnat_tools.bids_utils import (
     path_string_preprocess,
     prepare_export_output_path,
     prepare_path_prefixes,
+    validate_frame_counts,
 )
 from xnat_tools.logging import setup_logging
 from xnat_tools.xnat_utils import (
@@ -87,6 +88,14 @@ def dicom_export(
         False,
         "--overwrite",
         help="Remove directories where prior results for session/participant may exist",
+    ),
+    validate_frames: bool = typer.Option(
+        False,
+        "--validate_frames",
+        help=(
+            "Validate frame counts for all BOLD sequence acquisitions. "
+            "Deletes the DICOM file if the final acquisition lacks expected slices."
+        ),
     ),
 ):
 
@@ -151,6 +160,9 @@ def dicom_export(
         build_dir,
         export_session_dir,
     )
+
+    if validate_frames:
+        validate_frame_counts(scans, export_session_dir)
 
     # Close connection(I don't think this works)
     connection.delete(f"{host}/data/JSESSION")

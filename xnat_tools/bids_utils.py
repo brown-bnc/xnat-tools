@@ -436,6 +436,58 @@ def download_resources(connection, host, session, bids_session_dir):
         os.chdir(build_dir)
 
 
+# Function to sort by frame acquisition number in dicom filename
+def extract_slice_number(filename: str) -> int:
+    parts = filename.split("-")
+
+    if len(parts) > 2:
+        numeric_part = parts[-2]
+        return int(numeric_part)
+
+    return 0
+
+
+# Extract frame count from enhanced dicom header.
+def read_dicom_frame_count(file_path: str) -> int:
+    dicom = pydicom.dcmread(file_path)
+    return dicom.get((0x0028, 0x0008), None)
+
+
+def validate_frame_counts(scans: list, bids_session_dir: str) -> None:
+
+    for _, series_desc in scans:
+        if "func" in series_desc:
+            bids_scan_dir = os.path.join(bids_session_dir, series_desc)
+
+            with os.scandir(bids_scan_dir) as entries:
+                dicom_files = sorted(
+                    [
+                        entry.name
+                        for entry in entries
+                        if entry.is_file() and entry.name.endswith(".dcm")
+                    ],
+                    key=extract_slice_number,
+                )
+
+            # Compare frame counts of first and last acquisition. Remove the last if unequal.
+            if dicom_files:
+                first_frame_count = read_dicom_frame_count(
+                    os.path.join(bids_scan_dir, dicom_files[0])
+                )
+                last_frame_count = read_dicom_frame_count(
+                    os.path.join(bids_scan_dir, dicom_files[-1])
+                )
+
+                if last_frame_count != first_frame_count:
+                    last_file_path = os.path.join(bids_scan_dir, dicom_files[-1])
+
+                    if os.path.exists(last_file_path):
+                        _logger.info(
+                            f"Detected discrepant frame counts. Removing DICOM: {last_file_path}"
+                        )
+                        os.remove(last_file_path)
+
+
 def assign_bids_name(
     connection,
     host,
