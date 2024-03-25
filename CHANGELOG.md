@@ -1,3 +1,14 @@
+## v1.6.2 (2024-03-25)
+
+### Fix
+
+- merge commits
+- **dicom_export.py**: validate frame counts of all acquisitons from a supplied task type
+
+### Refactor
+
+- **bids_utils.py**: remove refactored code
+
 ## v1.6.1 (2023-11-07)
 
 ### Fix
