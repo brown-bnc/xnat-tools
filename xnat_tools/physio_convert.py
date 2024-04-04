@@ -32,6 +32,8 @@ def check_xmlfile(tree):
             resp = elem
         elif "ECG" in elem.attrib["TYPE"]:
             print("found ECG data")
+        elif "EXT" in elem.attrib["TYPE"]:
+            print("found EXT data")
         else:
             raise Exception("something new in the phys file!")
     return images, triggers, puls, resp
@@ -117,7 +119,14 @@ def physio_convert(
             if len(pmu_dicoms) > 1:
                 raise ValueError("More than one DICOM file in single PMU folder")
 
-            physio_prefix = find_matching_bold_filename(bids_func_dir, pmudir.split("/")[-1][:-4])
+            # before the XA30 upgrade, the physio files had _PMU at the end of the
+            # filename, and after the upgrade they have _WIP_PMU
+            if "_WIP_PMU" in pmudir.split("/")[-1]:
+                file_base = pmudir.split("/")[-1][:-8]
+            else:
+                file_base = pmudir.split("/")[-1][:-4]
+
+            physio_prefix = find_matching_bold_filename(bids_func_dir, file_base)
 
             # read in dicom and save out a .xml
             pmudicom = dcmread(pmu_dicoms[0])
