@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xnat-tools"
-version = "1.6.2"
+version = "1.6.3"
 description = ""
 authors = ["Isabel Restrepo <isabelrestre@gmail.com>"]
 
@@ -40,7 +40,7 @@ xnat2bids = "xnat_tools.xnat2bids:main"
 pandas-stubs = "^2.0.1.230501"
 
 [tool.commitizen]
-version = "1.6.2"
+version = "1.6.3"
 tag_format = "v$version"
 version_files = [
     "pyproject.toml:version",

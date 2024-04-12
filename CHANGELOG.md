@@ -1,3 +1,9 @@
+## v1.6.3 (2024-04-12)
+
+### Fix
+
+- accept XA30 physio file naming
+
 ## v1.6.2 (2024-03-25)
 
 ### Fix
