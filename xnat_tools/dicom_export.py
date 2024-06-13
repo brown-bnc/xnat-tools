@@ -21,6 +21,7 @@ import typer
 from xnat_tools.bids_utils import (
     assign_bids_name,
     bidsmap_scans,
+    correct_dicom_header,
     download_resources,
     path_string_preprocess,
     prepare_export_output_path,
@@ -97,6 +98,9 @@ def dicom_export(
             "Deletes the DICOM file if the final acquisition lacks expected slices."
         ),
     ),
+    correct_dicoms_config: str = typer.Option(
+        "", "-d", "--dicomfix-config", help="JSON file to correct DICOM fields. USE WITH CAUTION"
+    ),
 ):
 
     """
@@ -163,6 +167,11 @@ def dicom_export(
 
     if validate_frames:
         validate_frame_counts(scans, export_session_dir)
+
+    # If a configuration file is passed, correct DICOM headers of
+    # specified files
+    if correct_dicoms_config != "":
+        correct_dicom_header(export_session_dir, correct_dicoms_config)
 
     # Close connection(I don't think this works)
     connection.delete(f"{host}/data/JSESSION")

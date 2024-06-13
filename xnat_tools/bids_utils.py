@@ -627,3 +627,70 @@ def run_mne_eeg2bids(
 
             # Ouput EEG-BIDS data to defined path
             write_raw_bids(raw, bids_path, overwrite=True)
+
+
+def correct_dicom_header(export_session_dir, dicomfix_config_path):
+
+    # Check that the configuration file exists
+    if not os.path.exists(dicomfix_config_path):
+        print(f"ERROR: The DICOM correction config file '{dicomfix_config_path}' does not exist.")
+        return
+
+    # Load the configuration file
+    with open(dicomfix_config_path, "r") as file:
+        try:
+            config = json.load(file)
+        except json.JSONDecodeError as e:
+            print(f"Error parsing the configuration file: {e}")
+            return
+
+    mappings = config["mappings"]
+
+    for mapping in mappings:
+        scans_to_correct = mapping.get("scans_to_correct", [])
+        dicom_field = mapping.get("dicom_field", "")
+        new_value = mapping.get("new_value", "")
+
+        if not scans_to_correct or not dicom_field or not new_value:
+            print(f"Invalid mapping: {mapping}")
+            continue
+
+        for scan in scans_to_correct:
+            if os.path.isdir(os.path.join(export_session_dir, scan)):
+                for root, _, files in os.walk(os.path.join(export_session_dir, scan)):
+                    for filename in files:
+                        if filename.lower().endswith(".dcm"):
+                            dicom_path = os.path.join(root, filename)
+                            process_dicom_file(dicom_path, dicom_field, new_value)
+            else:
+                print(f"WARNING: Unable to find {scan} to correct DICOMs.")
+                print("Check that your naming is correct.")
+
+
+def process_dicom_file(dicom_path, dicom_field, new_value):
+    # Read the DICOM file
+    ds = pydicom.dcmread(dicom_path)
+
+    # Check if the specified field exists
+    if hasattr(ds, dicom_field):
+
+        # Capture warnings
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            setattr(ds, dicom_field, new_value)
+
+            # Check for warnings
+            if any("Invalid value" in str(warning.message) for warning in w):
+                print(f"{[str(warning.message) for warning in w]}")
+                print("The requested new value is not valid. DICOM not modified")
+            else:
+                # Print the modified value of the field if no warnings were raised
+                print(f"Modified {dicom_field} in {dicom_path}: {getattr(ds, dicom_field)}")
+
+                # Save the modified DICOM file in place
+                ds.save_as(dicom_path)
+                print(f"Modified DICOM file saved as {dicom_path}")
+
+    else:
+        print(f"{dicom_field} field is not present in {dicom_path}.")
+        return
