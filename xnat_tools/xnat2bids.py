@@ -86,6 +86,9 @@ def xnat2bids(
             "the associated DICOM file will be deleted."
         ),
     ),
+    correct_dicoms_config: str = typer.Option(
+        "", "-d", "--dicomfix-config", help="JSON file to correct DICOM fields. USE WITH CAUTION"
+    ),
 ):
     """
     Export DICOM images from an XNAT experiment to a BIDS compliant directory
@@ -107,6 +110,7 @@ def xnat2bids(
             verbose=verbose,
             overwrite=overwrite,
             validate_frames=validate_frames,
+            correct_dicoms_config=correct_dicoms_config,
         )
 
     if not export_only:

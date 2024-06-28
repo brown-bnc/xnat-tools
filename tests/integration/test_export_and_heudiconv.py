@@ -54,6 +54,7 @@ def test_dicom_export():
         verbose=0,
         overwrite=False,
         validate_frames=False,
+        correct_dicoms_config="",
     )
 
     assert p == project
