@@ -633,7 +633,9 @@ def correct_dicom_header(export_session_dir, dicomfix_config_path):
 
     # Check that the configuration file exists
     if not os.path.exists(dicomfix_config_path):
-        print(f"ERROR: The DICOM correction config file '{dicomfix_config_path}' does not exist.")
+        _logger.warning(
+            f"ERROR: The DICOM correction config file '{dicomfix_config_path}' does not exist."
+        )
         return
 
     # Load the configuration file
@@ -641,7 +643,7 @@ def correct_dicom_header(export_session_dir, dicomfix_config_path):
         try:
             config = json.load(file)
         except json.JSONDecodeError as e:
-            print(f"Error parsing the configuration file: {e}")
+            _logger.warning(f"Error parsing the configuration file: {e}")
             return
 
     mappings = config["mappings"]
@@ -652,7 +654,7 @@ def correct_dicom_header(export_session_dir, dicomfix_config_path):
         new_value = mapping.get("new_value", "")
 
         if not scans_to_correct or not dicom_field or not new_value:
-            print(f"Invalid mapping: {mapping}")
+            _logger.warning(f"Invalid mapping: {mapping}")
             continue
 
         for scan in scans_to_correct:
@@ -663,8 +665,8 @@ def correct_dicom_header(export_session_dir, dicomfix_config_path):
                             dicom_path = os.path.join(root, filename)
                             process_dicom_file(dicom_path, dicom_field, new_value)
             else:
-                print(f"WARNING: Unable to find {scan} to correct DICOMs.")
-                print("Check that your naming is correct.")
+                _logger.warning(f"WARNING: Unable to find {scan} to correct DICOMs.")
+                _logger.warning("Check that your naming is correct.")
 
 
 def process_dicom_file(dicom_path, dicom_field, new_value):
@@ -681,16 +683,16 @@ def process_dicom_file(dicom_path, dicom_field, new_value):
 
             # Check for warnings
             if any("Invalid value" in str(warning.message) for warning in w):
-                print(f"{[str(warning.message) for warning in w]}")
-                print("The requested new value is not valid. DICOM not modified")
+                _logger.warning(f"{[str(warning.message) for warning in w]}")
+                _logger.warning("The requested new value is not valid. DICOM not modified")
             else:
                 # Print the modified value of the field if no warnings were raised
-                print(f"Modified {dicom_field} in {dicom_path}: {getattr(ds, dicom_field)}")
+                _logger.info(f"Modified {dicom_field} in {dicom_path}: {getattr(ds, dicom_field)}")
 
                 # Save the modified DICOM file in place
                 ds.save_as(dicom_path)
-                print(f"Modified DICOM file saved as {dicom_path}")
+                _logger.info(f"Modified DICOM file saved as {dicom_path}")
 
     else:
-        print(f"{dicom_field} field is not present in {dicom_path}.")
+        _logger.warning(f"{dicom_field} field is not present in {dicom_path}.")
         return
