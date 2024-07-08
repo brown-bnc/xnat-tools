@@ -273,3 +273,39 @@ def test_xnat2bids_eeg():
     # Verify session1 diffusion fmaps have been processed.
     for eeg_file in subj_bncmethods_ses_01_eeg:
         assert os.path.isfile(eeg_file)
+
+
+def test_xnat2bids_correct_dicom_header():
+    xnat_user = os.environ.get("XNAT_USER", "")
+    xnat_pass = os.environ.get("XNAT_PASS", "")
+    session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
+    session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "session1")
+    bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
+    includeseq = "17"
+    dicom_fix_config_file = "./tests/dicom_fix_config_invalid_value.json"
+    if os.path.exists(bids_root_dir):
+        shutil.rmtree(bids_root_dir, ignore_errors=True)
+
+    os.mkdir(bids_root_dir)
+
+    xnat2bids_cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} \
+        -i {includeseq} --export-only --dicomfix-config {dicom_fix_config_file}"
+
+    xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
+    print(xnat2bids_split_cmd)
+    r = runner.invoke(app, xnat2bids_split_cmd)
+    print(r.stdout)
+
+    xnat_export_path = glob.glob(
+        f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
+    )[0]
+
+    export_subdirs = [f.path for f in os.scandir(xnat_export_path) if f.is_dir()]
+
+    for d in export_subdirs:
+        for f in os.listdir(d):
+            dataset = pydicom.dcmread(os.path.join(d, f))
+            # first test if we successfully changed the Patient ID to "Anonymous"
+            assert dataset.data_element("PatientID").value == "Anonymous"
+            # then test that we did not change the Study Date to an invalid date
+            assert dataset.data_element("StudyDate").value != "20240435"
