@@ -26,6 +26,7 @@ $ dicom_export [OPTIONS] SESSION BIDS_ROOT_DIR
 * `-v, --verbose`: Verbose level. Can be specified multiple times to increase verbosity  [default: 0]
 * `--overwrite`: Remove directories where prior results for session/participant may exist
 * `--validate_frames`: Validate frame counts for all BOLD sequence acquisitions. Deletes the DICOM file if the final acquisition lacks expected slices.
+* `-d, --dicomfix-config TEXT`: JSON file to correct DICOM fields. USE WITH CAUTION
 * `--install-completion`: Install completion for the current shell.
 * `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 * `--help`: Show this message and exit.

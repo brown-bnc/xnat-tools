@@ -1,0 +1,18 @@
+{
+    "mappings": [
+        {
+            "scans_to_correct": [
+                "fmap_acq-diffSE_dir-ap"
+            ],
+            "dicom_field": "PatientID",
+            "new_value": "Anonymous"
+        },
+        {
+            "scans_to_correct": [
+                "fmap_acq-diffSE_dir-ap"
+            ],
+            "dicom_field": "StudyDate",
+            "new_value": "20240435"
+        }
+    ]
+}
