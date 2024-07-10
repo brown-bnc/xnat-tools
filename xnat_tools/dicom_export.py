@@ -111,7 +111,7 @@ def dicom_export(
     bidsmap = None
 
     # Parse bidsmap file
-    if bidsmap_file != "":
+    if bidsmap_file:
         with Path(bidsmap_file).open() as f:
             bidsmap = json.load(f)
 
@@ -170,7 +170,7 @@ def dicom_export(
 
     # If a configuration file is passed, correct DICOM headers of
     # specified files
-    if correct_dicoms_config != "":
+    if correct_dicoms_config:
         correct_dicom_header(export_session_dir, correct_dicoms_config)
 
     # Close connection(I don't think this works)
