@@ -1,3 +1,9 @@
+## v1.7.0 (2024-07-12)
+
+### Feat
+
+- correct dicom headers
+
 ## v1.6.3 (2024-04-12)
 
 ### Fix
