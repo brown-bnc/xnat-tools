@@ -10,8 +10,8 @@ $ run_heudiconv [OPTIONS] PROJECT SUBJECT BIDS_ROOT_DIR
 
 **Arguments**:
 
-* `PROJECT`: XNAT's Project ID  [required]
-* `SUBJECT`: XNAT's subject ID  [required]
+* `PROJECT`: XNAT&#x27;s Project ID  [required]
+* `SUBJECT`: XNAT&#x27;s subject ID  [required]
 * `BIDS_ROOT_DIR`: Root output directory for exporting files  [required]
 
 **Options**:
