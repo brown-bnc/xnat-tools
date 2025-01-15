@@ -469,23 +469,24 @@ def validate_frame_counts(scans: list, bids_session_dir: str) -> None:
                     key=extract_slice_number,
                 )
 
-            # Compare frame counts of first and last acquisition. Remove the last if unequal.
+            # Compare frame counts of first and all other DICOMs. Remove other DICOMs if unequal.
+            # Should generally only be the last DICOM, unless data is multiecho and/or mag/phase
             if dicom_files:
                 first_frame_count = read_dicom_frame_count(
                     os.path.join(bids_scan_dir, dicom_files[0])
                 )
-                last_frame_count = read_dicom_frame_count(
-                    os.path.join(bids_scan_dir, dicom_files[-1])
-                )
 
-                if last_frame_count != first_frame_count:
-                    last_file_path = os.path.join(bids_scan_dir, dicom_files[-1])
+                for dicomfile in dicom_files[1:]:
+                    frame_count = read_dicom_frame_count(os.path.join(bids_scan_dir, dicomfile))
 
-                    if os.path.exists(last_file_path):
-                        _logger.info(
-                            f"Detected discrepant frame counts. Removing DICOM: {last_file_path}"
-                        )
-                        os.remove(last_file_path)
+                    if frame_count != first_frame_count:
+                        partial_file_path = os.path.join(bids_scan_dir, dicomfile)
+
+                        if os.path.exists(partial_file_path):
+                            _logger.info(
+                                f"Detected discrepant frame counts. Removing {partial_file_path}"
+                            )
+                            os.remove(partial_file_path)
 
 
 def assign_bids_name(
