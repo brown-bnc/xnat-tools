@@ -476,11 +476,11 @@ def validate_frame_counts(scans: list, bids_session_dir: str) -> None:
                     os.path.join(bids_scan_dir, dicom_files[0])
                 )
 
-                for dicomfile in dicom_files[1:]:
-                    frame_count = read_dicom_frame_count(os.path.join(bids_scan_dir, dicomfile))
+                for dicom_file in dicom_files[1:]:
+                    frame_count = read_dicom_frame_count(os.path.join(bids_scan_dir, dicom_file))
 
                     if frame_count != first_frame_count:
-                        partial_file_path = os.path.join(bids_scan_dir, dicomfile)
+                        partial_file_path = os.path.join(bids_scan_dir, dicom_file)
 
                         if os.path.exists(partial_file_path):
                             _logger.info(
