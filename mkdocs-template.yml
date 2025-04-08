@@ -16,6 +16,9 @@ repo_name: brown-bnc/xnat-tools
 repo_url: https://github.com/brown-bnc/xnat-tools
 edit_uri: ''
 
+watch:
+  - xnat_tools
+  
 plugins:
   - search
   - markdownextradata
@@ -32,8 +35,6 @@ plugins:
             show_root_heading: false
             show_root_toc_entry: false
             heading_level: 3
-      watch:
-        - xnat_tools
 
 markdown_extensions:
   - toc:
