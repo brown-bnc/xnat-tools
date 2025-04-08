@@ -17,7 +17,7 @@ $ dicom_export [OPTIONS] SESSION BIDS_ROOT_DIR
 
 * `-u, --user TEXT`: XNAT User
 * `-p, --pass TEXT`: XNAT Password
-* `-h, --host TEXT`: XNAT's URL  [default: https://xnat.bnc.brown.edu]
+* `-h, --host TEXT`: XNAT&#x27;s URL  [default: https://xnat.bnc.brown.edu]
 * `-S, --session-suffix TEXT`: The session_suffix is initially set to -1.              This will signify an unspecified session_suffix and default to sess-01.              For multi-session studies, the session label will be pulled from XNAT  [default: -1]
 * `-f, --bidsmap-file TEXT`: Bidsmap JSON file to correct sequence names
 * `-i, --includeseq TEXT`: Include this sequence only, this flag can specify multiple times
