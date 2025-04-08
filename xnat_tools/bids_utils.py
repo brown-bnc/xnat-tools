@@ -447,10 +447,10 @@ def extract_slice_number(filename: str) -> int:
     return 0
 
 
-# Extract frame count from enhanced dicom header.
-def read_dicom_frame_count(file_path: str) -> int:
-    dicom = pydicom.dcmread(file_path)
-    return dicom.get((0x0028, 0x0008), None)
+# Load enhanced dicom header.
+def read_dicom_header(file_path: str):
+    dicom = pydicom.dcmread(file_path, stop_before_pixels=True)
+    return dicom
 
 
 def validate_frame_counts(scans: list, bids_session_dir: str) -> None:
@@ -472,21 +472,44 @@ def validate_frame_counts(scans: list, bids_session_dir: str) -> None:
             # Compare frame counts of first and all other DICOMs. Remove other DICOMs if unequal.
             # Should generally only be the last DICOM, unless data is multiecho and/or mag/phase
             if dicom_files:
-                first_frame_count = read_dicom_frame_count(
-                    os.path.join(bids_scan_dir, dicom_files[0])
+                volume_temporal_idx = []
+                bad_vols = set()
+
+                first_dicom = read_dicom_header(os.path.join(bids_scan_dir, dicom_files[0]))
+                first_frame_count = first_dicom.get((0x0028, 0x0008), None)
+                # this grabs the DICOM field that reports the volume number (1-indexed) for the
+                # first frame in the volume (and assumes that all frames have the same value)
+                volume_temporal_idx.append(
+                    first_dicom.PerFrameFunctionalGroupsSequence[0]
+                    .FrameContentSequence[0]
+                    .TemporalPositionIndex
                 )
 
                 for dicomfile in dicom_files[1:]:
-                    frame_count = read_dicom_frame_count(os.path.join(bids_scan_dir, dicomfile))
+                    subsequent_dicom = read_dicom_header(os.path.join(bids_scan_dir, dicomfile))
+                    curr_frame_count = subsequent_dicom.get((0x0028, 0x0008), None)
+                    curr_temporal_idx = (
+                        subsequent_dicom.PerFrameFunctionalGroupsSequence[0]
+                        .FrameContentSequence[0]
+                        .TemporalPositionIndex
+                    )
+                    volume_temporal_idx.append(curr_temporal_idx)
 
-                    if frame_count != first_frame_count:
-                        partial_file_path = os.path.join(bids_scan_dir, dicomfile)
+                    if curr_frame_count != first_frame_count:
+                        bad_vols.add(curr_temporal_idx)
 
-                        if os.path.exists(partial_file_path):
-                            _logger.info(
-                                f"Detected discrepant frame counts. Removing {partial_file_path}"
-                            )
-                            os.remove(partial_file_path)
+                dicoms_to_drop = [
+                    dicom_files[i] for i, n in enumerate(volume_temporal_idx) if n in bad_vols
+                ]
+
+                for dcmfile in dicoms_to_drop:
+                    partial_file_path = os.path.join(bids_scan_dir, dcmfile)
+
+                    if os.path.exists(partial_file_path):
+                        _logger.info(
+                            f"Detected discrepant frame counts. Removing {partial_file_path}"
+                        )
+                        os.remove(partial_file_path)
 
 
 def assign_bids_name(
