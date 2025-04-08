@@ -20,7 +20,7 @@ jobs:
       run: | 
         python -m pip install --upgrade pip 
         pip install .
-        pip install mkdocs mkdocs-material mkdocstrings mkdocs-versioning mkdocs-markdownextradata-plugin
+        pip install mkdocs mkdocs-material mkdocstrings[python-legacy] mkdocs-versioning mkdocs-markdownextradata-plugin
     - name: Set up mkdocs config 
       run: |
         (envsubst 'v${VERSION}' < mkdocs-template.yml) > mkdocs.yml
