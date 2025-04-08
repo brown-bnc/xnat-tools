@@ -1,3 +1,9 @@
+## v1.7.1 (2025-01-16)
+
+### Fix
+
+- **bids_utils.py**: variable name change
+
 ## v1.7.0 (2024-07-12)
 
 ### Feat
