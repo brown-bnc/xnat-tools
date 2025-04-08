@@ -476,7 +476,9 @@ def validate_frame_counts(scans: list, bids_session_dir: str) -> None:
                 bad_vols = set()
 
                 first_dicom = read_dicom_header(os.path.join(bids_scan_dir, dicom_files[0]))
+                # read the DICOM field that reports the number of frames (slices)
                 first_frame_count = first_dicom.get((0x0028, 0x0008), None)
+
                 # this grabs the DICOM field that reports the volume number (1-indexed) for the
                 # first frame in the volume (and assumes that all frames have the same value)
                 volume_temporal_idx.append(
@@ -498,6 +500,8 @@ def validate_frame_counts(scans: list, bids_session_dir: str) -> None:
                     if curr_frame_count != first_frame_count:
                         bad_vols.add(curr_temporal_idx)
 
+                # any DICOM, regardless of its frame count, that comes from a volume with
+                # a partial DICOM needs to be deleted (handles multi-echo data)
                 dicoms_to_drop = [
                     dicom_files[i] for i, n in enumerate(volume_temporal_idx) if n in bad_vols
                 ]
