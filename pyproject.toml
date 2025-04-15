@@ -14,6 +14,7 @@ dependencies = [
     "isort>=6",
     "mne-bids==0.16.0",
     "pandas>=2.0.1",
+    "dcm2niix==1.0.20241211",
 ]
 
 [project.scripts]
