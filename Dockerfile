@@ -1,4 +1,4 @@
-FROM python:3.13
+FROM python:3.10
 
 
 RUN mkdir -p xnat-tools
@@ -10,12 +10,13 @@ RUN curl -fLO "https://github.com/rordenlab/dcm2niix/releases/download/${DCM2NII
     && unzip dcm2niix_lnx.zip \
     && mv dcm2niix /usr/bin/
 
-RUN pip install uv
-COPY pyproject.toml uv.lock ./
-RUN uv pip install .
-
 COPY uv.lock pyproject.toml tests xnat_tools ./
 COPY xnat_tools/ ./xnat_tools 
 COPY tests/ ./tests
+
+RUN pip install uv
+COPY pyproject.toml uv.lock ./
+RUN uv venv && uv pip install .
+
 
 RUN uv pip install pytest python-dotenv responses
