@@ -1,43 +1,44 @@
-[tool.poetry]
+[project]
 name = "xnat-tools"
 version = "1.7.2"
 description = ""
-authors = ["Isabel Restrepo <isabelrestre@gmail.com>"]
+authors = [{ name = "Isabel Restrepo", email = "isabelrestre@gmail.com" }]
+requires-python = "~=3.10"
+dependencies = [
+    "coloredlogs>=15.0.1",
+    "heudiconv>=1.3.3",
+    "pydicom>=3",
+    "pytest-mock>=3.8.2",
+    "six>=1.16.0",
+    "typer>=0.15.2",
+    "isort>=6",
+    "mne-bids==0.16.0",
+    "pandas>=2.0.1",
+]
 
-[tool.poetry.dependencies]
-coloredlogs = "^15.0.1"
-heudiconv = "^0.13.1"
-pydicom = "^2.3.0"
-pytest-mock = "^3.8.2"
-python = "^3.10"
-six = "^1.16.0"
-typer = "^0.6.1"
-isort = "^5.12.0"
-mne-bids = "0.15.0"
-pandas = "^2.0.1"
-
-[tool.poetry.dev-dependencies]
-black = "^22.6.0"
-commitizen = "^2.31.0"
-flake8 = "^5.0.4"
-mkdocs = "^1.1.2"
-mkdocs-markdownextradata-plugin = "^0.2.5"
-mkdocs-material = "^6.0.1"
-mkdocs-versioning = "^0.4.0"
-mkdocstrings = "^0.13.2"
-mypy = "^1.5.1"
-pre-commit = "^2.20.0"
-pytest = "^7.1.2"
-python-dotenv = "^0.20.0"
-responses = "^0.21.0"
-# See Issue: https://github.com/tiangolo/typer-cli/issues/50
-# typer-cli = "^0.0.10"
-
-[tool.poetry.scripts]
+[project.scripts]
 xnat2bids = "xnat_tools.xnat2bids:main"
 
-[tool.poetry.group.dev.dependencies]
-pandas-stubs = "^2.0.1.230501"
+[dependency-groups]
+dev = [
+    "black>=22.6.0,<23",
+    "commitizen>=2.31.0,<3",
+    "flake8>=5.0.4,<6",
+    "mkdocs>=1.1.2,<2",
+    "mkdocs-markdownextradata-plugin>=0.2.5,<0.3",
+    "mkdocs-material>=6.0.1,<7",
+    "mkdocs-versioning>=0.4.0,<0.5",
+    "mkdocstrings>=0.13.2,<0.14",
+    "mypy>=1.5.1,<2",
+    "pre-commit>=2.20.0,<3",
+    "pytest>=7.1.2,<8",
+    "python-dotenv>=0.20.0,<0.21",
+    "responses>=0.21.0,<0.22",
+    "pandas-stubs>=2.0.1.230501,<3",
+]
+
+[tool.setuptools]
+packages = ["xnat_tools"]
 
 [tool.commitizen]
 version = "1.7.2"
@@ -73,8 +74,3 @@ use_parentheses = true
 include_trailing_comma = true
 force_grid_wrap = 0
 known_third_party = [ "pytest"]
-
-[build-system]		
-requires = ["poetry>=0.12"]		
-build-backend = "poetry.masonry.api"
-
