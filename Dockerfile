@@ -2,6 +2,9 @@ FROM ghcr.io/astral-sh/uv:python3.10-bookworm
 
 WORKDIR /xnat-tools
 
+ENV VIRTUAL_ENV=/xnat-tools/.venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
 ENV DCM2NIIX_VERSION=v1.0.20241211
 
 # dcm2niix must be fetched——cannot be built locally via uv
@@ -24,5 +27,3 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
 RUN uv venv && uv pip install pytest python-dotenv responses
-
-ENV PATH="/app/.venv/bin:$PATH"
