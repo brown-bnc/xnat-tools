@@ -1,22 +1,28 @@
-FROM python:3.10
+FROM ghcr.io/astral-sh/uv:python3.10-bookworm
 
-
-RUN mkdir -p xnat-tools
-WORKDIR xnat-tools
+WORKDIR /xnat-tools
 
 ENV DCM2NIIX_VERSION=v1.0.20241211
 
+# dcm2niix must be fetched——cannot be built locally via uv
 RUN curl -fLO "https://github.com/rordenlab/dcm2niix/releases/download/${DCM2NIIX_VERSION}/dcm2niix_lnx.zip" \
     && unzip dcm2niix_lnx.zip \
     && mv dcm2niix /usr/bin/
 
-COPY uv.lock pyproject.toml tests xnat_tools ./
-COPY xnat_tools/ ./xnat_tools 
+# Install the project's dependencies using the lockfile and settings
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project --no-dev
+
+COPY uv.lock pyproject.toml tests ./
+ADD xnat_tools ./xnat_tools 
 COPY tests/ ./tests
 
-RUN pip install uv
-COPY pyproject.toml uv.lock ./
-RUN uv venv && uv pip install .
+# Installing separately from its dependencies allows optimal layer caching
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
 
+RUN uv venv && uv pip install pytest python-dotenv responses
 
-RUN uv pip install pytest python-dotenv responses
+ENV PATH="/app/.venv/bin:$PATH"
