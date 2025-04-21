@@ -34,6 +34,8 @@ jobs:
         run: |
           uv pip install .[docs]
           uv pip install typer-cli
+        env:
+          UV_SYSTEM_PYTHON: 1
       - name: Set up mkdocs config
         run: | 
           export VERSION=dev
