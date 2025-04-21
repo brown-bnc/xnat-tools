@@ -19,22 +19,25 @@ dependencies = [
 [project.scripts]
 xnat2bids = "xnat_tools.xnat2bids:main"
 
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
     "black>=22.6.0,<23",
     "commitizen>=2.31.0,<3",
     "flake8>=5.0.4,<6",
-    "mkdocs>=1.1.2,<2",
-    "mkdocs-markdownextradata-plugin>=0.2.5,<0.3",
-    "mkdocs-material>=6.0.1,<7",
-    "mkdocs-versioning>=0.4.0,<0.5",
-    "mkdocstrings>=0.13.2,<0.14",
     "mypy>=1.5.1,<2",
     "pre-commit>=2.20.0,<3",
     "pytest>=7.1.2,<8",
     "python-dotenv>=0.20.0,<0.21",
     "responses>=0.21.0,<0.22",
-    "pandas-stubs>=2.0.1.230501,<3",
+    "pandas-stubs>=2.0.1.230501,<3"
+]
+
+docs = [
+    "mkdocs>=1.5,<2",
+    "mkdocs-material>=9,<10",
+    "mkdocstrings[python]>=0.23,<1",
+    "mkdocs-versioning>=0.4,<1",
+    "mkdocs-markdownextradata-plugin>=0.2,<1"
 ]
 
 [tool.setuptools]
