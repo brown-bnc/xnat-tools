@@ -5,7 +5,7 @@ from datetime import datetime
 import typer
 
 from xnat_tools.bids_postprocess import bids_postprocess
-from xnat_tools.bids_utils import prepare_path_prefixes, run_mne_eeg2bids
+from xnat_tools.bids_utils import convert_mrs, prepare_path_prefixes, run_mne_eeg2bids
 from xnat_tools.run_heudiconv import run_heudiconv
 
 app = typer.Typer()
@@ -85,6 +85,14 @@ def dcm2bids(
             session_suffix,
             bids_experiment_dir,
             eeg_data_path,
+        )
+
+    for mrsdir in glob.glob(xnat_data_path + "/mrs-*"):
+        convert_mrs(
+            subject,
+            session_suffix,
+            bids_experiment_dir,
+            mrsdir,
         )
 
     bids_postprocess(

@@ -1,7 +1,9 @@
+import glob
 import json
 import logging
 import os
 import shutil
+import subprocess
 import warnings
 from collections import defaultdict
 
@@ -724,3 +726,46 @@ def process_dicom_file(dicom_path, dicom_field, new_value):
     else:
         _logger.warning(f"{dicom_field} field is not present in {dicom_path}.")
         return
+
+
+def convert_mrs(
+    subject,
+    session_suffix,
+    bids_experiment_dir,
+    mrs_data_path,
+):
+    mrs_sourcedata_dir = os.path.join(
+        bids_experiment_dir, "sourcedata", f"sub-{subject}", f"ses-{session_suffix}", "mrs"
+    )
+    if not os.path.exists(mrs_sourcedata_dir):
+        os.mkdir(mrs_sourcedata_dir)
+    mrs_bids_dir = os.path.join(
+        bids_experiment_dir, f"sub-{subject}", f"ses-{session_suffix}", "mrs"
+    )
+    if not os.path.exists(mrs_bids_dir):
+        os.mkdir(mrs_bids_dir)
+
+    mrs_scan_name = str.split(mrs_data_path, "/")[-1]
+    # this assumes one dicom per scan. check if this is true pre-upgrade
+    mrs_dicomfiles = glob.glob(os.path.join(mrs_data_path, "*.dcm"))
+    if len(mrs_dicomfiles) > 1:
+        _logger.warning(
+            f"WARNING: More than one spectroscopy DICOM per scan. \
+                Processing only {mrs_dicomfiles[0]}"
+        )
+
+    mrs_keys = str.split(mrs_scan_name, "_")
+
+    bids_mrs_scan_name = f"sub-{subject}_ses-{session_suffix}_\
+        {'_'.join(mrs_keys[1:])}_{str.split(mrs_keys[0],'-')[-1]}"
+
+    mrs_bids_dicomfile = f"{mrs_sourcedata_dir}/{bids_mrs_scan_name}.dcm"
+    shutil.copy(mrs_dicomfiles[0], mrs_bids_dicomfile)
+
+    spec2nii_command = (
+        f"spec2nii dicom -j -f {bids_mrs_scan_name} -o {mrs_bids_dir} {mrs_bids_dicomfile}"
+    )
+    result = subprocess.run(spec2nii_command, shell=True, capture_output=True, text=True)
+    _logger.debug(result)
+
+    # add line to scans.tsv file
