@@ -8,6 +8,7 @@ import warnings
 from collections import defaultdict
 
 import pydicom
+from heudiconv.bids import add_rows_to_scans_keys_file, get_formatted_scans_key_row
 from mne.io import read_raw_brainvision
 from mne_bids import BIDSPath, write_raw_bids
 
@@ -109,6 +110,68 @@ def insert_intended_for_fmap(
                         insert_intendedfor_scans(fmap, nii_dwi_files, overwrite)
                 else:
                     process_fmap_json_files(diff_fmap_files, nii_dwi_files, overwrite)
+
+
+def remove_func_acquisition_duration_field(bids_dir, sub_list, session="", sess_list=[]):
+    """Remove AcquisitionDuration from func jsons if RepetitionTime is defined"""
+
+    for subj in sub_list:
+
+        # makes list of the json files to edit
+        subj_path = f"{bids_dir}/sub-{subj}"
+        _logger.info(f"Processing participant {subj} at path {subj_path}")
+
+        subj_sub_dirs = os.listdir(subj_path)
+
+        # If a session is provided, only process that session.
+        # If the includesess list is not empty, cocatenate all session
+        # suffixes with "ses-" prefix for the file path.
+        # Otherwise, include all sessions for every subject to be processed.
+        if session != "":
+            sessions = ["ses-" + session]
+        elif sess_list != []:
+            sessions = ["ses-" + x for x in sess_list]
+        else:
+            sessions = [x for x in subj_sub_dirs if x.startswith("ses-")]
+
+        _logger.info(f"List of sessions sub-directories {sess_list}")
+
+        for sess in sessions:
+            func_path = f"{bids_dir}/sub-{subj}/{sess}/func"
+
+            funcPathExists = os.path.exists(func_path)
+
+            # Don't do anything if this session doesn't contain a func folder
+            if not funcPathExists:
+                continue
+
+            func_jsons = [
+                os.path.join(func_path, f) for f in os.listdir(func_path) if f.endswith("json")
+            ]
+
+            task_bold_jsons = glob.glob(os.path.join(bids_dir, "task*_bold.json"))
+
+            func_jsons = func_jsons + task_bold_jsons
+
+            # Log JSON file lists
+            _logger.info(f"List of BOLD JSON files to amend {func_jsons}")
+
+            for js in func_jsons:
+                os.chmod(js, 0o664)
+                with open(js, "r") as rj:
+                    _logger.info(f"Processing file {rj}")
+                    data = json.load(rj)
+                    if all(key in data for key in ("AcquisitionDuration", "RepetitionTime")):
+                        del data["AcquisitionDuration"]
+                        _logger.info(
+                            "AcquisitionDuration and RepetitionTime are mutually exclusive "
+                            "for BOLD data according to the BIDS spec. "
+                            "Removing AcquisitionDuration field."
+                        )
+                        with open(js, "w") as wj:
+                            json.dump(data, wj, indent=4, sort_keys=True)
+                            wj.close
+                    rj.close
 
 
 # Extract aquisition token from filename
@@ -734,20 +797,28 @@ def convert_mrs(
     bids_experiment_dir,
     mrs_data_path,
 ):
+    _logger.info("INFO: Converting MR spectroscopy data")
+
+    # create mrs directory within bids/sourcedata to copy DICOMS into
     mrs_sourcedata_dir = os.path.join(
         bids_experiment_dir, "sourcedata", f"sub-{subject}", f"ses-{session_suffix}", "mrs"
     )
-    if not os.path.exists(mrs_sourcedata_dir):
-        os.mkdir(mrs_sourcedata_dir)
-    mrs_bids_dir = os.path.join(
-        bids_experiment_dir, f"sub-{subject}", f"ses-{session_suffix}", "mrs"
-    )
-    if not os.path.exists(mrs_bids_dir):
-        os.mkdir(mrs_bids_dir)
 
+    if not os.path.exists(mrs_sourcedata_dir):
+        os.makedirs(mrs_sourcedata_dir, exist_ok=True)
+
+    # create mrs directory within bids session directory
+    session_dir = os.path.join(bids_experiment_dir, f"sub-{subject}", f"ses-{session_suffix}")
+
+    mrs_bids_dir = os.path.join(session_dir, "mrs")
+
+    if not os.path.exists(mrs_bids_dir):
+        os.makedirs(mrs_bids_dir, exist_ok=True)
+
+    # copy MRS DICOM to sourcedata, renaming for BIDS format
     mrs_scan_name = str.split(mrs_data_path, "/")[-1]
-    # this assumes one dicom per scan. check if this is true pre-upgrade
     mrs_dicomfiles = glob.glob(os.path.join(mrs_data_path, "*.dcm"))
+
     if len(mrs_dicomfiles) > 1:
         _logger.warning(
             f"WARNING: More than one spectroscopy DICOM per scan. \
@@ -756,16 +827,32 @@ def convert_mrs(
 
     mrs_keys = str.split(mrs_scan_name, "_")
 
-    bids_mrs_scan_name = f"sub-{subject}_ses-{session_suffix}_\
-        {'_'.join(mrs_keys[1:])}_{str.split(mrs_keys[0],'-')[-1]}"
+    bids_mrs_scan_name = (
+        f"sub-{subject}_ses-{session_suffix}_"
+        f"{'_'.join(mrs_keys[1:])}_"
+        f"{str.split(mrs_keys[0],'-')[-1]}"
+    )
 
     mrs_bids_dicomfile = f"{mrs_sourcedata_dir}/{bids_mrs_scan_name}.dcm"
     shutil.copy(mrs_dicomfiles[0], mrs_bids_dicomfile)
 
+    # convert MRS DICOM to NIFTI-MRS and place in bids mrs directory
     spec2nii_command = (
         f"spec2nii dicom -j -f {bids_mrs_scan_name} -o {mrs_bids_dir} {mrs_bids_dicomfile}"
     )
     result = subprocess.run(spec2nii_command, shell=True, capture_output=True, text=True)
+    if result.returncode:
+        _logger.warning(f"spec2nii failed to convert MRS DICOM {mrs_bids_dicomfile}")
     _logger.debug(result)
 
-    # add line to scans.tsv file
+    # if the conversion succeeded, add a line to scans.tsv file
+    mrs_bids_nii = os.path.join(mrs_bids_dir, f"{bids_mrs_scan_name}.nii.gz")
+
+    if os.path.exists(mrs_bids_nii):
+        scans_tsv_filename = f"sub-{subject}_ses-{session_suffix}_scans.tsv"
+
+        # use heudiconv functions to extract info for _scans.tsv file and add to file
+        new_row = {
+            f"mrs/{bids_mrs_scan_name}.nii.gz": get_formatted_scans_key_row(mrs_bids_dicomfile)
+        }
+        add_rows_to_scans_keys_file(os.path.join(session_dir, scans_tsv_filename), new_row)
