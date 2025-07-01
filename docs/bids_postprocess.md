@@ -2,7 +2,10 @@
 
 Script for performing post BIDSIFY processing.
 At the moment it inserts the IntendedFor field
-to JSON sidecart for fieldmap data
+to JSON sidecar for fieldmap data, and removes
+the AcquisitionDuration key from func jsons if
+RepetitionTime is present, because they are
+mutually exclusive according to BIDS spec
 
 **Usage**:
 
