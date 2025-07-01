@@ -744,10 +744,7 @@
 <h1 id="bids_postprocess"><code>bids_postprocess</code><a class="headerlink" href="#bids_postprocess" title="Permanent link">&para;</a></h1>
 <p>Script for performing post BIDSIFY processing.
 At the moment it inserts the IntendedFor field
-to JSON sidecar for fieldmap data, and removes
-the AcquisitionDuration key from func jsons if
-RepetitionTime is present, because they are
-mutually exclusive according to BIDS spec</p>
+to JSON sidecart for fieldmap data</p>
 <p><strong>Usage</strong>:</p>
 <div class="codehilite"><pre><span></span><code><span class="gp">$ </span>bids_postprocess<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>BIDS_EXPERIMENT_DIR
 </code></pre></div>
