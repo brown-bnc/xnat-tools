@@ -4,7 +4,11 @@ from typing import List
 
 import typer
 
-from xnat_tools.bids_utils import insert_intended_for_fmap, path_string_preprocess
+from xnat_tools.bids_utils import (
+    insert_intended_for_fmap,
+    path_string_preprocess,
+    remove_func_acquisition_duration_field,
+)
 from xnat_tools.logging import setup_logging
 from xnat_tools.xnat_utils import establish_connection, get_project_subject_session
 
@@ -70,7 +74,10 @@ def bids_postprocess(
     """
     Script for performing post BIDSIFY processing.
     At the moment it inserts the IntendedFor field
-    to JSON sidecart for fieldmap data
+    to JSON sidecar for fieldmap data, and removes
+    the AcquisitionDuration key from func jsons if
+    RepetitionTime is present, because they are
+    mutually exclusive according to BIDS spec
     """
 
     setup_logging(_logger, log_file, verbose_level=verbose)
@@ -95,6 +102,12 @@ def bids_postprocess(
         session_suffix = session_info[2]
 
         insert_intended_for_fmap(bids_experiment_dir, includesubj, session_suffix, overwrite)
+        remove_func_acquisition_duration_field(
+            bids_experiment_dir,
+            includesubj,
+            session_suffix,
+            includesess,
+        )
 
     else:
         if includesubj == []:
@@ -139,6 +152,13 @@ def bids_postprocess(
             session,
             includesess,
             overwrite,
+        )
+
+        remove_func_acquisition_duration_field(
+            bids_experiment_dir,
+            includesubj,
+            session,
+            includesess,
         )
 
 
