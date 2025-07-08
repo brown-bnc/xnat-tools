@@ -5,6 +5,7 @@ from typing import List
 import typer
 
 from xnat_tools.bids_utils import (
+    append_anat_units_field,
     insert_intended_for_fmap,
     path_string_preprocess,
     remove_func_acquisition_duration_field,
@@ -109,6 +110,13 @@ def bids_postprocess(
             includesess,
         )
 
+        append_anat_units_field(
+            bids_experiment_dir,
+            includesubj,
+            session_suffix,
+            includesess,
+        )
+
     else:
         if includesubj == []:
             files = os.listdir(bids_experiment_dir)
@@ -155,6 +163,13 @@ def bids_postprocess(
         )
 
         remove_func_acquisition_duration_field(
+            bids_experiment_dir,
+            includesubj,
+            session,
+            includesess,
+        )
+
+        append_anat_units_field(
             bids_experiment_dir,
             includesubj,
             session,

@@ -117,6 +117,37 @@ def build_sessions_list(bids_dir, subj, session="", sess_list=None):
     return sessions
 
 
+def ensure_json_field(json_path, field, default):
+    """Add 'Units' key with empty value if missing from JSON."""
+    try:
+        with open(json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        if field not in data:
+            data[field] = default
+
+            with open(json_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4)
+            _logger.info(f"Added {field} field to {json_path}")
+        else:
+            _logger.info(f"{field} field already present in {json_path}")
+    except Exception as e:
+        _logger.info(f"Error processing {json_path}: {e}")
+
+
+def append_anat_units_field(bids_dir, sub_list=None, session="", sess_list=None):
+    anat_dirs = [
+        f"{bids_dir}/sub-{subj}/ses-{sess}/anat" for subj in sub_list for sess in sess_list
+    ]
+
+    for dir in anat_dirs:
+        anat_jsons = [os.path.join(dir, f) for f in os.listdir(dir) if f.endswith("json")]
+
+        for path in anat_jsons:
+            # Phase images (with the `part-phase` entity) must have units "rad" or "arbitrary".
+            ensure_json_field(path, "Units", "arbitrary")
+
+
 def remove_func_acquisition_duration_field(bids_dir, sub_list=None, session="", sess_list=None):
     """Remove AcquisitionDuration from func jsons if RepetitionTime is defined"""
 
@@ -170,6 +201,7 @@ def correct_for_bids_schema_validator(bids_dir, sub_list=None, session="", sess_
         sub_list = [x.removeprefix("sub-") for x in os.listdir(bids_dir) if x.startswith("sub-")]
 
     remove_func_acquisition_duration_field(bids_dir, sub_list, session, sess_list)
+    append_anat_units_field(bids_dir, sub_list, session, sess_list)
 
 
 # Extract aquisition token from filename
