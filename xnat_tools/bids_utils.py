@@ -118,7 +118,7 @@ def build_sessions_list(bids_dir, subj, session="", sess_list=None):
 
 
 def ensure_json_field(json_path, field, default):
-    """Add 'Units' key with empty value if missing from JSON."""
+    """Add 'Units' key with default value if missing from JSON."""
     try:
         with open(json_path, "r", encoding="utf-8") as f:
             data = json.load(f)
