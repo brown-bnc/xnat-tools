@@ -40,6 +40,18 @@ uv venv
 source .venv/bin/activate
 uv pip install -e '.[dev]'
 ```
+
+## Environment Variables for Local Development
+
+To run integration tests, you'll need to provide authentication credentials for XNAT using environment variables. These should be defined in a local `.env` file at the root of the repository.
+
+### Creating a `.env` File
+
+Create a file named `.env` in the project root (next to `pyproject.toml`) with the following contents:
+
+XNAT_USER=your_xnat_username
+XNAT_PASS=your_xnat_password
+
 To run all of the tests:
 
 ```
@@ -150,7 +162,7 @@ rm -rf ./site/.git/
 mkdocs build
 ```
 
-To serve:
+To serve locally:
 ```
 mkdocs serve
 ```

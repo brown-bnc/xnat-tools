@@ -85,7 +85,7 @@ pipx install uv
 Unlike Poetry, uv does not automatically manage virtual environments. You must create and activate one manually:
 
 ```bash
-uv venv  # creates a .venv/ directory in the current folder
+uv venv 
 source .venv/bin/activate 
 ```
 
