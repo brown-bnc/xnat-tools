@@ -52,17 +52,20 @@ pip install git+https://github.com/brown-bnc/xnat-tools.git@v{{ mdvars.version }
 pip install git+https://github.com/brown-bnc/xnat-tools.git
 ```
 
-### Poetry
+### uv
 
-This package is developed using [Poetry](https://python-poetry.org). If you are familiar with Poetry, you can add it to your project via
+This package is developed using [uv](https://docs.astral.sh/uv/), a modern Python package manager that supports lockfiles, dependency resolution, and virtual environments.
 
-```
-poetry add git+https://github.com/brown-bnc/xnat-tools.git
-```
+To install and develop locally with `uv`:
 
-or for a tagged release
-
-```
-poetry add git+https://github.com/brown-bnc/xnat-tools.git@v{{ mdvars.version }}
+```bash
+uv venv
+source .venv/bin/activate
+uv pip install -e 'git+https://github.com/brown-bnc/xnat-tools.git'
 ```
 
+To install a specific, tagged release:
+
+```
+uv pip install -e 'git+https://github.com/brown-bnc/xnat-tools.git@v{{ mdvars.version }}'
+```
