@@ -70,16 +70,31 @@ This will create a hidden file `.python-version` in the current directory.
 
 `python -m pip install pipx`
 
-## 5. Poetry
+## 5. uv
 
-[Poetry](https://python-poetry.org) handles dependency and virtual-environment-management in a way that’s very intuitive.
+[`uv`](https://docs.astral.sh/uv/) is a fast and user-friendly Python package manager and dependency resolver. It also simplifies creating and managing virtual environments.
 
-`pipx install poetry`
+### Installation
 
-### Configure poetry to create virtual environments inside the project's root directory
+We recommend installing `uv` using `pipx` to keep it isolated:
 
-`poetry config virtualenvs.in-project true`
+```bash
+pipx install uv
+```
 
-### Making sure that Poetry is using Pyenvs python
+Unlike Poetry, uv does not automatically manage virtual environments. You must create and activate one manually:
 
-`poetry env use $(pyenv which python)`
+```bash
+uv venv  # creates a .venv/ directory in the current folder
+source .venv/bin/activate 
+```
+
+You should see your shell prompt change to reflect that the virtual environment is active.
+
+### Installing Dependencies 
+
+With your environment active, install your project’s dependencies:
+
+```
+uv pip install -e '.[dev, docs]'
+```
