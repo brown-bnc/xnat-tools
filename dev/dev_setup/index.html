@@ -786,28 +786,28 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-uv" class="md-nav__link">
+  <a href="#5-poetry" class="md-nav__link">
     <span class="md-ellipsis">
-      5. uv
+      5. Poetry
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="5. uv">
+    <nav class="md-nav" aria-label="5. Poetry">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#installation_2" class="md-nav__link">
+  <a href="#configure-poetry-to-create-virtual-environments-inside-the-projects-root-directory" class="md-nav__link">
     <span class="md-ellipsis">
-      Installation
+      Configure poetry to create virtual environments inside the project's root directory
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#installing-dependencies" class="md-nav__link">
+  <a href="#making-sure-that-poetry-is-using-pyenvs-python" class="md-nav__link">
     <span class="md-ellipsis">
-      Installing Dependencies
+      Making sure that Poetry is using Pyenvs python
     </span>
   </a>
   
@@ -1015,28 +1015,28 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-uv" class="md-nav__link">
+  <a href="#5-poetry" class="md-nav__link">
     <span class="md-ellipsis">
-      5. uv
+      5. Poetry
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="5. uv">
+    <nav class="md-nav" aria-label="5. Poetry">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#installation_2" class="md-nav__link">
+  <a href="#configure-poetry-to-create-virtual-environments-inside-the-projects-root-directory" class="md-nav__link">
     <span class="md-ellipsis">
-      Installation
+      Configure poetry to create virtual environments inside the project's root directory
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#installing-dependencies" class="md-nav__link">
+  <a href="#making-sure-that-poetry-is-using-pyenvs-python" class="md-nav__link">
     <span class="md-ellipsis">
-      Installing Dependencies
+      Making sure that Poetry is using Pyenvs python
     </span>
   </a>
   
@@ -1103,23 +1103,13 @@ If this is your first time using <code>pyenv</code> you can learn more about isu
 <p><a href="https://github.com/pipxproject/pipx">PIPX</a> allows you to install Python (and Ruby) CLI utilities in their own environment, without contaminating your global environment</p>
 <h3 id="installation_1">Installation<a class="headerlink" href="#installation_1" title="Permanent link">&para;</a></h3>
 <p><code>python -m pip install pipx</code></p>
-<h2 id="5-uv">5. uv<a class="headerlink" href="#5-uv" title="Permanent link">&para;</a></h2>
-<p><a href="https://docs.astral.sh/uv/"><code>uv</code></a> is a fast and user-friendly Python package manager and dependency resolver. It also simplifies creating and managing virtual environments.</p>
-<h3 id="installation_2">Installation<a class="headerlink" href="#installation_2" title="Permanent link">&para;</a></h3>
-<p>We recommend installing <code>uv</code> using <code>pipx</code> to keep it isolated:</p>
-<div class="codehilite"><pre><span></span><code>pipx<span class="w"> </span>install<span class="w"> </span>uv
-</code></pre></div>
-
-<p>Unlike Poetry, uv does not automatically manage virtual environments. You must create and activate one manually:</p>
-<div class="codehilite"><pre><span></span><code>uv<span class="w"> </span>venv<span class="w"> </span>
-<span class="nb">source</span><span class="w"> </span>.venv/bin/activate<span class="w"> </span>
-</code></pre></div>
-
-<p>You should see your shell prompt change to reflect that the virtual environment is active.</p>
-<h3 id="installing-dependencies">Installing Dependencies<a class="headerlink" href="#installing-dependencies" title="Permanent link">&para;</a></h3>
-<p>With your environment active, install your project’s dependencies:</p>
-<div class="codehilite"><pre><span></span><code>uv pip install -e &#39;.[dev, docs]&#39;
-</code></pre></div>
+<h2 id="5-poetry">5. Poetry<a class="headerlink" href="#5-poetry" title="Permanent link">&para;</a></h2>
+<p><a href="https://python-poetry.org">Poetry</a> handles dependency and virtual-environment-management in a way that’s very intuitive.</p>
+<p><code>pipx install poetry</code></p>
+<h3 id="configure-poetry-to-create-virtual-environments-inside-the-projects-root-directory">Configure poetry to create virtual environments inside the project's root directory<a class="headerlink" href="#configure-poetry-to-create-virtual-environments-inside-the-projects-root-directory" title="Permanent link">&para;</a></h3>
+<p><code>poetry config virtualenvs.in-project true</code></p>
+<h3 id="making-sure-that-poetry-is-using-pyenvs-python">Making sure that Poetry is using Pyenvs python<a class="headerlink" href="#making-sure-that-poetry-is-using-pyenvs-python" title="Permanent link">&para;</a></h3>
+<p><code>poetry env use $(pyenv which python)</code></p>
 
 
 

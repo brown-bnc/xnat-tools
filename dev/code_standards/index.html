@@ -738,26 +738,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#environment-variables-for-local-development" class="md-nav__link">
+  <a href="#deploying" class="md-nav__link">
     <span class="md-ellipsis">
-      Environment Variables for Local Development
+      Deploying
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Environment Variables for Local Development">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#creating-a-env-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      Creating a .env File
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -950,26 +935,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#environment-variables-for-local-development" class="md-nav__link">
+  <a href="#deploying" class="md-nav__link">
     <span class="md-ellipsis">
-      Environment Variables for Local Development
+      Deploying
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Environment Variables for Local Development">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#creating-a-env-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      Creating a .env File
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1090,7 +1060,7 @@
 <li>topic branches are created for new features, fixes, or really any changes</li>
 </ul>
 <h3 id="comment-styles">Comment styles<a class="headerlink" href="#comment-styles" title="Permanent link">&para;</a></h3>
-<p>Developers should use <a href="https://www.conventionalcommits.org/en/v1.0.0/">Conventional Commits</a>. <a href="https://commitizen-tools.github.io/commitizen/">Commitizen</a> comes installed as a <code>dev</code> dependency via uv and you can use it to help you format your commit messages. It can also be installed as stand alone CLI or as a plugin on VSCODE.</p>
+<p>Developers should use <a href="https://www.conventionalcommits.org/en/v1.0.0/">Conventional Commits</a>. <a href="https://commitizen-tools.github.io/commitizen/">Commitizen</a> comes installed as a <code>dev</code> dependency via poetry and you can use it to help you format your commit messages. It can also be installed as stand alone CLI or as a plugin on VSCODE.</p>
 <p>We use Commitizen in GitHub Actions to automatically bump the version and update the <a href="changelog.md">CHANGELOG.md</a> of this package according to the commit messages. Using conventional commits guarantees than Commitizen works appropriately.  Notice that only few types of commits trigger a bump. At the moment we use the <a href="https://commitizen-tools.github.io/commitizen/customization/">default configuration</a> which includes:</p>
 <div class="codehilite"><pre><span></span><code>bump_pattern = &quot;^(break|new|fix|hotfix)&quot;
 bump_map = {&quot;break&quot; = &quot;MAJOR&quot;, &quot;new&quot; = &quot;MINOR&quot;, &quot;fix&quot; = &quot;PATCH&quot;, &quot;hotfix&quot; = &quot;PATCH&quot;}
@@ -1098,26 +1068,14 @@ bump_map = {&quot;break&quot; = &quot;MAJOR&quot;, &quot;new&quot; = &quot;MINOR
 
 <p>When a PR is merged to the main branch, a dry-run of the Commitizen's bump action is run. If indeed a new version is created, you can manually trigger the <strong>publish</strong> workflow to tag a release, commit new docs and build and push the docker image to ghcr.io. </p>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
-<p>The unit and integration tests currently run in CI. If you would like to test locally, do the following:</p>
+<p>In the future we will add testing as part of CI. For the moment, you'll need to test yourself</p>
 <p><code>pytest</code> is the library used for testing.</p>
-<p>Set up your environment:</p>
-<div class="codehilite"><pre><span></span><code>uv<span class="w"> </span>venv
-<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
-uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;.[dev]&#39;</span>
-</code></pre></div>
-
-<h2 id="environment-variables-for-local-development">Environment Variables for Local Development<a class="headerlink" href="#environment-variables-for-local-development" title="Permanent link">&para;</a></h2>
-<p>To run integration tests, you'll need to provide authentication credentials for XNAT using environment variables. These should be defined in a local <code>.env</code> file at the root of the repository.</p>
-<h3 id="creating-a-env-file">Creating a <code>.env</code> File<a class="headerlink" href="#creating-a-env-file" title="Permanent link">&para;</a></h3>
-<p>Create a file named <code>.env</code> in the project root (next to <code>pyproject.toml</code>) with the following contents:</p>
-<p>XNAT_USER=your_xnat_username
-XNAT_PASS=your_xnat_password</p>
 <p>To run all of the tests:</p>
-<div class="codehilite"><pre><span></span><code>pytest -x -s -o log_cli=true --log-cli-level=INFO
+<div class="codehilite"><pre><span></span><code>poetry run pytest -x -s -o log_cli=true --log-cli-level=INFO
 </code></pre></div>
 
 <p>To run only a file</p>
-<div class="codehilite"><pre><span></span><code><span class="n">pytest</span><span class="w"> </span><span class="o">-</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="n">s</span><span class="w"> </span><span class="o">-</span><span class="n">o</span><span class="w"> </span><span class="n">log_cli</span><span class="o">=</span><span class="bp">true</span><span class="w"> </span><span class="o">--</span><span class="nb">log</span><span class="o">-</span><span class="n">cli</span><span class="o">-</span><span class="n">level</span><span class="o">=</span><span class="n">INFO</span><span class="w"> </span><span class="n">tests</span><span class="o">/</span><span class="n">integration</span><span class="o">/</span><span class="n">test_export_typer</span><span class="o">.</span><span class="n">py</span>
+<div class="codehilite"><pre><span></span><code><span class="n">poetry</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">pytest</span><span class="w"> </span><span class="o">-</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="n">s</span><span class="w"> </span><span class="o">-</span><span class="n">o</span><span class="w"> </span><span class="n">log_cli</span><span class="o">=</span><span class="bp">true</span><span class="w"> </span><span class="o">--</span><span class="nb">log</span><span class="o">-</span><span class="n">cli</span><span class="o">-</span><span class="n">level</span><span class="o">=</span><span class="n">INFO</span><span class="w"> </span><span class="n">tests</span><span class="o">/</span><span class="n">integration</span><span class="o">/</span><span class="n">test_export_typer</span><span class="o">.</span><span class="n">py</span>
 </code></pre></div>
 
 <p><code>-s</code> makes sure that <code>stdout</code> is printed to terminal
@@ -1129,16 +1087,18 @@ XNAT_PASS=your_xnat_password</p>
 docker<span class="w"> </span>run<span class="w"> </span>-ti<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span><span class="cp">${</span><span class="n">bids_directory</span><span class="cp">}</span>:/data:ro<span class="w"> </span>bids/validator<span class="w"> </span>/data
 </code></pre></div>
 
+<h2 id="deploying">Deploying<a class="headerlink" href="#deploying" title="Permanent link">&para;</a></h2>
+<p>When </p>
 <h2 id="code-style">Code Style<a class="headerlink" href="#code-style" title="Permanent link">&para;</a></h2>
 <h4 id="pre-commit-hooks">Pre-Commit hooks<a class="headerlink" href="#pre-commit-hooks" title="Permanent link">&para;</a></h4>
 <p>This repository has pre-commit hooks configured to enforce typing and formatting.</p>
 <p>To set up the hooks, run </p>
-<div class="codehilite"><pre><span></span><code>uv pip install -e &#39;.[dev, docs]&#39;
+<div class="codehilite"><pre><span></span><code>poetry run pre-commit install
 </code></pre></div>
 
 <p>Now, you hooks will run on <code>git commit</code></p>
 <p>If you would like to run on all files (not just staged ones), you can run</p>
-<div class="codehilite"><pre><span></span><code>pre-commit run --all-files
+<div class="codehilite"><pre><span></span><code>poetry run pre-commit run --all-files
 </code></pre></div>
 
 <p>The following hooks are set up 
@@ -1150,20 +1110,20 @@ docker<span class="w"> </span>run<span class="w"> </span>-ti<span class="w"> </s
 <h3 id="typing">Typing<a class="headerlink" href="#typing" title="Permanent link">&para;</a></h3>
 <p>Please use <a href="https://mypy.readthedocs.io/en/stable/">type hints</a> on all signatures where reasonable.  This will make sure the code is more readable, can be statically tested for type soundness, and helps fill in the documentation.</p>
 <p>Run the below to check for type errors:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">mypy</span><span class="w"> </span><span class="n">xnat_tools</span>
+<div class="codehilite"><pre><span></span><code><span class="n">poetry</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">mypy</span><span class="w"> </span><span class="n">xnat_tools</span>
 </code></pre></div>
 
 <h3 id="formatting">Formatting<a class="headerlink" href="#formatting" title="Permanent link">&para;</a></h3>
 <h3 id="black">black<a class="headerlink" href="#black" title="Permanent link">&para;</a></h3>
-<p>The code must conform to <code>black</code>'s standards and this is automatically checked via github actions.  While it is highly recommended to run the pre-commit hooks, you can also run black directly  to automatically fix files with <code>black .</code> from the root of the <code>xnat_tools</code> directory.</p>
+<p>The code must conform to <code>black</code>'s standards and this is automatically checked via github actions.  While it is highly recommended to run the pre-commit hooks, you can also run black directly  to automatically fix files with <code>poetry run black .</code> from the root of the <code>xnat_tools</code> directory.</p>
 <h3 id="flake8">flake8<a class="headerlink" href="#flake8" title="Permanent link">&para;</a></h3>
 <p>The code must not have any egregious linting errors. And others should be minimized as reasonable.</p>
 <p>Check for egregious errors:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">flake8</span><span class="w"> </span><span class="n">xnat_tools</span><span class="w"> </span><span class="o">--</span><span class="n">count</span><span class="w"> </span><span class="o">--</span><span class="n">select</span><span class="o">=</span><span class="n">E9</span><span class="p">,</span><span class="n">F63</span><span class="p">,</span><span class="n">F7</span><span class="p">,</span><span class="n">F82</span><span class="w"> </span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">source</span><span class="w"> </span><span class="o">--</span><span class="n">statistics</span>
+<div class="codehilite"><pre><span></span><code><span class="n">poetry</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">flake8</span><span class="w"> </span><span class="n">xnat_tools</span><span class="w"> </span><span class="o">--</span><span class="n">count</span><span class="w"> </span><span class="o">--</span><span class="n">select</span><span class="o">=</span><span class="n">E9</span><span class="p">,</span><span class="n">F63</span><span class="p">,</span><span class="n">F7</span><span class="p">,</span><span class="n">F82</span><span class="w"> </span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">source</span><span class="w"> </span><span class="o">--</span><span class="n">statistics</span>
 </code></pre></div>
 
 <p>Check for all warnings:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">flake8</span><span class="w"> </span><span class="n">xnat_tools</span><span class="w"> </span><span class="o">--</span><span class="n">count</span><span class="w"> </span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">zero</span><span class="w"> </span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">complexity</span><span class="o">=</span><span class="mi">12</span><span class="w"> </span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">line</span><span class="o">-</span><span class="n">length</span><span class="o">=</span><span class="mi">88</span><span class="w"> </span><span class="o">--</span><span class="n">statistics</span>
+<div class="codehilite"><pre><span></span><code><span class="n">poetry</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">flake8</span><span class="w"> </span><span class="n">xnat_tools</span><span class="w"> </span><span class="o">--</span><span class="n">count</span><span class="w"> </span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">zero</span><span class="w"> </span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">complexity</span><span class="o">=</span><span class="mi">12</span><span class="w"> </span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">line</span><span class="o">-</span><span class="n">length</span><span class="o">=</span><span class="mi">88</span><span class="w"> </span><span class="o">--</span><span class="n">statistics</span>
 </code></pre></div>
 
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
@@ -1180,6 +1140,7 @@ docker<span class="w"> </span>run<span class="w"> </span>-ti<span class="w"> </s
 </ul>
 </li>
 </ul>
+<p>Running the documentation locally (within a Poetry shell or add <code>poetry run</code>)</p>
 <div class="codehilite"><pre><span></span><code><span class="k">export</span><span class="w"> </span><span class="n">VERSION</span><span class="o">=</span><span class="n">dev</span>
 <span class="p">(</span><span class="n">envsubst</span><span class="w"> </span><span class="s1">&#39;${VERSION}&#39;</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">mkdocs</span><span class="o">-</span><span class="n">template</span><span class="o">.</span><span class="n">yml</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">mkdocs</span><span class="o">.</span><span class="n">yml</span>
 <span class="n">mkdir</span><span class="w"> </span><span class="n">site</span>
@@ -1192,7 +1153,7 @@ docker<span class="w"> </span>run<span class="w"> </span>-ti<span class="w"> </s
 <span class="n">mkdocs</span><span class="w"> </span><span class="n">build</span>
 </code></pre></div>
 
-<p>To serve locally:</p>
+<p>To serve:</p>
 <div class="codehilite"><pre><span></span><code>mkdocs serve
 </code></pre></div>
 
@@ -1206,7 +1167,7 @@ docker<span class="w"> </span>run<span class="w"> </span>-ti<span class="w"> </s
 
 <p>However, the URL is https://brown-bnc.github.io/xnat-tools/ dash instead of underscore</p>
 <h3 id="documentation-for-console-scripts">Documentation for console scripts<a class="headerlink" href="#documentation-for-console-scripts" title="Permanent link">&para;</a></h3>
-<p>The markdown files for console scripts are generated by the <code>typer-cli</code>. Here is an example of how to call it manually.</p>
+<p>The markdown files for console scripts are generated by the <code>typer-cli</code>. Here is an example of how to call it manually from your Poetry shell i.e. <code>poetry shell</code></p>
 <div class="codehilite"><pre><span></span><code><span class="n">PYTHONPATH</span><span class="o">=&lt;</span><span class="n">path</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">xnat</span><span class="o">-</span><span class="n">tools</span><span class="o">&gt;</span><span class="w"> </span><span class="n">typer</span><span class="w"> </span><span class="o">./</span><span class="n">dicom_export</span><span class="o">.</span><span class="n">py</span><span class="w"> </span><span class="n">utils</span><span class="w"> </span><span class="n">docs</span><span class="w"> </span><span class="o">--</span><span class="n">name</span><span class="w"> </span><span class="n">xnat</span><span class="o">-</span><span class="n">dicom</span><span class="o">-</span><span class="k">export</span><span class="w"> </span><span class="o">--</span><span class="n">output</span><span class="w"> </span><span class="o">../</span><span class="n">docs</span><span class="o">/</span><span class="n">dicom_export</span><span class="o">.</span><span class="n">md</span>
 </code></pre></div>
 
