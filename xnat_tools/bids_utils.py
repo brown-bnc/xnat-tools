@@ -135,17 +135,25 @@ def ensure_json_field(json_path, field, default):
         _logger.info(f"Error processing {json_path}: {e}")
 
 
-def append_anat_units_field(bids_dir, sub_list=None, session="", sess_list=None):
-    anat_dirs = [
-        f"{bids_dir}/sub-{subj}/ses-{sess}/anat" for subj in sub_list for sess in sess_list
-    ]
+def append_phase_units_field(bids_dir, sub_list=None, session="", sess_list=None):
+    for subj in sub_list:
+        for sess in sess_list:
+            ses_dir = os.path.join(bids_dir, f"sub-{subj}", f"ses-{sess}")
+            if not os.path.isdir(ses_dir):
+                continue
 
-    for dir in anat_dirs:
-        anat_jsons = [os.path.join(dir, f) for f in os.listdir(dir) if f.endswith("json")]
+            # Walk through all folders under the session directory (anat, func, etc.)
+            for root, _, files in os.walk(ses_dir):
+                json_files = [
+                    os.path.join(root, f)
+                    for f in files
+                    if f.endswith("json") and "_part-phase" in f
+                ]
 
-        for path in anat_jsons:
-            # Phase images (with the `part-phase` entity) must have units "rad" or "arbitrary".
-            ensure_json_field(path, "Units", "arbitrary")
+                for path in json_files:
+                    # Phase images must have units "rad" or "arbitrary"
+                    # (defaulting to "arbitrary" here)
+                    ensure_json_field(path, "Units", "arbitrary")
 
 
 def remove_func_acquisition_duration_field(bids_dir, sub_list=None, session="", sess_list=None):
@@ -201,7 +209,7 @@ def correct_for_bids_schema_validator(bids_dir, sub_list=None, session="", sess_
         sub_list = [x.removeprefix("sub-") for x in os.listdir(bids_dir) if x.startswith("sub-")]
 
     remove_func_acquisition_duration_field(bids_dir, sub_list, session, sess_list)
-    append_anat_units_field(bids_dir, sub_list, session, sess_list)
+    append_phase_units_field(bids_dir, sub_list, session, sess_list)
 
 
 # Extract aquisition token from filename
