@@ -101,8 +101,6 @@ def build_sessions_list(bids_dir, subj, session="", sess_list=None):
     subj_path = f"{bids_dir}/sub-{subj}"
     subj_sub_dirs = os.listdir(subj_path)
 
-    log_info(f"Processing participant {subj} at path {subj_path}")
-
     # If a session is provided, only process that session.
     # If the includesess list is not empty, cocatenate all session
     # suffixes with "ses-" prefix for the file path.
@@ -128,19 +126,25 @@ def ensure_json_field(json_path, field, default):
 
             with open(json_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=4)
-            _logger.info(f"Added {field} field to {json_path}")
+            log_info(f"Added {field} field to {json_path}")
         else:
-            _logger.info(f"{field} field already present in {json_path}")
+            log_info(f"{field} field already present in {json_path}")
     except Exception as e:
-        _logger.info(f"Error processing {json_path}: {e}")
+        log_info(f"Error processing {json_path}: {e}")
 
 
 def append_phase_units_field(bids_dir, sub_list=None, session="", sess_list=None):
     for subj in sub_list:
-        for sess in sess_list:
-            ses_dir = os.path.join(bids_dir, f"sub-{subj}", f"ses-{sess}")
+
+        # makes list of the sessions to process
+        sessions = build_sessions_list(bids_dir, subj, session, sess_list)
+
+        for sess in sessions:
+            ses_dir = os.path.join(bids_dir, f"sub-{subj}", f"{sess}")
             if not os.path.isdir(ses_dir):
                 continue
+
+            log_info(f"Checking for missing phase units in jsons at path {ses_dir}")
 
             # Walk through all folders under the session directory (anat, func, etc.)
             for root, _, files in os.walk(ses_dir):
@@ -167,11 +171,14 @@ def remove_func_acquisition_duration_field(bids_dir, sub_list=None, session="", 
         _logger.info(f"List of sessions sub-directories {sessions}")
 
         for sess in sessions:
+
             func_path = f"{bids_dir}/sub-{subj}/{sess}/func"
 
             # Don't do anything if this session doesn't contain a func folder
             if not os.path.exists(func_path):
                 continue
+
+            log_info(f"Removing AcquisitionDuration field from jsons at path {func_path}")
 
             func_jsons = [
                 os.path.join(func_path, f) for f in os.listdir(func_path) if f.endswith("json")
