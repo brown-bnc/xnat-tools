@@ -1,3 +1,15 @@
+## v2.1.0 (2025-07-21)
+
+### Feat
+
+- include deno install in dockerfile
+- convert MRS DICOMS to BIDS format
+
+### Fix
+
+- build sessions list if only bidsdir passed to append phase units func
+- separate build session function for bids postproc
+
 ## v2.0.0 (2025-06-27)
 
 ## v1.7.2 (2025-04-09)
