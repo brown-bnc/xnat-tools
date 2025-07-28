@@ -9,7 +9,7 @@ from xnat_tools.dicom_export import dicom_export
 from xnat_tools.physio_convert import physio_convert
 from xnat_tools.xnat_utils import establish_connection, get_project_subject_session
 
-app = typer.Typer()
+app = typer.Typer(pretty_exceptions_show_locals=False)
 
 
 @app.command()
