@@ -1,3 +1,9 @@
+## v2.1.1 (2025-07-31)
+
+### Fix
+
+- keep typer from printing locals on crash
+
 ## v2.1.0 (2025-07-21)
 
 ### Feat
