@@ -94,7 +94,6 @@ def run_heudiconv(
     print(f"Executing Heudiconv command: {heudi_cmd}")
 
     logfile = str(Path(heudi_output_dir).parent) + f"/logs/heudiconv-{log_id}.log"
-    Path(logfile).parent.mkdir(parents=True, exist_ok=True)
 
     with Popen(
         heudi_split_cmd, stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True
