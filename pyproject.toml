@@ -13,7 +13,8 @@ dependencies = [
     "typer>=0.15.2",
     "isort>=6.0.1",         
     "mne-bids==0.16.0",
-    "pandas>=2.2.2"         
+    "pandas>=2.2.2",
+    "spec2nii>=0.8.0"         
 ]
 
 [project.scripts]
