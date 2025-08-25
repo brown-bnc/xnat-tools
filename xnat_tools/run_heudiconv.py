@@ -5,7 +5,7 @@ import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
-from subprocess import PIPE, STDOUT, Popen
+from subprocess import PIPE, Popen
 
 import typer
 
@@ -96,15 +96,15 @@ def run_heudiconv(
     logfile = str(Path(heudi_output_dir).parent) + f"/logs/heudiconv-{log_id}.log"
 
     with Popen(
-        heudi_split_cmd, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True
-    ) as p:
-        with open(logfile, "a") as file:
-            ouput, _ = p.communicate()
-            for line in ouput:
-                sys.stdout.write(line)
-                file.write(line)
+        heudi_split_cmd, stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True
+    ) as p, open(logfile, "a", encoding="utf-8") as file:
+        stdout, stderr = p.communicate()
+        sys.stdout.write(stdout)
+        file.write(stdout)
+        file.write(stderr)
+
         if p.returncode != 0:
-            raise RuntimeError("Heudiconv was asked to overwrite files. Try the --overwite flag")
+            raise RuntimeError(f"Heudiconv failed with exit code {p.returncode}:\n{stderr}")
 
     print("Done with Heudiconv BIDS Convesion.")
 
