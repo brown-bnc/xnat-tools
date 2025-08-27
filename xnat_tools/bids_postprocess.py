@@ -11,7 +11,7 @@ from xnat_tools.bids_utils import (
     remove_func_acquisition_duration_field,
 )
 from xnat_tools.logging import setup_logging
-from xnat_tools.xnat_utils import establish_connection, get_project_subject_session
+from xnat_tools.xnat_utils import establish_connection, get_project_subject_session, close_session  
 
 _logger = logging.getLogger(__name__)
 
@@ -27,6 +27,7 @@ def bids_postprocess(
     password: str = typer.Option(
         None, "-p", "--pass", prompt=True, hide_input=True, help="XNAT Password"
     ),
+    host: str = typer.Option("https://xnat.bnc.brown.edu", "-h", "--host", help="XNAT's URL"),
     session: str = typer.Option(
         "", help="XNAT Session ID, that is the Accession # for an experiment."
     ),
@@ -93,8 +94,10 @@ def bids_postprocess(
         connection = establish_connection(user, password)
 
         project, subject, session_suffix = get_project_subject_session(
-            connection, "https://xnat.bnc.brown.edu", session, "-1"
+            connection, host, session, "-1"
         )
+
+        close_session(connection, host)
 
         session_info = path_string_preprocess(project, subject, session_suffix)
 

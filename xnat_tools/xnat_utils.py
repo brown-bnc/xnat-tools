@@ -133,3 +133,19 @@ def filter_scans(scans, seqlist=[], skiplist=[]):
     ]
 
     return desired_scans
+
+def close_session(connection, host: str):
+    """Terminate the XNAT session on the server (DELETE /data/JSESSION) and
+    always close the client session.
+    """
+    base = (host or "").rstrip("/")
+    # Server-side session invalidation 
+    try:
+        connection.delete(f"{base}/data/JSESSION")
+    except Exception:
+        pass
+    # Client-side HTTP session cleanup
+    try:
+        connection.close()
+    except Exception:
+        pass
