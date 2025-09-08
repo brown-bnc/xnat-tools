@@ -30,11 +30,11 @@ from xnat_tools.bids_utils import (
 )
 from xnat_tools.logging import setup_logging
 from xnat_tools.xnat_utils import (
+    close_session,
     establish_connection,
     filter_scans,
     get_project_subject_session,
     get_scan_ids,
-    close_session
 )
 
 _logger = logging.getLogger(__name__)

@@ -7,7 +7,7 @@ from xnat_tools.bids_utils import path_string_preprocess
 from xnat_tools.dcm2bids import dcm2bids
 from xnat_tools.dicom_export import dicom_export
 from xnat_tools.physio_convert import physio_convert
-from xnat_tools.xnat_utils import establish_connection, get_project_subject_session, close_session
+from xnat_tools.xnat_utils import close_session, establish_connection, get_project_subject_session
 
 app = typer.Typer(pretty_exceptions_show_locals=False)
 
