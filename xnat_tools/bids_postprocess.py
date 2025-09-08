@@ -11,7 +11,7 @@ from xnat_tools.bids_utils import (
     remove_func_acquisition_duration_field,
 )
 from xnat_tools.logging import setup_logging
-from xnat_tools.xnat_utils import establish_connection, get_project_subject_session, close_session  
+from xnat_tools.xnat_utils import close_session, establish_connection, get_project_subject_session
 
 _logger = logging.getLogger(__name__)
 
