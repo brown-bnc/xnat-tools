@@ -21,6 +21,7 @@ $ bids_postprocess [OPTIONS] BIDS_EXPERIMENT_DIR
 
 * `-u, --user TEXT`: XNAT User
 * `-p, --pass TEXT`: XNAT Password
+* `-h, --host TEXT`: XNAT&#x27;s URL  [default: https://xnat.bnc.brown.edu]
 * `--session TEXT`: XNAT Session ID, that is the Accession # for an experiment.
 * `-n, --includesess TEXT`: Include this session only, this flag can be specified multiple time
 * `-i, --includesubj TEXT`: Include this participant only, this flag can be specified multiple times

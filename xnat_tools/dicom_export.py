@@ -30,6 +30,7 @@ from xnat_tools.bids_utils import (
 )
 from xnat_tools.logging import setup_logging
 from xnat_tools.xnat_utils import (
+    close_session,
     establish_connection,
     filter_scans,
     get_project_subject_session,
@@ -173,9 +174,7 @@ def dicom_export(
     if correct_dicoms_config:
         correct_dicom_header(export_session_dir, correct_dicoms_config)
 
-    # Close connection(I don't think this works)
-    connection.delete(f"{host}/data/JSESSION")
-    connection.close()
+    close_session(connection, host)
 
     return project, subject, session_suffix
 

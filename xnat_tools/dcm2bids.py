@@ -23,6 +23,7 @@ def dcm2bids(
     password: str = typer.Option(
         None, "-p", "--pass", prompt=True, hide_input=True, help="XNAT Password"
     ),
+    host: str = typer.Option("https://xnat.bnc.brown.edu", "-h", "--host", help="XNAT's URL"),
     session_suffix: str = typer.Option(
         "-1",
         "-S",
@@ -99,6 +100,7 @@ def dcm2bids(
         bids_experiment_dir,
         user=user,
         password=password,
+        host=host,
         session=session,
         includesess=[session_suffix],
         includesubj=[subject],
