@@ -6,6 +6,8 @@ import shutil
 import subprocess
 import warnings
 from collections import defaultdict
+import aiohttp
+import asyncio
 
 import pydicom
 from heudiconv.bids import add_rows_to_scans_keys_file, get_formatted_scans_key_row
@@ -712,10 +714,39 @@ def assign_bids_name(
         seriesdesc = add_magphase_part_entity(scans, name, seriesdesc)
         bidsify_dicom_headers(name, seriesdesc)
 
-        # Download remaining DICOMs
-        for name, pathDict in dicomFileList[1:]:
-            download(connection, name, pathDict)
-            bidsify_dicom_headers(name, seriesdesc)
+        # --- Remaining files: single-threaded async (overlapped I/O via aiohttp) ---
+        async def _download_and_bidsify(name: str, pathDict: dict, series: str, session_: aiohttp.ClientSession):
+            # stream response and write in chunks; no threads involved
+            url = pathDict["URI"]
+            async with session_.get(url) as resp:
+                resp.raise_for_status()
+                with open(name, "wb") as f:
+                    async for chunk in resp.content.iter_chunked(1 << 15):
+                        f.write(chunk)
+            # header update remains synchronous (CPU-bound), runs between awaits
+            bidsify_dicom_headers(name, series)
+
+        async def _run_remaining(files, series: str):
+            # carry over basic auth & cookies from requests.Session where possible
+            auth = None
+            if getattr(connection, "auth", None):
+                user, pwd = connection.auth
+                auth = aiohttp.BasicAuth(user, pwd)
+            cookies = getattr(connection, "cookies", None)
+            cookie_dict = cookies.get_dict() if cookies is not None else None
+            headers = dict(getattr(connection, "headers", {})) if getattr(connection, "headers", None) else None
+
+            timeout = aiohttp.ClientTimeout(total=None)  # leave per-req default
+            async with aiohttp.ClientSession(auth=auth, cookies=cookie_dict, headers=headers, timeout=timeout) as sess:
+                tasks = [
+                    asyncio.create_task(_download_and_bidsify(name, pathDict, series, sess))
+                    for name, pathDict in files
+                ]
+                # propagate any error like your original loop would
+                await asyncio.gather(*tasks)
+
+        # kick the tiny event loop for the remaining files (single-threaded)
+        asyncio.run(_run_remaining(dicomFileList[1:], seriesdesc))
 
         os.chdir(build_dir)
         _logger.info("Done.")
