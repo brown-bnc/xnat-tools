@@ -736,16 +736,14 @@ def assign_bids_name(
             cookie_dict = cookies.get_dict() if cookies is not None else None
             headers = dict(getattr(connection, "headers", {})) if getattr(connection, "headers", None) else None
 
-            timeout = aiohttp.ClientTimeout(total=None)  # leave per-req default
+            timeout = aiohttp.ClientTimeout(total=None)  
             async with aiohttp.ClientSession(auth=auth, cookies=cookie_dict, headers=headers, timeout=timeout) as sess:
                 tasks = [
                     asyncio.create_task(_download_and_bidsify(name, pathDict, series, sess))
                     for name, pathDict in files
                 ]
-                # propagate any error like your original loop would
                 await asyncio.gather(*tasks)
-
-        # kick the tiny event loop for the remaining files (single-threaded)
+                
         asyncio.run(_run_remaining(dicomFileList[1:], seriesdesc))
 
         os.chdir(build_dir)
