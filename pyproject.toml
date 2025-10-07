@@ -15,8 +15,9 @@ dependencies = [
     "mne-bids==0.16.0",
     "pandas>=2.2.2",
     "spec2nii>=0.8.0",
-    "asyncio>=4.0.0",
-    "aiohttp>=3.12.15"
+    "aiohttp>=3.12.15",
+    "numpy==1.26.4",
+    "setuptools>=68.0.0"  
 ]
 
 [project.scripts]

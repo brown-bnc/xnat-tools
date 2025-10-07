@@ -714,16 +714,15 @@ def assign_bids_name(
         seriesdesc = add_magphase_part_entity(scans, name, seriesdesc)
         bidsify_dicom_headers(name, seriesdesc)
 
-        # --- Remaining files: single-threaded async (overlapped I/O via aiohttp) ---
+        # Remaining files: single-threaded async (overlapped I/O via aiohttp) ---
         async def _download_and_bidsify(name: str, pathDict: dict, series: str, session_: aiohttp.ClientSession):
-            # stream response and write in chunks; no threads involved
             url = pathDict["URI"]
             async with session_.get(url) as resp:
                 resp.raise_for_status()
                 with open(name, "wb") as f:
                     async for chunk in resp.content.iter_chunked(1 << 15):
                         f.write(chunk)
-            # header update remains synchronous (CPU-bound), runs between awaits
+            # header update remains synchronous, runs between awaits
             bidsify_dicom_headers(name, series)
 
         async def _run_remaining(files, series: str):

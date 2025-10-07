@@ -42,16 +42,6 @@ def download(connection, name, pathDict):
     _logger.debug("Downloaded remote file %s." % name)
 
 
-async def establish_aio_connection(user: str, password: str) -> aiohttp.ClientSession:
-    """
-    Create an aiohttp ClientSession with basic auth and TLS verification.
-    Caller is responsible for closing the session (use async with).
-    """
-    auth = aiohttp.BasicAuth(user, password)
-    session = aiohttp.ClientSession(auth=auth, raise_for_status=True)
-    return session
-
-
 def establish_connection(user, password):
     connection = requests.Session()
     connection.verify = True
