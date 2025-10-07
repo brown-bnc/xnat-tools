@@ -1,3 +1,4 @@
+import asyncio
 import glob
 import json
 import logging
@@ -6,9 +7,8 @@ import shutil
 import subprocess
 import warnings
 from collections import defaultdict
-import aiohttp
-import asyncio
 
+import aiohttp
 import pydicom
 from heudiconv.bids import add_rows_to_scans_keys_file, get_formatted_scans_key_row
 from mne.io import read_raw_brainvision
@@ -715,7 +715,9 @@ def assign_bids_name(
         bidsify_dicom_headers(name, seriesdesc)
 
         # Remaining files: single-threaded async (overlapped I/O via aiohttp) ---
-        async def _download_and_bidsify(name: str, pathDict: dict, series: str, session_: aiohttp.ClientSession):
+        async def _download_and_bidsify(
+            name: str, pathDict: dict, series: str, session_: aiohttp.ClientSession
+        ):
             url = pathDict["URI"]
             async with session_.get(url) as resp:
                 resp.raise_for_status()
@@ -733,16 +735,22 @@ def assign_bids_name(
                 auth = aiohttp.BasicAuth(user, pwd)
             cookies = getattr(connection, "cookies", None)
             cookie_dict = cookies.get_dict() if cookies is not None else None
-            headers = dict(getattr(connection, "headers", {})) if getattr(connection, "headers", None) else None
+            headers = (
+                dict(getattr(connection, "headers", {}))
+                if getattr(connection, "headers", None)
+                else None
+            )
 
-            timeout = aiohttp.ClientTimeout(total=None)  
-            async with aiohttp.ClientSession(auth=auth, cookies=cookie_dict, headers=headers, timeout=timeout) as sess:
+            timeout = aiohttp.ClientTimeout(total=None)
+            async with aiohttp.ClientSession(
+                auth=auth, cookies=cookie_dict, headers=headers, timeout=timeout
+            ) as sess:
                 tasks = [
                     asyncio.create_task(_download_and_bidsify(name, pathDict, series, sess))
                     for name, pathDict in files
                 ]
                 await asyncio.gather(*tasks)
-                
+
         asyncio.run(_run_remaining(dicomFileList[1:], seriesdesc))
 
         os.chdir(build_dir)

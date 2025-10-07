@@ -3,7 +3,7 @@ import logging
 
 import requests  # type: ignore
 import urllib3
-import aiohttp  # type: ignore
+
 urllib3.disable_warnings()
 
 _logger = logging.getLogger(__name__)
