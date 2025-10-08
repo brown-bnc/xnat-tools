@@ -716,16 +716,17 @@ def assign_bids_name(
 
         # Remaining files: single-threaded async (overlapped I/O via aiohttp) ---
         async def _download_and_bidsify(
-            name: str, pathDict: dict, series: str, session_: aiohttp.ClientSession
+            name: str, pathDict: dict, series: str, session_: aiohttp.ClientSession, sem: asyncio.Semaphore
         ):
-            url = pathDict["URI"]
-            async with session_.get(url) as resp:
-                resp.raise_for_status()
-                with open(name, "wb") as f:
-                    async for chunk in resp.content.iter_chunked(1 << 15):
-                        f.write(chunk)
-            # header update remains synchronous, runs between awaits
-            bidsify_dicom_headers(name, series)
+            async with sem:
+                url = pathDict["URI"]
+                async with session_.get(url) as resp:
+                    resp.raise_for_status()
+                    with open(name, "wb") as f:
+                        async for chunk in resp.content.iter_chunked(1 << 15):
+                            f.write(chunk)
+                # header update remains synchronous, runs between awaits
+                bidsify_dicom_headers(name, series)
 
         async def _run_remaining(files, series: str):
             # carry over basic auth & cookies from requests.Session where possible
@@ -745,8 +746,9 @@ def assign_bids_name(
             async with aiohttp.ClientSession(
                 auth=auth, cookies=cookie_dict, headers=headers, timeout=timeout
             ) as sess:
+                sem = asyncio.Semaphore(30)
                 tasks = [
-                    asyncio.create_task(_download_and_bidsify(name, pathDict, series, sess))
+                    asyncio.create_task(_download_and_bidsify(name, pathDict, series, sess, sem))
                     for name, pathDict in files
                 ]
                 await asyncio.gather(*tasks)
