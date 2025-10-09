@@ -716,7 +716,11 @@ def assign_bids_name(
 
         # Remaining files: single-threaded async (overlapped I/O via aiohttp) ---
         async def _download_and_bidsify(
-            name: str, pathDict: dict, series: str, session_: aiohttp.ClientSession, sem: asyncio.Semaphore
+            name: str,
+            pathDict: dict,
+            series: str,
+            session_: aiohttp.ClientSession,
+            sem: asyncio.Semaphore,
         ):
             async with sem:
                 url = pathDict["URI"]
