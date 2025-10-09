@@ -714,13 +714,13 @@ def assign_bids_name(
         seriesdesc = add_magphase_part_entity(scans, name, seriesdesc)
         bidsify_dicom_headers(name, seriesdesc)
 
-        # Remaining files: single-threaded async (overlapped I/O via aiohttp) ---
-        async def _download_and_bidsify(
-            name: str,
-            pathDict: dict,
-            series: str,
-            session_: aiohttp.ClientSession,
-            sem: asyncio.Semaphore,
+        # Remaining files: single-threaded async via aiohttp ---
+        async def download_and_bidsify(
+            name,
+            pathDict,
+            series,
+            session_,
+            sem,
         ):
             async with sem:
                 url = pathDict["URI"]
@@ -729,35 +729,27 @@ def assign_bids_name(
                     with open(name, "wb") as f:
                         async for chunk in resp.content.iter_chunked(1 << 15):
                             f.write(chunk)
-                # header update remains synchronous, runs between awaits
+
                 bidsify_dicom_headers(name, series)
 
-        async def _run_remaining(files, series: str):
-            # carry over basic auth & cookies from requests.Session where possible
+        async def run_remaining(files, series: str):
             auth = None
             if getattr(connection, "auth", None):
                 user, pwd = connection.auth
                 auth = aiohttp.BasicAuth(user, pwd)
-            cookies = getattr(connection, "cookies", None)
-            cookie_dict = cookies.get_dict() if cookies is not None else None
-            headers = (
-                dict(getattr(connection, "headers", {}))
-                if getattr(connection, "headers", None)
-                else None
-            )
 
             timeout = aiohttp.ClientTimeout(total=None)
             async with aiohttp.ClientSession(
-                auth=auth, cookies=cookie_dict, headers=headers, timeout=timeout
+                auth=auth, timeout=timeout
             ) as sess:
                 sem = asyncio.Semaphore(30)
                 tasks = [
-                    asyncio.create_task(_download_and_bidsify(name, pathDict, series, sess, sem))
+                    asyncio.create_task(download_and_bidsify(name, pathDict, series, sess, sem))
                     for name, pathDict in files
                 ]
                 await asyncio.gather(*tasks)
 
-        asyncio.run(_run_remaining(dicomFileList[1:], seriesdesc))
+        asyncio.run(run_remaining(dicomFileList[1:], seriesdesc))
 
         os.chdir(build_dir)
         _logger.info("Done.")
