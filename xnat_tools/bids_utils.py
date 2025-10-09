@@ -739,9 +739,7 @@ def assign_bids_name(
                 auth = aiohttp.BasicAuth(user, pwd)
 
             timeout = aiohttp.ClientTimeout(total=None)
-            async with aiohttp.ClientSession(
-                auth=auth, timeout=timeout
-            ) as sess:
+            async with aiohttp.ClientSession(auth=auth, timeout=timeout) as sess:
                 sem = asyncio.Semaphore(30)
                 tasks = [
                     asyncio.create_task(download_and_bidsify(name, pathDict, series, sess, sem))
