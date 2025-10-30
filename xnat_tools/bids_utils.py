@@ -1,5 +1,6 @@
 import asyncio
 import glob
+from http import cookies
 import json
 import logging
 import os
@@ -737,9 +738,14 @@ def assign_bids_name(
             if getattr(connection, "auth", None):
                 user, pwd = connection.auth
                 auth = aiohttp.BasicAuth(user, pwd)
-
+            cookies = {}
+            if hasattr(connection, "cookies"):
+                jsess = connection.cookies.get("JSESSIONID")
+                if jsess:
+                    cookies["JSESSIONID"] = jsess
+                    
             timeout = aiohttp.ClientTimeout(total=None)
-            async with aiohttp.ClientSession(auth=auth, timeout=timeout) as sess:
+            async with aiohttp.ClientSession(auth=auth, timeout=timeout, cookies=cookies) as sess:
                 sem = asyncio.Semaphore(30)
                 tasks = [
                     asyncio.create_task(download_and_bidsify(name, pathDict, series, sess, sem))
