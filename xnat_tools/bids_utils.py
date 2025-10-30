@@ -1,6 +1,5 @@
 import asyncio
 import glob
-from http import cookies
 import json
 import logging
 import os
@@ -743,7 +742,7 @@ def assign_bids_name(
                 jsess = connection.cookies.get("JSESSIONID")
                 if jsess:
                     cookies["JSESSIONID"] = jsess
-                    
+
             timeout = aiohttp.ClientTimeout(total=None)
             async with aiohttp.ClientSession(auth=auth, timeout=timeout, cookies=cookies) as sess:
                 sem = asyncio.Semaphore(30)
