@@ -112,8 +112,9 @@ def run_heudiconv(
         else:
             keep_dirs.append(d)
 
-    print(f"Skipping heudiconv BIDS conversion for {', '.join(s.name for s in skip_dirs)}")
-    print(f"DICOMS for those scans can be found in {str(heudi_output_dir)}/sourcedata")
+    if skip_dirs:
+        print(f"Skipping heudiconv BIDS conversion for {', '.join(s.name for s in skip_dirs)}")
+        print(f"DICOMS for those scans can be found in {str(heudi_output_dir)}/sourcedata")
 
     if not keep_dirs:
         raise RuntimeError(
