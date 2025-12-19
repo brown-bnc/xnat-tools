@@ -919,104 +919,127 @@ def convert_tb1tfl(subject, session_suffix, bids_experiment_dir, tb1tfl_tarbase)
     # modality-specific-files/magnetic-resonance-imaging-data.html#tb1tfl-and-tb1rfm-\
     # specific-notes
 
-    tb1tfl_dicomdir = Path(tb1tfl_tarbase).parent
-    with tarfile.open(f"{tb1tfl_tarbase}.dicom.tgz", "r:gz") as tar:
-        tar.extractall(tb1tfl_dicomdir)
+    tb1tfl_dir = Path(tb1tfl_tarbase)  # directory where tgz extracts (and where dcm2niix writes)
+    tgz_path = Path(f"{tb1tfl_tarbase}.dicom.tgz")  # keep your naming convention
 
-    # there should be exactly two DICOMs in there
-    # if not, print error message
-    if len(glob.glob(f"{tb1tfl_tarbase}/*dcm")) == 2:
-        pass
-    elif len(glob.glob(f"{tb1tfl_tarbase}/*dcm")) > 2:
-        _logger.warning(
-            "More than two TB1TFL DICOM files found. "
-            "If scan was run multiple times, they must have "
-            "different names. Skipping TB1TFL BIDS conversion."
-        )
-        return
-    elif len(glob.glob(f"{tb1tfl_tarbase}/*dcm")) < 2:
-        _logger.warning(
-            "Could not find the two TB1TFL DICOM files. " "Skipping TB1TFL BIDS conversion."
-        )
-        return
+    session_dir = Path(bids_experiment_dir) / f"sub-{subject}" / f"ses-{session_suffix}"
+    fmap_bids_dir = session_dir / "fmap"
+    fmap_bids_dir.mkdir(parents=True, exist_ok=True)
 
     try:
-        result = subprocess.run(
-            [f"dcm2niix -z y -f %f_%3s {tb1tfl_tarbase}"],
-            shell=True,
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        _logger.debug(result)
+        # Extract (trusted)
+        with tarfile.open(tgz_path, "r:gz") as tar:
+            tar.extractall(tb1tfl_dir.parent)
+
+        # Validate DICOM count once
+        dcm_files = sorted(tb1tfl_dir.glob("*dcm"))
+        if len(dcm_files) != 2:
+            if len(dcm_files) > 2:
+                _logger.warning(
+                    "More than two TB1TFL DICOM files found. "
+                    "If scan was run multiple times, they must have "
+                    "different names. Skipping TB1TFL BIDS conversion."
+                )
+            else:
+                _logger.warning(
+                    "Could not find the two TB1TFL DICOM files. " "Skipping TB1TFL BIDS conversion."
+                )
+            return
+
+        # Run dcm2niix (no shell=True)
+        cmd = ["dcm2niix", "-z", "y", "-f", "%f_%3s", str(tb1tfl_dir)]
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        _logger.debug("dcm2niix stdout:\n%s", result.stdout)
+        if result.stderr:
+            _logger.debug("dcm2niix stderr:\n%s", result.stderr)
+
+        # The TB1TFL sequence produces two DICOMs, one anatomical image
+        # that should be labeled with acq-anat, and one flip angle map
+        # that should be labeled with acq-famp. These two DICOMs are
+        # produced from a single sequence on the scanner, so they need
+        # to be given this naming after the fact.
+        acq_flags = ["anat", "famp"]
+        tb1tfl_niis = sorted(tb1tfl_dir.glob("*.nii*"))
+
+        for nii_idx, nii in enumerate(tb1tfl_niis):
+            keyvals = nii.name.split("_")[:-1]
+            acq_val = f"acq-{acq_flags[nii_idx]}"
+
+            # Replace existing acq- if present
+            if any(k.startswith("acq-") for k in keyvals):
+                keyvals = [acq_val if k.startswith("acq-") else k for k in keyvals]
+
+            else:
+                ses_idx = next((i for i, v in enumerate(keyvals) if v.startswith("ses-")), None)
+                if ses_idx is not None:
+                    insert_idx = ses_idx + 1
+                else:
+                    sub_idx = next((i for i, v in enumerate(keyvals) if v.startswith("sub-")), None)
+                    if sub_idx is not None:
+                        insert_idx = sub_idx + 1
+                    else:
+                        _logger.warning(
+                            "Unable to parse TB1TFL keys (no sub- or ses-). "
+                            "Skipping TB1TFL BIDS conversion."
+                        )
+                        return
+
+                keyvals.insert(insert_idx, acq_val)
+
+            newname = "_".join(keyvals)
+            # if the tb1tfl key is lowercase, convert it to uppercase
+            newname = newname.replace("tb1tfl", "TB1TFL")
+
+            old_nii = Path(nii)
+            old_stem = old_nii.with_suffix("").stem
+            json_path = old_nii.with_name(old_stem + ".json")
+
+            if not json_path.exists():
+                raise FileNotFoundError(f"Missing sidecar JSON: {json_path}")
+
+            new_nii = old_nii.with_name(newname + ".nii.gz")
+            new_json = json_path.with_name(newname + ".json")
+
+            # Rename files
+            shutil.move(old_nii, new_nii)
+            shutil.move(json_path, new_json)
+
+            # create fmap directory within bids session directory
+            # if it doesn't exist
+            session_dir = os.path.join(
+                bids_experiment_dir, f"sub-{subject}", f"ses-{session_suffix}"
+            )
+
+            fmap_bids_dir = os.path.join(session_dir, "fmap")
+
+            if not os.path.exists(fmap_bids_dir):
+                os.makedirs(fmap_bids_dir, exist_ok=True)
+
+            shutil.move(new_nii, fmap_bids_dir)
+            shutil.move(new_json, fmap_bids_dir)
+
+            # if the conversion succeeded, add a line to scans.tsv file
+            tb1tfl_bids_nii = os.path.join(fmap_bids_dir, new_nii)
+
+            if os.path.exists(tb1tfl_bids_nii):
+                scans_tsv_filename = f"sub-{subject}_ses-{session_suffix}_scans.tsv"
+
+                dicom_reference = glob.glob(f"{tb1tfl_tarbase}/*dcm")[nii_idx]
+                # use heudiconv functions to extract info for _scans.tsv file and add to file
+                new_row = {
+                    f"fmap/{Path(tb1tfl_bids_nii).name}": get_formatted_scans_key_row(
+                        dicom_reference
+                    )
+                }
+                add_rows_to_scans_keys_file(os.path.join(session_dir, scans_tsv_filename), new_row)
+
+        _logger.info("Conversion of TB1TFL DICOMs complete")
+
     except subprocess.CalledProcessError as e:
-        _logger.warning(f"dcm2niix command failed with error: {e.stderr}")
+        _logger.warning("dcm2niix command failed: %s", e.stderr)
         return
 
-    os.chdir(tb1tfl_tarbase)
-
-    # The TB1TFL sequence produces two DICOMs, one anatomical image
-    # that should be labeled with acq-anat, and one flip angle map
-    # that should be labeled with acq-famp. These two DICOMs are
-    # produced from a single sequence on the scanner, so they need
-    # to be given this naming after the fact.
-    acq_flags = ["anat", "famp"]
-    tb1tfl_niis = glob.glob("*.nii*")
-
-    for nii_idx, nii in enumerate(tb1tfl_niis):
-        keyvals = nii.split("_")[0:-1]
-        acq_val = "acq-" + acq_flags[nii_idx]
-        if "acq-" in nii:
-            newname = "_".join([acq_val if "acq-" in x else x for x in keyvals])
-        else:
-            try:
-                index = keyvals.index("TB1TFL".lower()) - 1
-            except ValueError:
-                _logger.warning("TB1TFL key not found. Skipping TB1TFL BIDS conversion")
-                break
-            newname = "_".join(keyvals.insert(index, acq_val))
-        # if the tb1tfl key is lowercase, convert it to uppercase
-        newname = newname.replace("tb1tfl", "TB1TFL")
-
-        old_nii = Path(nii)
-        old_stem = old_nii.with_suffix("").stem
-        json_path = old_nii.with_name(old_stem + ".json")
-
-        if not json_path.exists():
-            raise FileNotFoundError(f"Missing sidecar JSON: {json_path}")
-
-        new_nii = old_nii.with_name(newname + ".nii.gz")
-        new_json = json_path.with_name(newname + ".json")
-
-        # Rename files
-        shutil.move(old_nii, new_nii)
-        shutil.move(json_path, new_json)
-
-        # create fmap directory within bids session directory
-        # if it doesn't exist
-        session_dir = os.path.join(bids_experiment_dir, f"sub-{subject}", f"ses-{session_suffix}")
-
-        fmap_bids_dir = os.path.join(session_dir, "fmap")
-
-        if not os.path.exists(fmap_bids_dir):
-            os.makedirs(fmap_bids_dir, exist_ok=True)
-
-        shutil.move(new_nii, fmap_bids_dir)
-        shutil.move(new_json, fmap_bids_dir)
-
-        # if the conversion succeeded, add a line to scans.tsv file
-        tb1tfl_bids_nii = os.path.join(fmap_bids_dir, new_nii)
-
-        if os.path.exists(tb1tfl_bids_nii):
-            scans_tsv_filename = f"sub-{subject}_ses-{session_suffix}_scans.tsv"
-
-            dicom_reference = glob.glob(f"{tb1tfl_tarbase}/*dcm")[nii_idx]
-            # use heudiconv functions to extract info for _scans.tsv file and add to file
-            new_row = {
-                f"fmap/{Path(tb1tfl_bids_nii).name}": get_formatted_scans_key_row(dicom_reference)
-            }
-            add_rows_to_scans_keys_file(os.path.join(session_dir, scans_tsv_filename), new_row)
-
-    # clean up unzipped DICOM directory
-    shutil.rmtree(tb1tfl_tarbase)
-    _logger.info("Conversion of TB1TFL DICOMs complete")
+    finally:
+        # Clean up extracted DICOM directory
+        if tb1tfl_dir.exists():
+            shutil.rmtree(tb1tfl_dir, ignore_errors=True)
