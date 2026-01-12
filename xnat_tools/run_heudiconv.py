@@ -1,6 +1,5 @@
 import glob
 import os
-import re
 import shlex
 import shutil
 import sys
@@ -164,16 +163,30 @@ def run_heudiconv(
     bids_datatypes = ["anat", "func", "dwi", "fmap", "perf", "mrs"]
 
     for s in skip_dirs:
-        dirname = re.split("-|_", s.name)[0]
+
+        first, rest = (
+            s.name.split("_", 1) if "_" in s.name else (s.name, "")
+        )  # get first key or key-value pair
+
+        if "-" in first:
+            dirname, value = first.split("-", 1)
+            scanname = "_".join(x for x in [rest, value] if x)
+        else:
+            dirname = first
+            scanname = rest
+
         if dirname in bids_datatypes:
             pass
         else:
             dirname = "unknown"
+
+        dicom_tarbase = f"{sourcedata_dir}{dirname}/sub-{subject}_ses-{session_suffix}_{scanname}"
         if not Path(sourcedata_dir, dirname).exists():
             os.makedirs(str(Path(sourcedata_dir, dirname)))
-        compress_dicoms(
-            glob.glob(f"{str(s)}/*"), f"{sourcedata_dir}{dirname}/{s.name}", tempdirs, False
-        )
+        compress_dicoms(glob.glob(f"{str(s)}/*"), dicom_tarbase, tempdirs, False)
+
+        # if 'tb1tfl' in s.name.lower():
+        #     convert_tb1tfl(subject,session_suffix,heudi_output_dir,dicom_tarbase)
 
     print("Done with Heudiconv BIDS conversion.")
 

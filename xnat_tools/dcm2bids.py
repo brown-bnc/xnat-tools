@@ -1,11 +1,17 @@
 import glob
 import os
 from datetime import datetime
+from pathlib import Path
 
 import typer
 
 from xnat_tools.bids_postprocess import bids_postprocess
-from xnat_tools.bids_utils import convert_mrs, prepare_path_prefixes, run_mne_eeg2bids
+from xnat_tools.bids_utils import (
+    convert_mrs,
+    convert_tb1tfl,
+    prepare_path_prefixes,
+    run_mne_eeg2bids,
+)
 from xnat_tools.run_heudiconv import run_heudiconv
 
 app = typer.Typer()
@@ -88,6 +94,7 @@ def dcm2bids(
             eeg_data_path,
         )
 
+    # Convert MR spectroscopy data to BIDS if present
     for mrsdir in glob.glob(xnat_data_path + "/mrs-*"):
         convert_mrs(
             subject,
@@ -95,6 +102,14 @@ def dcm2bids(
             bids_experiment_dir,
             mrsdir,
         )
+
+    # If there are any turboflash B1 maps, we have to
+    # convert to BIDS ourselves
+    for p in Path(bids_experiment_dir, "sourcedata").rglob("*"):
+        if p.is_file() and "tb1tfl" in p.name.lower():
+            tb1tfl_tarbase = p.with_name(p.name.removesuffix(".dicom.tgz"))
+
+            convert_tb1tfl(subject, session_suffix, bids_experiment_dir, tb1tfl_tarbase)
 
     bids_postprocess(
         bids_experiment_dir,
