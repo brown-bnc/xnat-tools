@@ -1,3 +1,15 @@
+## v2.1.3 (2026-01-12)
+
+### Feat
+
+- convert turboflash B1 map to BIDS
+- filter directories for heudiconv
+
+### Fix
+
+- correct insertion of acq key val pair
+- guard DICOM filter print statements
+
 ## v2.1.2 (2025-08-25)
 
 ## v2.1.1 (2025-07-31)

@@ -1,6 +1,6 @@
 [project]
 name = "xnat-tools"
-version = "2.1.2"
+version = "2.2.0"
 description = ""
 authors = [{ name = "Isabel Restrepo", email = "isabelrestre@gmail.com" }]
 requires-python = "~=3.10"
@@ -45,7 +45,7 @@ docs = [
 packages = ["xnat_tools"]
 
 [tool.commitizen]
-version = "2.1.2"
+version = "2.2.0"
 tag_format = "v$version"
 version_files = [
     "pyproject.toml:version",
