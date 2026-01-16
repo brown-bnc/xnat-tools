@@ -1,3 +1,4 @@
+import asyncio
 import glob
 import json
 import logging
@@ -9,6 +10,7 @@ import warnings
 from collections import defaultdict
 from pathlib import Path
 
+import aiohttp
 import pydicom
 from heudiconv.bids import add_rows_to_scans_keys_file, get_formatted_scans_key_row
 from mne.io import read_raw_brainvision
@@ -714,10 +716,45 @@ def assign_bids_name(
         seriesdesc = add_magphase_part_entity(scans, name, seriesdesc)
         bidsify_dicom_headers(name, seriesdesc)
 
-        # Download remaining DICOMs
-        for name, pathDict in dicomFileList[1:]:
-            download(connection, name, pathDict)
-            bidsify_dicom_headers(name, seriesdesc)
+        # Remaining files: single-threaded async via aiohttp ---
+        async def download_and_bidsify(
+            name,
+            pathDict,
+            series,
+            session_,
+            sem,
+        ):
+            async with sem:
+                url = pathDict["URI"]
+                async with session_.get(url) as resp:
+                    resp.raise_for_status()
+                    with open(name, "wb") as f:
+                        async for chunk in resp.content.iter_chunked(1 << 15):
+                            f.write(chunk)
+
+                bidsify_dicom_headers(name, series)
+
+        async def run_remaining(files, series: str):
+            auth = None
+            if getattr(connection, "auth", None):
+                user, pwd = connection.auth
+                auth = aiohttp.BasicAuth(user, pwd)
+            cookies = {}
+            if hasattr(connection, "cookies"):
+                jsess = connection.cookies.get("JSESSIONID")
+                if jsess:
+                    cookies["JSESSIONID"] = jsess
+
+            timeout = aiohttp.ClientTimeout(total=None)
+            async with aiohttp.ClientSession(auth=auth, timeout=timeout, cookies=cookies) as sess:
+                sem = asyncio.Semaphore(30)
+                tasks = [
+                    asyncio.create_task(download_and_bidsify(name, pathDict, series, sess, sem))
+                    for name, pathDict in files
+                ]
+                await asyncio.gather(*tasks)
+
+        asyncio.run(run_remaining(dicomFileList[1:], seriesdesc))
 
         os.chdir(build_dir)
         _logger.info("Done.")
