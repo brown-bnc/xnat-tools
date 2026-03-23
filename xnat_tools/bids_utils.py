@@ -636,6 +636,53 @@ def validate_frame_counts(scans: list, bids_session_dir: str) -> None:
                         os.remove(partial_file_path)
 
 
+def list_xnat_resources(connection, host, resourcesURL, filetype=None):
+    resp = get(
+        connection,
+        resourcesURL,
+        params={"format": "json"},
+    )
+
+    resources = resp.json()["ResultSet"]["Result"]
+
+    if filetype == "rawMRS":
+        label = "MRS"
+        resourceList = [r for r in resources if r["label"] == label]
+    elif filetype == "DICOM":
+        # limit the resources to ones that are DICOM format
+        resourceList = [r for r in resources if r["format"] == "DICOM"]
+        # check the label of our one DICOM resource
+        label = resourceList[0]["label"]
+    else:
+        _logger.warning("Unknown XNAT filetype. Must be 'DICOM' or 'rawMRS'.")
+        return None
+
+    if resourceList is None:
+        _logger.debug(f"No {label} resources found")
+
+        return None
+
+    _logger.debug(f"resource label: {label}")
+
+    # the full file path is determined by the "label" xnat has applied to that
+    # resource
+    filesURL = resourcesURL + "%s/files" % (label,)
+
+    r = get(connection, filesURL, params={"format": "json"})
+    # Build a dict keyed off file name
+    fileDict = {
+        resource["Name"]: {"URI": host + resource["URI"]}
+        for resource in r.json()["ResultSet"]["Result"]
+    }
+
+    # Have to manually add absolutePath with a separate request
+    r = get(connection, filesURL, params={"format": "json", "locator": "absolutePath"})
+    for resource in r.json()["ResultSet"]["Result"]:
+        fileDict[resource["Name"]]["absolutePath"] = resource["absolutePath"]
+
+    return fileDict
+
+
 def assign_bids_name(
     connection,
     host,
@@ -669,44 +716,14 @@ def assign_bids_name(
                 f"{bids_scan_directory} already exists. \
                 See documentation to understand behavior for repeated sequences."
             )
+        os.chdir(bids_scan_directory)
 
-        # check the label to figure out which folder xnat has the dicoms stored
-        # in (DICOMS or secondary)
         resourcesURL = host + f"/data/experiments/{session}/scans/{scanid}/resources/"
 
-        resp = get(
-            connection,
-            resourcesURL,
-            params={"format": "json"},
-        )
-
-        # limit the resources to ones that are DICOM format
-        dicomResourceList = [
-            r for r in resp.json()["ResultSet"]["Result"] if r["format"] == "DICOM"
-        ]
-
-        # check the label of our one DICOM resource
-        resourceLabel = dicomResourceList[0]["label"]
-        _logger.debug(f"resource label: {resourceLabel}")
-
-        # the DICOM file path is determined by the "label" xnat has applied to that
-        # resource
-        filesURL = resourcesURL + "%s/files" % (resourceLabel,)
-
-        r = get(connection, filesURL, params={"format": "json"})
-        # Build a dict keyed off file name
-        dicomFileDict = {
-            dicom["Name"]: {"URI": host + dicom["URI"]} for dicom in r.json()["ResultSet"]["Result"]
-        }
-
-        # Have to manually add absolutePath with a separate request
-        r = get(connection, filesURL, params={"format": "json", "locator": "absolutePath"})
-        for dicom in r.json()["ResultSet"]["Result"]:
-            dicomFileDict[dicom["Name"]]["absolutePath"] = dicom["absolutePath"]
+        dicomFileDict = list_xnat_resources(connection, host, resourcesURL, filetype="DICOM")
 
         # Download DICOMs
         _logger.info("Downloading files")
-        os.chdir(bids_scan_directory)
         dicomFileList = list(dicomFileDict.items())
         (name, pathDict) = dicomFileList[0]
         download(connection, name, pathDict)
@@ -719,8 +736,20 @@ def assign_bids_name(
             download(connection, name, pathDict)
             bidsify_dicom_headers(name, seriesdesc)
 
-        os.chdir(build_dir)
         _logger.info("Done.")
+
+        mrsFileDict = list_xnat_resources(connection, host, resourcesURL, filetype="rawMRS")
+
+        # If there is raw MRS data, download it
+        if mrsFileDict:
+            # Download all raw MRS files
+            _logger.info("Downloading raw MRS files")
+            mrsFileList = list(mrsFileDict.items())
+            for name, pathDict in mrsFileList:
+                download(connection, name, pathDict)
+                _logger.info(f"{name} downloaded.")
+
+        os.chdir(build_dir)
         _logger.info("---------------------------------")
 
 
@@ -846,6 +875,17 @@ def process_dicom_file(dicom_path, dicom_field, new_value):
         return
 
 
+def increment_tar_name(path):
+    p = Path(path)
+    stem = p.name.removesuffix(".tar.gz")
+    i = 1
+    while True:
+        tarname = p.with_name(f"{stem}_{i}.tar.gz")
+        if not tarname.exists():
+            return tarname
+        i += 1
+
+
 def convert_mrs(
     subject,
     session_suffix,
@@ -876,8 +916,7 @@ def convert_mrs(
 
     if len(mrs_dicomfiles) > 1:
         _logger.warning(
-            f"WARNING: More than one spectroscopy DICOM per scan. \
-                Processing only {mrs_dicomfiles[0]}"
+            "More than one spectroscopy DICOM per scan." f"Processing only {mrs_dicomfiles[0]}"
         )
 
     mrs_keys = str.split(mrs_scan_name, "_")
@@ -890,6 +929,42 @@ def convert_mrs(
 
     mrs_bids_dicomfile = f"{mrs_sourcedata_dir}/{bids_mrs_scan_name}.dcm"
     shutil.copy(mrs_dicomfiles[0], mrs_bids_dicomfile)
+
+    # if any raw MRS data is present, zip into a tarfile in sourcedata directory
+    rawMrsFileList = glob.glob(os.path.join(mrs_data_path, "*.dat")) + glob.glob(
+        os.path.join(mrs_data_path, "*.rda")
+    )
+
+    if rawMrsFileList:
+
+        rda_count = sum(1 for r in rawMrsFileList if r.lower().endswith(".rda"))
+        dat_count = sum(1 for r in rawMrsFileList if r.lower().endswith(".dat"))
+
+        mrsTarName = os.path.join(
+            mrs_sourcedata_dir,
+            f"{bids_mrs_scan_name}_rawMRSfiles.tar.gz",
+        )
+
+        if rda_count > 3 or dat_count > 1:
+            _logger.warning(
+                "Unexpected number of spectroscopy raw data files "
+                "(%d .rda, %d .dat). Zipping into: %s",
+                rda_count,
+                dat_count,
+                mrsTarName,
+            )
+
+        while True:
+            try:
+                with tarfile.open(mrsTarName, "x:gz") as tar:
+                    for name in rawMrsFileList:
+                        p = Path(name)
+                        tar.add(p, arcname=p.name)
+
+                _logger.info(f"Zipped spectroscopy raw data files into: {mrsTarName}")
+                break
+            except FileExistsError:
+                mrsTarName = increment_tar_name(mrsTarName)
 
     # convert MRS DICOM to NIFTI-MRS and place in bids mrs directory
     spec2nii_command = (
