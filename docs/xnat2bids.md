@@ -30,6 +30,7 @@ $ xnat2bids [OPTIONS] SESSION BIDS_ROOT_DIR
 * `--export-only`: Run DICOM Export without subsequent BIDS conversion
 * `--validate_frames`: Validate the frame counts of all acquisitions of functional bold sequences. If the final acquisition does not contain the expected number of slices, the associated DICOM file will be deleted.
 * `-d, --dicomfix-config TEXT`: JSON file to correct DICOM fields. USE WITH CAUTION
+* `--export-refaced`: Prefer REFACED_DICOM where available; otherwise export standard DICOM
 * `--install-completion`: Install completion for the current shell.
 * `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 * `--help`: Show this message and exit.
