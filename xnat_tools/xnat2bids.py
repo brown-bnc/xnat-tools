@@ -89,6 +89,11 @@ def xnat2bids(
     correct_dicoms_config: str = typer.Option(
         "", "-d", "--dicomfix-config", help="JSON file to correct DICOM fields. USE WITH CAUTION"
     ),
+    export_refaced: bool = typer.Option(
+        False,
+        "--export-refaced",
+        help="Prefer REFACED_DICOM where available; otherwise export standard DICOM",
+    ),
 ):
     """
     Export DICOM images from an XNAT experiment to a BIDS compliant directory
@@ -111,6 +116,7 @@ def xnat2bids(
             overwrite=overwrite,
             validate_frames=validate_frames,
             correct_dicoms_config=correct_dicoms_config,
+            export_refaced=export_refaced,
         )
 
     if not export_only:

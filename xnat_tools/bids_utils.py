@@ -19,6 +19,23 @@ from xnat_tools.xnat_utils import download, get
 _logger = logging.getLogger(__name__)
 
 
+def _select_dicom_resource(resources, export_refaced=False):
+    """Select the DICOM resource to export for a scan."""
+    if export_refaced:
+        # REFACED_DICOM resources on XNAT may not populate format/content fields.
+        # Match on label directly so preferred refaced export can find them reliably.
+        refaced_resources = [r for r in resources if r.get("label") == "REFACED_DICOM"]
+        if len(refaced_resources) == 1:
+            return refaced_resources[0]
+
+    dicom_resources = [r for r in resources if r["format"] == "DICOM"]
+
+    if len(dicom_resources) != 1:
+        return None
+
+    return dicom_resources[0]
+
+
 def insert_intended_for_fmap(
     bids_dir,
     sub_list,
@@ -486,7 +503,7 @@ def bidsify_dicom_headers(filename, series_description):
         dataset.save_as(filename)
 
 
-def scan_contains_dicom(connection, host, session, scanid):
+def scan_contains_dicom(connection, host, session, scanid, export_refaced=False):
     """Checks to see if the scan has suitable DICOM files for BIDS conversion"""
     resp = get(
         connection,
@@ -494,19 +511,13 @@ def scan_contains_dicom(connection, host, session, scanid):
         params={"format": "json"},
     )
 
-    dicomResourceList = [r for r in resp.json()["ResultSet"]["Result"] if r["format"] == "DICOM"]
-    _logger.debug(f"Found DICOM resources: {dicomResourceList}")
-    # NOTE (BNR): A scan contains multiple resources. A resource can be thought
-    #             of as a folder. We only want a single DICOM folder. If we have
-    #             multiple, something is weird. If we don't have any DICOM
-    #             resources the scan doesn't have any DICOM images. We only
-    #             download the scan if there's a single DICOM resource
-    if len(dicomResourceList) <= 0:
+    resources = resp.json()["ResultSet"]["Result"]
+    _logger.debug(f"Resources for scan {scanid}: {resources}")
+
+    dicomResource = _select_dicom_resource(resources, export_refaced=export_refaced)
+    _logger.debug(f"Selected DICOM resource for scan {scanid}: {dicomResource}")
+    if dicomResource is None:
         return False
-    elif len(dicomResourceList) > 1:
-        return False
-    else:
-        dicomResource = dicomResourceList[0]
 
     # NOTE (BNR): We only want to process the scan if we have dicom files. But
     #       sometimes the file_count field is empty and we process anyway even
@@ -636,7 +647,7 @@ def validate_frame_counts(scans: list, bids_session_dir: str) -> None:
                         os.remove(partial_file_path)
 
 
-def list_xnat_resources(connection, host, resourcesURL, filetype=None):
+def list_xnat_resources(connection, host, resourcesURL, filetype=None, export_refaced=False):
     resp = get(
         connection,
         resourcesURL,
@@ -649,10 +660,11 @@ def list_xnat_resources(connection, host, resourcesURL, filetype=None):
         label = "MRS"
         resourceList = [r for r in resources if r["label"] == label]
     elif filetype == "DICOM":
-        # limit the resources to ones that are DICOM format
-        resourceList = [r for r in resources if r["format"] == "DICOM"]
-        # check the label of our one DICOM resource
-        label = resourceList[0]["label"]
+        dicom_resource = _select_dicom_resource(resources, export_refaced=export_refaced)
+        if dicom_resource is None:
+            return None
+        resourceList = [dicom_resource]
+        label = dicom_resource["label"]
     else:
         _logger.warning("Unknown XNAT filetype. Must be 'DICOM' or 'rawMRS'.")
         return None
@@ -690,6 +702,7 @@ def assign_bids_name(
     scans,
     build_dir,
     bids_session_dir,
+    export_refaced=False,
 ):
     """
     subject: Subject to process
@@ -700,7 +713,9 @@ def assign_bids_name(
     # Build a dict keyed off file name
 
     for scanid, seriesdesc in scans:
-        if not scan_contains_dicom(connection, host, session, scanid):
+        if not scan_contains_dicom(
+            connection, host, session, scanid, export_refaced=export_refaced
+        ):
             continue
 
         # BIDS sourcedatadirectory for this scan
@@ -720,7 +735,17 @@ def assign_bids_name(
 
         resourcesURL = host + f"/data/experiments/{session}/scans/{scanid}/resources/"
 
-        dicomFileDict = list_xnat_resources(connection, host, resourcesURL, filetype="DICOM")
+        dicomFileDict = list_xnat_resources(
+            connection,
+            host,
+            resourcesURL,
+            filetype="DICOM",
+            export_refaced=export_refaced,
+        )
+        if not dicomFileDict:
+            _logger.info(f"No suitable DICOM resources found for scan {scanid}. Skipping.")
+            os.chdir(build_dir)
+            continue
 
         # Download DICOMs
         _logger.info("Downloading files")
