@@ -19,16 +19,27 @@ from xnat_tools.xnat_utils import download, get
 _logger = logging.getLogger(__name__)
 
 
-def _select_dicom_resource(resources, export_refaced=False):
+def _select_dicom_resource(resources, force_non_defaced=False):
     """Select the DICOM resource to export for a scan."""
-    if export_refaced:
+    if not force_non_defaced:
         # REFACED_DICOM resources on XNAT may not populate format/content fields.
         # Match on label directly so preferred refaced export can find them reliably.
         refaced_resources = [r for r in resources if r.get("label") == "REFACED_DICOM"]
         if len(refaced_resources) == 1:
             return refaced_resources[0]
+    else:
+        # In force-non-defaced mode, prefer the original DICOM resource by label.
+        original_resources = [r for r in resources if r.get("label") == "DICOM"]
+        if len(original_resources) == 1:
+            return original_resources[0]
 
-    dicom_resources = [r for r in resources if r["format"] == "DICOM"]
+    dicom_resources = [r for r in resources if r.get("format") == "DICOM"]
+
+    # If multiple DICOM-format resources are present, prefer the standard DICOM label.
+    if len(dicom_resources) > 1:
+        labeled_dicom = [r for r in dicom_resources if r.get("label") == "DICOM"]
+        if len(labeled_dicom) == 1:
+            return labeled_dicom[0]
 
     if len(dicom_resources) != 1:
         return None
@@ -452,6 +463,29 @@ def handle_scanner_exceptions(match):
     return match
 
 
+def add_rec_refaced_entity(series_description: str, resource_label: str) -> str:
+    """Add rec-refaced to the BIDS series description for refaced DICOM exports."""
+    if resource_label != "REFACED_DICOM":
+        return series_description
+
+    if "rec-refaced" in series_description:
+        return series_description
+
+    tokens = series_description.split("_")
+
+    # Canonical ordering is sub/ses/task/acq/ce/rec/dir/run/mod/echo/flip/inv/mt.
+    # Since we are inserting rec, anchor it before the first post-rec entity.
+    insertion_prefixes = ("dir-", "run-", "mod-", "echo-", "flip-", "inv-", "mt-")
+    insert_idx = len(tokens) - 1 if len(tokens) > 1 else len(tokens)
+    for idx, token in enumerate(tokens):
+        if token.startswith(insertion_prefixes):
+            insert_idx = idx
+            break
+
+    tokens.insert(insert_idx, "rec-refaced")
+    return "_".join(tokens)
+
+
 def add_magphase_part_entity(allscans, filename, series_description):
     # heudiconv/reproin do this automatically if magnitude and phase
     # data are included in a single series, but we have to do it manually
@@ -503,7 +537,7 @@ def bidsify_dicom_headers(filename, series_description):
         dataset.save_as(filename)
 
 
-def scan_contains_dicom(connection, host, session, scanid, export_refaced=False):
+def scan_contains_dicom(connection, host, session, scanid, force_non_defaced=False):
     """Checks to see if the scan has suitable DICOM files for BIDS conversion"""
     resp = get(
         connection,
@@ -514,7 +548,9 @@ def scan_contains_dicom(connection, host, session, scanid, export_refaced=False)
     resources = resp.json()["ResultSet"]["Result"]
     _logger.debug(f"Resources for scan {scanid}: {resources}")
 
-    dicomResource = _select_dicom_resource(resources, export_refaced=export_refaced)
+    dicomResource = _select_dicom_resource(
+        resources, force_non_defaced=force_non_defaced
+    )
     _logger.debug(f"Selected DICOM resource for scan {scanid}: {dicomResource}")
     if dicomResource is None:
         return False
@@ -647,7 +683,14 @@ def validate_frame_counts(scans: list, bids_session_dir: str) -> None:
                         os.remove(partial_file_path)
 
 
-def list_xnat_resources(connection, host, resourcesURL, filetype=None, export_refaced=False):
+def list_xnat_resources(
+    connection,
+    host,
+    resourcesURL,
+    filetype=None,
+    force_non_defaced=False,
+    return_resource_label=False,
+):
     resp = get(
         connection,
         resourcesURL,
@@ -660,7 +703,9 @@ def list_xnat_resources(connection, host, resourcesURL, filetype=None, export_re
         label = "MRS"
         resourceList = [r for r in resources if r["label"] == label]
     elif filetype == "DICOM":
-        dicom_resource = _select_dicom_resource(resources, export_refaced=export_refaced)
+        dicom_resource = _select_dicom_resource(
+            resources, force_non_defaced=force_non_defaced
+        )
         if dicom_resource is None:
             return None
         resourceList = [dicom_resource]
@@ -692,6 +737,9 @@ def list_xnat_resources(connection, host, resourcesURL, filetype=None, export_re
     for resource in r.json()["ResultSet"]["Result"]:
         fileDict[resource["Name"]]["absolutePath"] = resource["absolutePath"]
 
+    if return_resource_label and filetype == "DICOM":
+        return fileDict, label
+
     return fileDict
 
 
@@ -702,7 +750,7 @@ def assign_bids_name(
     scans,
     build_dir,
     bids_session_dir,
-    export_refaced=False,
+    force_non_defaced=False,
 ):
     """
     subject: Subject to process
@@ -714,11 +762,29 @@ def assign_bids_name(
 
     for scanid, seriesdesc in scans:
         if not scan_contains_dicom(
-            connection, host, session, scanid, export_refaced=export_refaced
+            connection, host, session, scanid, force_non_defaced=force_non_defaced
         ):
             continue
 
-        # BIDS sourcedatadirectory for this scan
+        resourcesURL = host + f"/data/experiments/{session}/scans/{scanid}/resources/"
+
+        dicom_resources = list_xnat_resources(
+            connection,
+            host,
+            resourcesURL,
+            filetype="DICOM",
+            force_non_defaced=force_non_defaced,
+            return_resource_label=True,
+        )
+        if not dicom_resources:
+            _logger.info(f"No suitable DICOM resources found for scan {scanid}. Skipping.")
+            os.chdir(build_dir)
+            continue
+
+        dicomFileDict, selected_resource_label = dicom_resources
+        seriesdesc = add_rec_refaced_entity(seriesdesc, selected_resource_label)
+
+        # BIDS sourcedata directory for this scan
         _logger.info(f"bids_session_dir: {bids_session_dir}")
         _logger.info(f"BIDSNAME: {seriesdesc}")
         bids_scan_directory = os.path.join(bids_session_dir, seriesdesc)
@@ -732,20 +798,6 @@ def assign_bids_name(
                 See documentation to understand behavior for repeated sequences."
             )
         os.chdir(bids_scan_directory)
-
-        resourcesURL = host + f"/data/experiments/{session}/scans/{scanid}/resources/"
-
-        dicomFileDict = list_xnat_resources(
-            connection,
-            host,
-            resourcesURL,
-            filetype="DICOM",
-            export_refaced=export_refaced,
-        )
-        if not dicomFileDict:
-            _logger.info(f"No suitable DICOM resources found for scan {scanid}. Skipping.")
-            os.chdir(build_dir)
-            continue
 
         # Download DICOMs
         _logger.info("Downloading files")

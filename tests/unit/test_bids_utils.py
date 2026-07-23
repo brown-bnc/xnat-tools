@@ -6,6 +6,7 @@ import responses
 
 from xnat_tools import bids_utils as utils
 from xnat_tools.bids_utils import (
+    add_rec_refaced_entity,
     bidsify_dicom_headers,
     bidsmap_scans,
     check_fmap_acquistion_tags,
@@ -97,6 +98,34 @@ def test_bidsmap_scans_run_plus():
     scans = [("1", "run+"), ("2", "run+"), ("3", "run+")]
 
     assert bidsmap_scans(scans) == [("1", "run-01"), ("2", "run-02"), ("3", "run-03")]
+
+
+def test_add_rec_refaced_entity_for_refaced_exports():
+    assert (
+        add_rec_refaced_entity("func_task-rest_run-01_bold", "REFACED_DICOM")
+        == "func_task-rest_rec-refaced_run-01_bold"
+    )
+
+
+def test_add_rec_refaced_entity_noop_for_non_refaced_exports():
+    assert (
+        add_rec_refaced_entity("anat_acq-MPRAGE_T1w", "DICOM")
+        == "anat_acq-MPRAGE_T1w"
+    )
+
+
+def test_add_rec_refaced_entity_no_duplicate():
+    assert (
+        add_rec_refaced_entity("func_task-rest_rec-refaced_run-01_bold", "REFACED_DICOM")
+        == "func_task-rest_rec-refaced_run-01_bold"
+    )
+
+
+def test_add_rec_refaced_entity_after_ce_before_run():
+    assert (
+        add_rec_refaced_entity("func_task-rest_acq-spiral_ce-gad_run-01_bold", "REFACED_DICOM")
+        == "func_task-rest_acq-spiral_ce-gad_rec-refaced_run-01_bold"
+    )
 
 
 def test_bidsify_dicom_headers_with_protocol_name(mocker):
@@ -288,6 +317,69 @@ def test_scan_contains_dicom_many_file_count():
     connection = requests.Session()
 
     assert scan_contains_dicom(connection, host, session, scanid) is True
+
+
+@responses.activate
+def test_scan_contains_dicom_prefers_refaced_by_default():
+    """Default mode should prefer REFACED_DICOM when available."""
+    host = "https://example.com/xnat"
+    session = "SESSION-01"
+    scanid = "SCAN-01"
+
+    url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
+    payload = {
+        "ResultSet": {
+            "Result": [
+                {
+                    "file_count": "10",
+                    "label": "DICOM",
+                    "format": "DICOM",
+                },
+                {
+                    "file_count": "10",
+                    "label": "REFACED_DICOM",
+                    "format": "DICOM",
+                },
+            ],
+        }
+    }
+
+    responses.add(responses.GET, url, json=payload, status=200)
+    connection = requests.Session()
+
+    assert scan_contains_dicom(connection, host, session, scanid) is True
+
+
+@responses.activate
+def test_scan_contains_dicom_force_non_defaced_prefers_standard_dicom():
+    """force_non_defaced should select standard DICOM over REFACED_DICOM."""
+    host = "https://example.com/xnat"
+    session = "SESSION-01"
+    scanid = "SCAN-01"
+
+    url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
+    payload = {
+        "ResultSet": {
+            "Result": [
+                {
+                    "file_count": "0",
+                    "label": "DICOM",
+                    "format": "DICOM",
+                },
+                {
+                    "file_count": "10",
+                    "label": "REFACED_DICOM",
+                    "format": "DICOM",
+                }
+            ],
+        }
+    }
+
+    responses.add(responses.GET, url, json=payload, status=200)
+    connection = requests.Session()
+
+    assert scan_contains_dicom(connection, host, session, scanid) is True
+    assert scan_contains_dicom(connection, host, session, scanid, force_non_defaced=True) is False
 
 
 def test_check_fmap_acquistion_tags():

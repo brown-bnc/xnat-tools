@@ -102,10 +102,10 @@ def dicom_export(
     correct_dicoms_config: str = typer.Option(
         "", "-d", "--dicomfix-config", help="JSON file to correct DICOM fields. USE WITH CAUTION"
     ),
-    export_refaced: bool = typer.Option(
+    force_non_defaced: bool = typer.Option(
         False,
-        "--export-refaced",
-        help="Prefer REFACED_DICOM where available; otherwise export standard DICOM",
+        "--force-non-defaced",
+        help="Export original DICOM when REFACED_DICOM is available",
     ),
 ):
 
@@ -169,7 +169,7 @@ def dicom_export(
         scans,
         build_dir,
         export_session_dir,
-        export_refaced=export_refaced,
+        force_non_defaced=force_non_defaced,
     )
 
     if validate_frames:
