@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -31,7 +31,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -824,32 +824,32 @@
 <h1 id="xnat2bids"><code>xnat2bids</code><a class="headerlink" href="#xnat2bids" title="Permanent link">&para;</a></h1>
 <p>Export DICOM images from an XNAT experiment to a BIDS compliant directory</p>
 <p><strong>Usage</strong>:</p>
-<div class="codehilite"><pre><span></span><code><span class="gp">$ </span>xnat2bids<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>SESSION<span class="w"> </span>BIDS_ROOT_DIR
+<div class="codehilite"><pre><span></span><code><span class="gp">$ </span>xnat2bids<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span><span class="o">{</span>session<span class="o">}</span><span class="w"> </span><span class="o">{</span>bids_root_dir<span class="o">}</span>
 </code></pre></div>
 
 <p><strong>Arguments</strong>:</p>
 <ul>
-<li><code>SESSION</code>: XNAT Session ID, that is the Accession # for an experiment.  [required]</li>
-<li><code>BIDS_ROOT_DIR</code>: Root output directory for exporting the files  [required]</li>
+<li><code>session</code>: XNAT Session ID, that is the Accession # for an experiment.  [required]</li>
+<li><code>bids_root_dir</code>: Root output directory for exporting the files  [required]</li>
 </ul>
 <p><strong>Options</strong>:</p>
 <ul>
-<li><code>-u, --user TEXT</code>: XNAT User</li>
-<li><code>-p, --pass TEXT</code>: XNAT Password</li>
-<li><code>-h, --host TEXT</code>: XNAT&#x27;sURL  [default: https://xnat.bnc.brown.edu]</li>
-<li><code>-S, --session-suffix TEXT</code>: The session_suffix is initially set to -1.              This will signify an unspecified session_suffix and default to sess-01.              For multi-session studies, the session label will be pulled from XNAT  [default: -1]</li>
-<li><code>-f, --bidsmap-file TEXT</code>: Bidsmap JSON file to correct sequence names</li>
-<li><code>-i, --includeseq TEXT</code>: Include this sequence only, this flag can specify multiple times</li>
-<li><code>-s, --skipseq TEXT</code>: Exclude this sequence, can be specified multiple times</li>
-<li><code>--log-id TEXT</code>: ID or suffix to append to logfile. If empty, current date is used  [default: current date - MM-DD-YYYY-HH-MM-SS]</li>
+<li><code>-u, --user &lt;str&gt;</code>: XNAT User</li>
+<li><code>-p, --pass &lt;str&gt;</code>: XNAT Password</li>
+<li><code>-h, --host &lt;str&gt;</code>: XNAT&#x27;sURL  [default: https://xnat.bnc.brown.edu]</li>
+<li><code>-S, --session-suffix &lt;str&gt;</code>: The session_suffix is initially set to -1.              This will signify an unspecified session_suffix and default to sess-01.              For multi-session studies, the session label will be pulled from XNAT  [default: -1]</li>
+<li><code>-f, --bidsmap-file &lt;str&gt;</code>: Bidsmap JSON file to correct sequence names</li>
+<li><code>-i, --includeseq &lt;str&gt;</code>: Include this sequence only, this flag can specify multiple times</li>
+<li><code>-s, --skipseq &lt;str&gt;</code>: Exclude this sequence, can be specified multiple times</li>
+<li><code>--log-id &lt;str&gt;</code>: ID or suffix to append to logfile. If empty, current date is used  [default: current date - MM-DD-YYYY-HH-MM-SS]</li>
 <li><code>-v, --verbose</code>: Verbose level. This flag can be specified multiple times to increase verbosity  [default: 0]</li>
 <li><code>--overwrite</code>: Remove directories where prior results for this session/participant</li>
 <li><code>--cleanup</code>: Remove xnat-export folder and move logs to derivatives/xnat/logs</li>
 <li><code>--skip-export</code>: Skip DICOM Export, while only running BIDS conversion</li>
 <li><code>--export-only</code>: Run DICOM Export without subsequent BIDS conversion</li>
 <li><code>--validate_frames</code>: Validate the frame counts of all acquisitions of functional bold sequences. If the final acquisition does not contain the expected number of slices, the associated DICOM file will be deleted.</li>
-<li><code>-d, --dicomfix-config TEXT</code>: JSON file to correct DICOM fields. USE WITH CAUTION</li>
-<li><code>--export-refaced</code>: Prefer REFACED_DICOM where available; otherwise export standard DICOM</li>
+<li><code>-d, --dicomfix-config &lt;str&gt;</code>: JSON file to correct DICOM fields. USE WITH CAUTION</li>
+<li><code>--force-non-defaced</code>: Export original DICOM when REFACED_DICOM is available</li>
 <li><code>--install-completion</code>: Install completion for the current shell.</li>
 <li><code>--show-completion</code>: Show completion for the current shell, to copy it or customize the installation.</li>
 <li><code>--help</code>: Show this message and exit.</li>
@@ -922,7 +922,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tabs", "navigation.expand"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
