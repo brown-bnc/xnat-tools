@@ -1210,11 +1210,11 @@
 <p>This instructions are for MacOS, while they should roughly be the same for Windows and Linux, they are untested in those environments:</p>
 <h2 id="1-package-manager">1. Package Manager<a class="headerlink" href="#1-package-manager" title="Permanent link">&para;</a></h2>
 <p><a href="https://brew.sh">Homebrew</a> is a popular package manager for MacOS. It can be installed as follows:</p>
-<div class="codehilite"><pre><span></span><code>/bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)&quot;
+<div class="codehilite"><pre><span></span><code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 </code></pre></div>
 
 <p><a href="https://chocolatey.org">Chocolatey</a> is a popular package manager for Windows. To install, run the following from a priviledged powershell prompt:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">Set</span><span class="o">-</span><span class="n">ExecutionPolicy</span><span class="w"> </span><span class="n">Bypass</span><span class="w"> </span><span class="o">-</span><span class="n">Scope</span><span class="w"> </span><span class="n">Process</span><span class="w"> </span><span class="o">-</span><span class="n">Force</span><span class="p">;</span><span class="w"> </span><span class="p">[</span><span class="n">System</span><span class="o">.</span><span class="n">Net</span><span class="o">.</span><span class="n">ServicePointManager</span><span class="p">]::</span><span class="n">SecurityProtocol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">System</span><span class="o">.</span><span class="n">Net</span><span class="o">.</span><span class="n">ServicePointManager</span><span class="p">]::</span><span class="n">SecurityProtocol</span><span class="w"> </span><span class="o">-</span><span class="n">bor</span><span class="w"> </span><span class="mi">3072</span><span class="p">;</span><span class="w"> </span><span class="n">iex</span><span class="w"> </span><span class="p">((</span><span class="n">New</span><span class="o">-</span><span class="nb nb-Type">Object</span><span class="w"> </span><span class="n">System</span><span class="o">.</span><span class="n">Net</span><span class="o">.</span><span class="n">WebClient</span><span class="p">)</span><span class="o">.</span><span class="n">DownloadString</span><span class="p">(</span><span class="s1">&#39;https://chocolatey.org/install.ps1&#39;</span><span class="p">))</span>
+<div class="codehilite"><pre><span></span><code><span class="n">Set</span><span class="o">-</span><span class="n">ExecutionPolicy</span><span class="w"> </span><span class="n">Bypass</span><span class="w"> </span><span class="o">-</span><span class="n">Scope</span><span class="w"> </span><span class="n">Process</span><span class="w"> </span><span class="o">-</span><span class="n">Force</span><span class="p">;</span><span class="w"> </span><span class="p">[</span><span class="n">System</span><span class="o">.</span><span class="n">Net</span><span class="o">.</span><span class="n">ServicePointManager</span><span class="p">]::</span><span class="n">SecurityProtocol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">System</span><span class="o">.</span><span class="n">Net</span><span class="o">.</span><span class="n">ServicePointManager</span><span class="p">]::</span><span class="n">SecurityProtocol</span><span class="w"> </span><span class="o">-</span><span class="n">bor</span><span class="w"> </span><span class="mi">3072</span><span class="p">;</span><span class="w"> </span><span class="n">iex</span><span class="w"> </span><span class="p">((</span><span class="n">New</span><span class="o">-</span><span class="nb nb-Type">Object</span><span class="w"> </span><span class="n">System</span><span class="o">.</span><span class="n">Net</span><span class="o">.</span><span class="n">WebClient</span><span class="p">)</span><span class="o">.</span><span class="n">DownloadString</span><span class="p">(</span><span class="s1">'https://chocolatey.org/install.ps1'</span><span class="p">))</span>
 </code></pre></div>
 
 <h2 id="2-pyenv">2. PYENV<a class="headerlink" href="#2-pyenv" title="Permanent link">&para;</a></h2>
@@ -1223,7 +1223,7 @@
 If this is your first time using <code>pyenv</code> you can learn more about isuing it in <a href="https://realpython.com/intro-to-pyenv/#exploring-pyenv-commands">this blog post</a></p>
 <p><code>brew install pyenv</code></p>
 <p>Append <code>pyenv init</code> to bash's profile</p>
-<div class="codehilite"><pre><span></span><code>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;if command -v pyenv 1&gt;/dev/null 2&gt;&amp;1; then\n eval &quot;$(pyenv init -)&quot;\nfi&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bash_profile
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s1">'if command -v pyenv 1&gt;/dev/null 2&gt;&amp;1; then\n eval "$(pyenv init -)"\nfi'</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bash_profile
 </code></pre></div>
 
 <p>And restart your SHELL</p>
@@ -1259,7 +1259,7 @@ If this is your first time using <code>pyenv</code> you can learn more about isu
 <p>You should see your shell prompt change to reflect that the virtual environment is active.</p>
 <h3 id="installing-dependencies">Installing Dependencies<a class="headerlink" href="#installing-dependencies" title="Permanent link">&para;</a></h3>
 <p>With your environment active, install your project’s dependencies:</p>
-<div class="codehilite"><pre><span></span><code>uv pip install -e &#39;.[dev, docs]&#39;
+<div class="codehilite"><pre><span></span><code>uv pip install -e '.[dev, docs]'
 </code></pre></div>
 
 

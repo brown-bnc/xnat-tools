@@ -846,7 +846,7 @@
 <li><code>--overwrite</code>: Remove directories where prior results for session/participant may exist</li>
 <li><code>--validate_frames</code>: Validate frame counts for all BOLD sequence acquisitions. Deletes the DICOM file if the final acquisition lacks expected slices.</li>
 <li><code>-d, --dicomfix-config &lt;str&gt;</code>: JSON file to correct DICOM fields. USE WITH CAUTION</li>
-<li><code>--force-non-defaced</code>: Export original DICOM when REFACED_DICOM is available</li>
+<li><code>--export-mode &lt;int&gt;</code>: Export mode: 0 = export defaced if present, 1 = force non-defaced export, 2 = export both defaced and non-defaced  [default: 0]</li>
 <li><code>--install-completion</code>: Install completion for the current shell.</li>
 <li><code>--show-completion</code>: Show completion for the current shell, to copy it or customize the installation.</li>
 <li><code>--help</code>: Show this message and exit.</li>
