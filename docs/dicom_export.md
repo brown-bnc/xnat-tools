@@ -27,7 +27,7 @@ $ dicom_export [OPTIONS] {session} {bids_root_dir}
 * `--overwrite`: Remove directories where prior results for session/participant may exist
 * `--validate_frames`: Validate frame counts for all BOLD sequence acquisitions. Deletes the DICOM file if the final acquisition lacks expected slices.
 * `-d, --dicomfix-config <str>`: JSON file to correct DICOM fields. USE WITH CAUTION
-* `--force-non-defaced`: Export original DICOM when REFACED_DICOM is available
+* `--export-mode <int>`: Export mode: 0 = export defaced if present, 1 = force non-defaced export, 2 = export both defaced and non-defaced  [default: 0]
 * `--install-completion`: Install completion for the current shell.
 * `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 * `--help`: Show this message and exit.
