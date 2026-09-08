@@ -19,21 +19,28 @@ from xnat_tools.xnat_utils import download, get
 _logger = logging.getLogger(__name__)
 
 
-def _select_dicom_resource(resources, force_non_defaced=False):
+def _select_dicom_resource(resources, export_mode=0):
     """Select the DICOM resource to export for a scan."""
-    if not force_non_defaced:
+    if export_mode == 2:
+        selected_resources = []
+        for label in ("REFACED_DICOM", "DICOM"):
+            labeled_resources = [r for r in resources if r.get("label") == label]
+            if len(labeled_resources) == 1:
+                selected_resources.append(labeled_resources[0])
+        return selected_resources
+
+    dicom_resources = [r for r in resources if r.get("format") == "DICOM"]
+    if export_mode == 0:
         # REFACED_DICOM resources on XNAT may not populate format/content fields.
         # Match on label directly so preferred refaced export can find them reliably.
         refaced_resources = [r for r in resources if r.get("label") == "REFACED_DICOM"]
         if len(refaced_resources) == 1:
             return refaced_resources[0]
-    else:
+    elif export_mode == 1:
         # In force-non-defaced mode, prefer the original DICOM resource by label.
         original_resources = [r for r in resources if r.get("label") == "DICOM"]
         if len(original_resources) == 1:
             return original_resources[0]
-
-    dicom_resources = [r for r in resources if r.get("format") == "DICOM"]
 
     # If multiple DICOM-format resources are present, prefer the standard DICOM label.
     if len(dicom_resources) > 1:
@@ -537,8 +544,13 @@ def bidsify_dicom_headers(filename, series_description):
         dataset.save_as(filename)
 
 
-def scan_contains_dicom(connection, host, session, scanid, force_non_defaced=False):
+def scan_contains_dicom(
+    connection, host, session, scanid, export_mode=0, force_non_defaced=None
+):
     """Checks to see if the scan has suitable DICOM files for BIDS conversion"""
+    if force_non_defaced is not None:
+        export_mode = 1 if force_non_defaced else 0
+
     resp = get(
         connection,
         host + "/data/experiments/%s/scans/%s/resources" % (session, scanid),
@@ -548,29 +560,29 @@ def scan_contains_dicom(connection, host, session, scanid, force_non_defaced=Fal
     resources = resp.json()["ResultSet"]["Result"]
     _logger.debug(f"Resources for scan {scanid}: {resources}")
 
-    dicomResource = _select_dicom_resource(
-        resources, force_non_defaced=force_non_defaced
-    )
-    _logger.debug(f"Selected DICOM resource for scan {scanid}: {dicomResource}")
-    if dicomResource is None:
+    selected_resources = _select_dicom_resource(resources, export_mode=export_mode)
+    if not isinstance(selected_resources, list):
+        selected_resources = [selected_resources] if selected_resources is not None else []
+    _logger.debug(f"Selected DICOM resources for scan {scanid}: {selected_resources}")
+    if not selected_resources:
         return False
 
-    # NOTE (BNR): We only want to process the scan if we have dicom files. But
-    #       sometimes the file_count field is empty and we process anyway even
-    #       though that might make things break later
-    if dicomResource.get("file_count") is None:
-        _logger.warning(
-            'DICOM resources for scan %s have a blank "file_count". '
-            "I cannot check to see if there are no files. "
-            "I am not skipping the scan. "
-            "This may lead to errors later if there are no DICOM files in the scan.",
-            scanid,
-        )
-        return True
-    elif int(dicomResource["file_count"]) == 0:
-        return False
+    for dicom_resource in selected_resources:
+        # A blank file_count is treated as potentially populated, matching the
+        # existing behavior for a single selected resource.
+        if dicom_resource.get("file_count") is None:
+            _logger.warning(
+                'DICOM resources for scan %s have a blank "file_count". '
+                "I cannot check to see if there are no files. "
+                "I am not skipping the scan. "
+                "This may lead to errors later if there are no DICOM files in the scan.",
+                scanid,
+            )
+            return True
+        if int(dicom_resource["file_count"]) > 0:
+            return True
 
-    return True
+    return False
 
 
 def download_resources(connection, host, session, bids_session_dir):
@@ -620,67 +632,82 @@ def read_dicom_header(file_path: str):
     return dicom
 
 
-def validate_frame_counts(scans: list, bids_session_dir: str) -> None:
+def validate_frame_counts(scans: list, bids_session_dir: str, export_mode=0) -> None:
 
     for _, series_desc in scans:
         if "func" in series_desc:
-            bids_scan_dir = os.path.join(bids_session_dir, series_desc)
-
-            with os.scandir(bids_scan_dir) as entries:
-                dicom_files = sorted(
-                    [
-                        entry.name
-                        for entry in entries
-                        if entry.is_file() and entry.name.endswith(".dcm")
-                    ],
-                    key=extract_slice_number,
+            sequence_dirs = [os.path.join(bids_session_dir, series_desc)]
+            if export_mode == 2:
+                sequence_dirs.append(
+                    os.path.join(
+                        bids_session_dir,
+                        add_rec_refaced_entity(series_desc, "REFACED_DICOM"),
+                    )
                 )
 
-            # Compare frame counts of first and all other DICOMs. Remove other DICOMs if unequal.
-            # Should generally only be the last DICOM, unless data is multiecho and/or mag/phase
-            if dicom_files:
-                volume_temporal_idx = []
-                bad_vols = set()
+            for bids_scan_dir in sequence_dirs:
+                if not os.path.isdir(bids_scan_dir):
+                    continue
 
-                first_dicom = read_dicom_header(os.path.join(bids_scan_dir, dicom_files[0]))
-                # read the DICOM field that reports the number of frames (slices)
-                first_frame_count = first_dicom.get((0x0028, 0x0008), None)
+                with os.scandir(bids_scan_dir) as entries:
+                    dicom_files = sorted(
+                        [
+                            entry.name
+                            for entry in entries
+                            if entry.is_file() and entry.name.endswith(".dcm")
+                        ],
+                        key=extract_slice_number,
+                    )
 
-                # this grabs the DICOM field that reports the volume number (1-indexed) for the
-                # first frame in the volume (and assumes that all frames have the same value)
-                volume_temporal_idx.append(
-                    first_dicom.PerFrameFunctionalGroupsSequence[0]
-                    .FrameContentSequence[0]
-                    .TemporalPositionIndex
-                )
+                # Compare frame counts of first and all other DICOMs. Remove other DICOMs if unequal.
+                # Should generally only be the last DICOM, unless data is multiecho and/or mag/phase
+                if dicom_files:
+                    volume_temporal_idx = []
+                    bad_vols = set()
 
-                for dicomfile in dicom_files[1:]:
-                    subsequent_dicom = read_dicom_header(os.path.join(bids_scan_dir, dicomfile))
-                    curr_frame_count = subsequent_dicom.get((0x0028, 0x0008), None)
-                    curr_temporal_idx = (
-                        subsequent_dicom.PerFrameFunctionalGroupsSequence[0]
+                    first_dicom = read_dicom_header(os.path.join(bids_scan_dir, dicom_files[0]))
+                    # read the DICOM field that reports the number of frames (slices)
+                    first_frame_count = first_dicom.get((0x0028, 0x0008), None)
+
+                    # this grabs the DICOM field that reports the volume number (1-indexed) for the
+                    # first frame in the volume (and assumes that all frames have the same value)
+                    volume_temporal_idx.append(
+                        first_dicom.PerFrameFunctionalGroupsSequence[0]
                         .FrameContentSequence[0]
                         .TemporalPositionIndex
                     )
-                    volume_temporal_idx.append(curr_temporal_idx)
 
-                    if curr_frame_count != first_frame_count:
-                        bad_vols.add(curr_temporal_idx)
-
-                # any DICOM, regardless of its frame count, that comes from a volume with
-                # a partial DICOM needs to be deleted (handles multi-echo data)
-                dicoms_to_drop = [
-                    dicom_files[i] for i, n in enumerate(volume_temporal_idx) if n in bad_vols
-                ]
-
-                for dcmfile in dicoms_to_drop:
-                    partial_file_path = os.path.join(bids_scan_dir, dcmfile)
-
-                    if os.path.exists(partial_file_path):
-                        _logger.info(
-                            f"Detected discrepant frame counts. Removing {partial_file_path}"
+                    for dicomfile in dicom_files[1:]:
+                        subsequent_dicom = read_dicom_header(
+                            os.path.join(bids_scan_dir, dicomfile)
                         )
-                        os.remove(partial_file_path)
+                        curr_frame_count = subsequent_dicom.get((0x0028, 0x0008), None)
+                        curr_temporal_idx = (
+                            subsequent_dicom.PerFrameFunctionalGroupsSequence[0]
+                            .FrameContentSequence[0]
+                            .TemporalPositionIndex
+                        )
+                        volume_temporal_idx.append(curr_temporal_idx)
+
+                        if curr_frame_count != first_frame_count:
+                            bad_vols.add(curr_temporal_idx)
+
+                    # any DICOM, regardless of its frame count, that comes from a volume with
+                    # a partial DICOM needs to be deleted (handles multi-echo data)
+                    dicoms_to_drop = [
+                        dicom_files[i]
+                        for i, n in enumerate(volume_temporal_idx)
+                        if n in bad_vols
+                    ]
+
+                    for dcmfile in dicoms_to_drop:
+                        partial_file_path = os.path.join(bids_scan_dir, dcmfile)
+
+                        if os.path.exists(partial_file_path):
+                            _logger.info(
+                                f"Detected discrepant frame counts. Removing {partial_file_path}"
+                            )
+                            os.remove(partial_file_path)
 
 
 def list_xnat_resources(
@@ -688,7 +715,8 @@ def list_xnat_resources(
     host,
     resourcesURL,
     filetype=None,
-    force_non_defaced=False,
+    export_mode=0,
+    force_non_defaced=None,
     return_resource_label=False,
 ):
     resp = get(
@@ -699,17 +727,21 @@ def list_xnat_resources(
 
     resources = resp.json()["ResultSet"]["Result"]
 
+    if force_non_defaced is not None:
+        export_mode = 1 if force_non_defaced else 0
+
     if filetype == "rawMRS":
         label = "MRS"
         resourceList = [r for r in resources if r["label"] == label]
     elif filetype == "DICOM":
-        dicom_resource = _select_dicom_resource(
-            resources, force_non_defaced=force_non_defaced
-        )
-        if dicom_resource is None:
+        selected_resources = _select_dicom_resource(resources, export_mode=export_mode)
+        if not isinstance(selected_resources, list):
+            selected_resources = (
+                [selected_resources] if selected_resources is not None else []
+            )
+        if not selected_resources:
             return None
-        resourceList = [dicom_resource]
-        label = dicom_resource["label"]
+        resourceList = selected_resources
     else:
         _logger.warning("Unknown XNAT filetype. Must be 'DICOM' or 'rawMRS'.")
         return None
@@ -719,28 +751,41 @@ def list_xnat_resources(
 
         return None
 
-    _logger.debug(f"resource label: {label}")
+    resource_files = []
+    for resource in resourceList:
+        label = resource["label"]
+        _logger.debug(f"resource label: {label}")
 
-    # the full file path is determined by the "label" xnat has applied to that
-    # resource
-    filesURL = resourcesURL + "%s/files" % (label,)
+        # The full file path is determined by the label XNAT applied to the resource.
+        filesURL = resourcesURL + "%s/files" % (label,)
+        r = get(connection, filesURL, params={"format": "json"})
+        fileDict = {
+            file_resource["Name"]: {"URI": host + file_resource["URI"]}
+            for file_resource in r.json()["ResultSet"]["Result"]
+        }
 
-    r = get(connection, filesURL, params={"format": "json"})
-    # Build a dict keyed off file name
-    fileDict = {
-        resource["Name"]: {"URI": host + resource["URI"]}
-        for resource in r.json()["ResultSet"]["Result"]
-    }
+        if not fileDict:
+            _logger.warning(
+                "No files found for DICOM resource %s at %s. Skipping resource.",
+                label,
+                filesURL,
+            )
+            continue
 
-    # Have to manually add absolutePath with a separate request
-    r = get(connection, filesURL, params={"format": "json", "locator": "absolutePath"})
-    for resource in r.json()["ResultSet"]["Result"]:
-        fileDict[resource["Name"]]["absolutePath"] = resource["absolutePath"]
+        r = get(connection, filesURL, params={"format": "json", "locator": "absolutePath"})
+        for file_resource in r.json()["ResultSet"]["Result"]:
+            if file_resource["Name"] in fileDict:
+                fileDict[file_resource["Name"]]["absolutePath"] = file_resource["absolutePath"]
+
+        resource_files.append((fileDict, label))
+
+    if not resource_files:
+        return None
 
     if return_resource_label and filetype == "DICOM":
-        return fileDict, label
+        return resource_files if export_mode == 2 else resource_files[0]
 
-    return fileDict
+    return resource_files if export_mode == 2 else resource_files[0][0]
 
 
 def assign_bids_name(
@@ -750,7 +795,7 @@ def assign_bids_name(
     scans,
     build_dir,
     bids_session_dir,
-    force_non_defaced=False,
+    export_mode,
 ):
     """
     subject: Subject to process
@@ -762,7 +807,7 @@ def assign_bids_name(
 
     for scanid, seriesdesc in scans:
         if not scan_contains_dicom(
-            connection, host, session, scanid, force_non_defaced=force_non_defaced
+            connection, host, session, scanid, export_mode=export_mode
         ):
             continue
 
@@ -773,7 +818,7 @@ def assign_bids_name(
             host,
             resourcesURL,
             filetype="DICOM",
-            force_non_defaced=force_non_defaced,
+            export_mode=export_mode,
             return_resource_label=True,
         )
         if not dicom_resources:
@@ -781,39 +826,59 @@ def assign_bids_name(
             os.chdir(build_dir)
             continue
 
-        dicomFileDict, selected_resource_label = dicom_resources
-        seriesdesc = add_rec_refaced_entity(seriesdesc, selected_resource_label)
-
-        # BIDS sourcedata directory for this scan
-        _logger.info(f"bids_session_dir: {bids_session_dir}")
-        _logger.info(f"BIDSNAME: {seriesdesc}")
-        bids_scan_directory = os.path.join(bids_session_dir, seriesdesc)
-
-        if not os.path.isdir(bids_scan_directory):
-            _logger.info("Making scan DICOM directory %s." % bids_scan_directory)
-            os.mkdir(bids_scan_directory)
+        if export_mode == 2:
+            selected_resources = dicom_resources
         else:
-            _logger.warning(
-                f"{bids_scan_directory} already exists. \
-                See documentation to understand behavior for repeated sequences."
+            selected_resources = [dicom_resources]
+
+        for dicomFileDict, selected_resource_label in selected_resources:
+            resource_seriesdesc = add_rec_refaced_entity(
+                seriesdesc, selected_resource_label
             )
-        os.chdir(bids_scan_directory)
 
-        # Download DICOMs
-        _logger.info("Downloading files")
-        dicomFileList = list(dicomFileDict.items())
-        (name, pathDict) = dicomFileList[0]
-        download(connection, name, pathDict)
+            # BIDS sourcedata directory for this scan and resource.
+            _logger.info(f"bids_session_dir: {bids_session_dir}")
+            _logger.info(
+                f"Exporting {selected_resource_label} as BIDSNAME: {resource_seriesdesc}"
+            )
+            bids_scan_directory = os.path.join(bids_session_dir, resource_seriesdesc)
 
-        seriesdesc = add_magphase_part_entity(scans, name, seriesdesc)
-        bidsify_dicom_headers(name, seriesdesc)
+            if not os.path.isdir(bids_scan_directory):
+                _logger.info("Making scan DICOM directory %s." % bids_scan_directory)
+                os.mkdir(bids_scan_directory)
+            else:
+                _logger.warning(
+                    f"{bids_scan_directory} already exists. \
+                    See documentation to understand behavior for repeated sequences."
+                )
+            os.chdir(bids_scan_directory)
 
-        # Download remaining DICOMs
-        for name, pathDict in dicomFileList[1:]:
+            if not dicomFileDict:
+                _logger.warning(
+                    "No files found for DICOM resource %s in scan %s. Skipping.",
+                    selected_resource_label,
+                    scanid,
+                )
+                os.chdir(build_dir)
+                continue
+
+            # Download DICOMs.
+            _logger.info("Downloading files")
+            dicomFileList = list(dicomFileDict.items())
+            name, pathDict = dicomFileList[0]
             download(connection, name, pathDict)
-            bidsify_dicom_headers(name, seriesdesc)
 
-        _logger.info("Done.")
+            resource_seriesdesc = add_magphase_part_entity(
+                scans, name, resource_seriesdesc
+            )
+            bidsify_dicom_headers(name, resource_seriesdesc)
+
+            for name, pathDict in dicomFileList[1:]:
+                download(connection, name, pathDict)
+                bidsify_dicom_headers(name, resource_seriesdesc)
+
+            _logger.info("Done.")
+            os.chdir(build_dir)
 
         mrsFileDict = list_xnat_resources(connection, host, resourcesURL, filetype="rawMRS")
 
