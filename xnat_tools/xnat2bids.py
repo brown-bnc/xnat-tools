@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import Annotated, List, Literal
 
 import typer
 
@@ -89,18 +89,14 @@ def xnat2bids(
     correct_dicoms_config: str = typer.Option(
         "", "-d", "--dicomfix-config", help="JSON file to correct DICOM fields. USE WITH CAUTION"
     ),
-    export_mode: int = typer.Option(
-        0,
-        "--export-mode",
-        min=0,
-        max=2,
-        help="Export mode: 0 = export defaced if present, 1 = force non-defaced export, 2 = export both defaced and non-defaced",
-    ),
+    reface_mode: Annotated[
+        Literal["refaced", "orig", "both"],
+        typer.Option(case_sensitive=False),
+    ] = "refaced",
 ):
     """
     Export DICOM images from an XNAT experiment to a BIDS compliant directory
     """
-
     if not skip_export:
 
         project, subject, session_suffix = dicom_export(
@@ -118,7 +114,7 @@ def xnat2bids(
             overwrite=overwrite,
             validate_frames=validate_frames,
             correct_dicoms_config=correct_dicoms_config,
-            export_mode=export_mode,
+            reface_mode=reface_mode,
         )
 
     if not export_only:
