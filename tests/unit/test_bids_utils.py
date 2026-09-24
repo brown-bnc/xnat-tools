@@ -212,7 +212,7 @@ def test_scan_contains_dicom_no_dicom():
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert scan_contains_dicom(connection, host, session, scanid) is False
+    assert scan_contains_dicom(connection, host, session, scanid, "DICOM") is False
 
 
 @responses.activate
@@ -243,7 +243,7 @@ def test_scan_contains_dicom_many_dicom():
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert scan_contains_dicom(connection, host, session, scanid) is False
+    assert scan_contains_dicom(connection, host, session, scanid, "DICOM") is False
 
 
 @responses.activate
@@ -268,7 +268,7 @@ def test_scan_contains_dicom_empty_file_count():
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert scan_contains_dicom(connection, host, session, scanid) is True
+    assert scan_contains_dicom(connection, host, session, scanid, "DICOM") is True
 
 
 @responses.activate
@@ -294,7 +294,7 @@ def test_scan_contains_dicom_zero_file_count():
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert scan_contains_dicom(connection, host, session, scanid) is False
+    assert scan_contains_dicom(connection, host, session, scanid, "DICOM") is False
 
 
 @responses.activate
@@ -320,12 +320,12 @@ def test_scan_contains_dicom_many_file_count():
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert scan_contains_dicom(connection, host, session, scanid) is True
+    assert scan_contains_dicom(connection, host, session, scanid, "DICOM") is True
 
 
 @responses.activate
-def test_scan_contains_dicom_prefers_refaced_by_default():
-    """Default mode should prefer REFACED_DICOM when available."""
+def test_scan_contains_dicom_refaced():
+    """Test scan_contains_dicom with a REFACED_DICOM resource."""
     host = "https://example.com/xnat"
     session = "SESSION-01"
     scanid = "SCAN-01"
@@ -336,9 +336,63 @@ def test_scan_contains_dicom_prefers_refaced_by_default():
             "Result": [
                 {
                     "file_count": "10",
+                    "label": "REFACED_DICOM",
+                    "format": "DICOM",
+                }
+            ],
+        }
+    }
+
+    responses.add(responses.GET, url, json=payload, status=200)
+    connection = requests.Session()
+
+    assert scan_contains_dicom(connection, host, session, scanid, "REFACED_DICOM") is True
+
+
+@responses.activate
+def test_scan_contains_dicom_checks_requested_label():
+    """Test that DICOM and REFACED_DICOM resources are checked independently."""
+    host = "https://example.com/xnat"
+    session = "SESSION-01"
+    scanid = "SCAN-01"
+
+    url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
+    payload = {
+        "ResultSet": {
+            "Result": [
+                {
+                    "file_count": "10",
+                    "label": "REFACED_DICOM",
+                    "format": "DICOM",
+                },
+                {
+                    "file_count": "10",
                     "label": "DICOM",
                     "format": "DICOM",
                 },
+            ],
+        }
+    }
+
+    responses.add(responses.GET, url, json=payload, status=200)
+    connection = requests.Session()
+
+    assert scan_contains_dicom(connection, host, session, scanid, "REFACED_DICOM") is True
+
+    assert scan_contains_dicom(connection, host, session, scanid, "DICOM") is True
+
+
+@responses.activate
+def test_scan_contains_dicom_missing_requested_label():
+    """Test that scan_contains_dicom returns False when the requested label is absent."""
+    host = "https://example.com/xnat"
+    session = "SESSION-01"
+    scanid = "SCAN-01"
+
+    url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
+    payload = {
+        "ResultSet": {
+            "Result": [
                 {
                     "file_count": "10",
                     "label": "REFACED_DICOM",
@@ -351,39 +405,9 @@ def test_scan_contains_dicom_prefers_refaced_by_default():
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert scan_contains_dicom(connection, host, session, scanid) is True
+    assert scan_contains_dicom(connection, host, session, scanid, "REFACED_DICOM") is True
 
-
-@responses.activate
-def test_scan_contains_dicom_force_non_defaced_prefers_standard_dicom():
-    """force_non_defaced should select standard DICOM over REFACED_DICOM."""
-    host = "https://example.com/xnat"
-    session = "SESSION-01"
-    scanid = "SCAN-01"
-
-    url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
-    payload = {
-        "ResultSet": {
-            "Result": [
-                {
-                    "file_count": "0",
-                    "label": "DICOM",
-                    "format": "DICOM",
-                },
-                {
-                    "file_count": "10",
-                    "label": "REFACED_DICOM",
-                    "format": "DICOM",
-                },
-            ],
-        }
-    }
-
-    responses.add(responses.GET, url, json=payload, status=200)
-    connection = requests.Session()
-
-    assert scan_contains_dicom(connection, host, session, scanid) is True
-    assert scan_contains_dicom(connection, host, session, scanid, force_non_defaced=True) is False
+    assert scan_contains_dicom(connection, host, session, scanid, "DICOM") is False
 
 
 def test_check_fmap_acquistion_tags():

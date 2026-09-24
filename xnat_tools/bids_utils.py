@@ -521,11 +521,18 @@ def scan_contains_dicom(connection, host, session, scanid, label):
         params={"format": "json"},
     )
 
-    dicomResourceList = [
-        r
-        for r in resp.json()["ResultSet"]["Result"]
-        if r["format"] == "DICOM" and r["label"] == label
-    ]
+    resources = resp.json()["ResultSet"]["Result"]
+
+    if label == "REFACED_DICOM":
+        dicomResourceList = [
+            r for r in resources if r["format"] == "DICOM" and r["label"] == "REFACED_DICOM"
+        ]
+    else:
+        # this allows DICOM/ or secondary/ (MRS) files
+        dicomResourceList = [
+            r for r in resources if r["format"] == "DICOM" and r["label"] != "REFACED_DICOM"
+        ]
+
     _logger.debug(f"Found DICOM resources: {dicomResourceList}")
     # NOTE (BNR): A scan contains multiple resources. A resource can be thought
     #             of as a folder. We only want a single DICOM folder. If we have
@@ -678,12 +685,27 @@ def list_xnat_resources(connection, host, resourcesURL, label=None):
     resources = resp.json()["ResultSet"]["Result"]
 
     if label == "MRS":
-        resourceList = [r for r in resources if r["label"] == label]
-    elif label in ["DICOM", "REFACED_DICOM"]:
-        # limit the resources to ones that are DICOM format
-        resourceList = [r for r in resources if r["format"] == "DICOM" and r["label"] == label]
+        resourceList = [r for r in resources if r["label"] == "MRS"]
+
+    elif label == "REFACED_DICOM":
+        resourceList = [
+            r for r in resources if r["format"] == "DICOM" and r["label"] == "REFACED_DICOM"
+        ]
+
+    elif label == "DICOM":
+        resourceList = [
+            r for r in resources if r["format"] == "DICOM" and r["label"] != "REFACED_DICOM"
+        ]
+
+        if resourceList:
+            # this changes the label to secondary
+            # if that's where the DICOMs are (MRS)
+            label = resourceList[0]["label"]
+
     else:
-        _logger.warning("Unknown XNAT label. Must be 'DICOM', 'REFACED_DICOM' or 'MRS'.")
+        _logger.warning(
+            "Unknown XNAT label. Must be 'DICOM', 'REFACED_DICOM', 'secondary', or 'MRS'."
+        )
         return None
 
     if resourceList is None:
