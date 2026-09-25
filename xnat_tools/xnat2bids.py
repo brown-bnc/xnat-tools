@@ -91,7 +91,16 @@ def xnat2bids(
     ),
     reface_mode: Annotated[
         Literal["refaced", "orig", "both"],
-        typer.Option(case_sensitive=False),
+        typer.Option(
+            case_sensitive=False,
+            help=(
+                "If you ran MRI Reface on XNAT, you can choose "
+                "which DICOM resources to export: "
+                "'refaced' exports only refaced DICOMs where present; "
+                "'orig' exports only the original DICOMs; "
+                "'both' exports both when available."
+            ),
+        ),
     ] = "refaced",
 ):
     """
