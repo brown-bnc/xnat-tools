@@ -6,6 +6,7 @@ import responses
 
 from xnat_tools import bids_utils as utils
 from xnat_tools.bids_utils import (
+    add_rec_refaced_entity,
     bidsify_dicom_headers,
     bidsmap_scans,
     check_fmap_acquistion_tags,
@@ -99,6 +100,38 @@ def test_bidsmap_scans_run_plus():
     assert bidsmap_scans(scans) == [("1", "run-01"), ("2", "run-02"), ("3", "run-03")]
 
 
+def test_add_rec_refaced_entity_for_refaced_exports():
+    assert (
+        add_rec_refaced_entity("func_task-rest_run-01_bold", "REFACED_DICOM")
+        == "func_task-rest_rec-refaced_run-01_bold"
+    )
+
+
+def test_add_rec_refaced_entity_noop_for_non_refaced_exports():
+    assert add_rec_refaced_entity("anat_acq-MPRAGE_T1w", "DICOM") == "anat_acq-MPRAGE_T1w"
+
+
+def test_add_rec_refaced_entity_no_duplicate():
+    assert (
+        add_rec_refaced_entity("func_task-rest_rec-refaced_run-01_bold", "REFACED_DICOM")
+        == "func_task-rest_rec-refaced_run-01_bold"
+    )
+
+
+def test_add_rec_refaced_entity_after_ce_before_run():
+    assert (
+        add_rec_refaced_entity("func_task-rest_acq-spiral_ce-gad_run-01_bold", "REFACED_DICOM")
+        == "func_task-rest_acq-spiral_ce-gad_rec-refaced_run-01_bold"
+    )
+
+
+def test_add_rec_refaced_entity_already_rec():
+    assert (
+        add_rec_refaced_entity("anat_acq-MPRAGE_rec-first_T1w", "REFACED_DICOM")
+        == "anat_acq-MPRAGE_rec-firstrefaced_T1w"
+    )
+
+
 def test_bidsify_dicom_headers_with_protocol_name(mocker):
     """Test bidsify_dicom_headers with ProtocolName match"""
     series_description = "foo"
@@ -179,7 +212,7 @@ def test_scan_contains_dicom_no_dicom():
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert scan_contains_dicom(connection, host, session, scanid) is False
+    assert scan_contains_dicom(connection, host, session, scanid, "DICOM") is False
 
 
 @responses.activate
@@ -210,7 +243,7 @@ def test_scan_contains_dicom_many_dicom():
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert scan_contains_dicom(connection, host, session, scanid) is False
+    assert scan_contains_dicom(connection, host, session, scanid, "DICOM") is False
 
 
 @responses.activate
@@ -235,7 +268,7 @@ def test_scan_contains_dicom_empty_file_count():
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert scan_contains_dicom(connection, host, session, scanid) is True
+    assert scan_contains_dicom(connection, host, session, scanid, "DICOM") is True
 
 
 @responses.activate
@@ -261,7 +294,7 @@ def test_scan_contains_dicom_zero_file_count():
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert scan_contains_dicom(connection, host, session, scanid) is False
+    assert scan_contains_dicom(connection, host, session, scanid, "DICOM") is False
 
 
 @responses.activate
@@ -287,7 +320,94 @@ def test_scan_contains_dicom_many_file_count():
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert scan_contains_dicom(connection, host, session, scanid) is True
+    assert scan_contains_dicom(connection, host, session, scanid, "DICOM") is True
+
+
+@responses.activate
+def test_scan_contains_dicom_refaced():
+    """Test scan_contains_dicom with a REFACED_DICOM resource."""
+    host = "https://example.com/xnat"
+    session = "SESSION-01"
+    scanid = "SCAN-01"
+
+    url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
+    payload = {
+        "ResultSet": {
+            "Result": [
+                {
+                    "file_count": "10",
+                    "label": "REFACED_DICOM",
+                    "format": "DICOM",
+                }
+            ],
+        }
+    }
+
+    responses.add(responses.GET, url, json=payload, status=200)
+    connection = requests.Session()
+
+    assert scan_contains_dicom(connection, host, session, scanid, "REFACED_DICOM") is True
+
+
+@responses.activate
+def test_scan_contains_dicom_checks_requested_label():
+    """Test that DICOM and REFACED_DICOM resources are checked independently."""
+    host = "https://example.com/xnat"
+    session = "SESSION-01"
+    scanid = "SCAN-01"
+
+    url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
+    payload = {
+        "ResultSet": {
+            "Result": [
+                {
+                    "file_count": "10",
+                    "label": "REFACED_DICOM",
+                    "format": "DICOM",
+                },
+                {
+                    "file_count": "10",
+                    "label": "DICOM",
+                    "format": "DICOM",
+                },
+            ],
+        }
+    }
+
+    responses.add(responses.GET, url, json=payload, status=200)
+    connection = requests.Session()
+
+    assert scan_contains_dicom(connection, host, session, scanid, "REFACED_DICOM") is True
+
+    assert scan_contains_dicom(connection, host, session, scanid, "DICOM") is True
+
+
+@responses.activate
+def test_scan_contains_dicom_missing_requested_label():
+    """Test that scan_contains_dicom returns False when the requested label is absent."""
+    host = "https://example.com/xnat"
+    session = "SESSION-01"
+    scanid = "SCAN-01"
+
+    url = f"{host}/data/experiments/{session}/scans/{scanid}/resources"
+    payload = {
+        "ResultSet": {
+            "Result": [
+                {
+                    "file_count": "10",
+                    "label": "REFACED_DICOM",
+                    "format": "DICOM",
+                },
+            ],
+        }
+    }
+
+    responses.add(responses.GET, url, json=payload, status=200)
+    connection = requests.Session()
+
+    assert scan_contains_dicom(connection, host, session, scanid, "REFACED_DICOM") is True
+
+    assert scan_contains_dicom(connection, host, session, scanid, "DICOM") is False
 
 
 def test_check_fmap_acquistion_tags():

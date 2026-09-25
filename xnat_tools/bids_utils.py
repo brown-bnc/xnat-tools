@@ -435,6 +435,33 @@ def handle_scanner_exceptions(match):
     return match
 
 
+def add_rec_refaced_entity(series_description: str, resource_label: str) -> str:
+    """Add refaced to the BIDS rec entity for refaced DICOM exports."""
+    if resource_label != "REFACED_DICOM":
+        return series_description
+
+    tokens = series_description.split("_")
+
+    # If a rec entity already exists, append "refaced" to its value.
+    for idx, token in enumerate(tokens):
+        if token.startswith("rec-"):
+            if not token.endswith("refaced"):
+                tokens[idx] = token + "refaced"
+            return "_".join(tokens)
+
+    # Otherwise, add a new rec-refaced entity.
+    insertion_prefixes = ("dir-", "run-", "mod-", "echo-", "flip-", "inv-", "mt-")
+    insert_idx = len(tokens) - 1 if len(tokens) > 1 else len(tokens)
+
+    for idx, token in enumerate(tokens):
+        if token.startswith(insertion_prefixes):
+            insert_idx = idx
+            break
+
+    tokens.insert(insert_idx, "rec-refaced")
+    return "_".join(tokens)
+
+
 def add_magphase_part_entity(allscans, filename, series_description):
     # heudiconv/reproin do this automatically if magnitude and phase
     # data are included in a single series, but we have to do it manually
@@ -486,7 +513,7 @@ def bidsify_dicom_headers(filename, series_description):
         dataset.save_as(filename)
 
 
-def scan_contains_dicom(connection, host, session, scanid):
+def scan_contains_dicom(connection, host, session, scanid, label):
     """Checks to see if the scan has suitable DICOM files for BIDS conversion"""
     resp = get(
         connection,
@@ -494,7 +521,18 @@ def scan_contains_dicom(connection, host, session, scanid):
         params={"format": "json"},
     )
 
-    dicomResourceList = [r for r in resp.json()["ResultSet"]["Result"] if r["format"] == "DICOM"]
+    resources = resp.json()["ResultSet"]["Result"]
+
+    if label == "REFACED_DICOM":
+        dicomResourceList = [
+            r for r in resources if r["format"] == "DICOM" and r["label"] == "REFACED_DICOM"
+        ]
+    else:
+        # this allows DICOM/ or secondary/ (MRS) files
+        dicomResourceList = [
+            r for r in resources if r["format"] == "DICOM" and r["label"] != "REFACED_DICOM"
+        ]
+
     _logger.debug(f"Found DICOM resources: {dicomResourceList}")
     # NOTE (BNR): A scan contains multiple resources. A resource can be thought
     #             of as a folder. We only want a single DICOM folder. If we have
@@ -573,22 +611,23 @@ def read_dicom_header(file_path: str):
     return dicom
 
 
-def validate_frame_counts(scans: list, bids_session_dir: str) -> None:
+def validate_frame_counts(bids_session_dir: str) -> None:
 
-    for _, series_desc in scans:
-        if "func" in series_desc:
-            bids_scan_dir = os.path.join(bids_session_dir, series_desc)
+    for sequence_dir in os.scandir(bids_session_dir):
+        if not sequence_dir.is_dir() or "func" not in sequence_dir.name:
+            continue
 
-            with os.scandir(bids_scan_dir) as entries:
-                dicom_files = sorted(
-                    [
-                        entry.name
-                        for entry in entries
-                        if entry.is_file() and entry.name.endswith(".dcm")
-                    ],
-                    key=extract_slice_number,
-                )
+        bids_scan_dir = sequence_dir.path
 
+        with os.scandir(bids_scan_dir) as sequence_dirs:
+            dicom_files = sorted(
+                [
+                    sequence_dir.name
+                    for sequence_dir in sequence_dirs
+                    if sequence_dir.is_file() and sequence_dir.name.endswith(".dcm")
+                ],
+                key=extract_slice_number,
+            )
             # Compare frame counts of first and all other DICOMs. Remove other DICOMs if unequal.
             # Should generally only be the last DICOM, unless data is multiecho and/or mag/phase
             if dicom_files:
@@ -636,7 +675,7 @@ def validate_frame_counts(scans: list, bids_session_dir: str) -> None:
                         os.remove(partial_file_path)
 
 
-def list_xnat_resources(connection, host, resourcesURL, filetype=None):
+def list_xnat_resources(connection, host, resourcesURL, label=None):
     resp = get(
         connection,
         resourcesURL,
@@ -645,16 +684,28 @@ def list_xnat_resources(connection, host, resourcesURL, filetype=None):
 
     resources = resp.json()["ResultSet"]["Result"]
 
-    if filetype == "rawMRS":
-        label = "MRS"
-        resourceList = [r for r in resources if r["label"] == label]
-    elif filetype == "DICOM":
-        # limit the resources to ones that are DICOM format
-        resourceList = [r for r in resources if r["format"] == "DICOM"]
-        # check the label of our one DICOM resource
-        label = resourceList[0]["label"]
+    if label == "MRS":
+        resourceList = [r for r in resources if r["label"] == "MRS"]
+
+    elif label == "REFACED_DICOM":
+        resourceList = [
+            r for r in resources if r["format"] == "DICOM" and r["label"] == "REFACED_DICOM"
+        ]
+
+    elif label == "DICOM":
+        resourceList = [
+            r for r in resources if r["format"] == "DICOM" and r["label"] != "REFACED_DICOM"
+        ]
+
+        if resourceList:
+            # this changes the label to secondary
+            # if that's where the DICOMs are (MRS)
+            label = resourceList[0]["label"]
+
     else:
-        _logger.warning("Unknown XNAT filetype. Must be 'DICOM' or 'rawMRS'.")
+        _logger.warning(
+            "Unknown XNAT label. Must be 'DICOM', 'REFACED_DICOM', 'secondary', or 'MRS'."
+        )
         return None
 
     if resourceList is None:
@@ -690,6 +741,7 @@ def assign_bids_name(
     scans,
     build_dir,
     bids_session_dir,
+    reface_mode,
 ):
     """
     subject: Subject to process
@@ -697,48 +749,69 @@ def assign_bids_name(
     build_dir: build director. What is this?
     study_bids_dir: BIDS directory to copy simlinks to. Typically the RESOURCES/BIDS
     """
+
+    # in the 'refaced' case, which is the default, we export refaced only if present
+    # but fall back to original DICOMs if it isn't
+    dicom_label = {
+        "refaced": ["REFACED_DICOM", "DICOM"],
+        "orig": ["DICOM"],
+        "both": ["REFACED_DICOM", "DICOM"],
+    }
+
     # Build a dict keyed off file name
 
     for scanid, seriesdesc in scans:
-        if not scan_contains_dicom(connection, host, session, scanid):
-            continue
-
-        # BIDS sourcedatadirectory for this scan
-        _logger.info(f"bids_session_dir: {bids_session_dir}")
-        _logger.info(f"BIDSNAME: {seriesdesc}")
-        bids_scan_directory = os.path.join(bids_session_dir, seriesdesc)
-
-        if not os.path.isdir(bids_scan_directory):
-            _logger.info("Making scan DICOM directory %s." % bids_scan_directory)
-            os.mkdir(bids_scan_directory)
-        else:
-            _logger.warning(
-                f"{bids_scan_directory} already exists. \
-                See documentation to understand behavior for repeated sequences."
-            )
-        os.chdir(bids_scan_directory)
-
         resourcesURL = host + f"/data/experiments/{session}/scans/{scanid}/resources/"
 
-        dicomFileDict = list_xnat_resources(connection, host, resourcesURL, filetype="DICOM")
+        for label in dicom_label[reface_mode]:
 
-        # Download DICOMs
-        _logger.info("Downloading files")
-        dicomFileList = list(dicomFileDict.items())
-        (name, pathDict) = dicomFileList[0]
-        download(connection, name, pathDict)
+            if not scan_contains_dicom(connection, host, session, scanid, label):
+                continue
 
-        seriesdesc = add_magphase_part_entity(scans, name, seriesdesc)
-        bidsify_dicom_headers(name, seriesdesc)
+            # if we are exporting REFACED_DICOM, we need to add the rec-refaced
+            # entity to the filename. this is especially important if we are
+            # exporting both original and refaced DICOMs, but we add it regardless
+            # for clarity
+            resource_seriesdesc = add_rec_refaced_entity(seriesdesc, label)
 
-        # Download remaining DICOMs
-        for name, pathDict in dicomFileList[1:]:
+            # BIDS sourcedatadirectory for this scan
+            _logger.info(f"bids_session_dir: {bids_session_dir}")
+            _logger.info(f"BIDSNAME: {resource_seriesdesc}")
+            bids_scan_directory = os.path.join(bids_session_dir, resource_seriesdesc)
+
+            if not os.path.isdir(bids_scan_directory):
+                _logger.info("Making scan DICOM directory %s." % bids_scan_directory)
+                os.mkdir(bids_scan_directory)
+            else:
+                _logger.warning(
+                    f"{bids_scan_directory} already exists. \
+                    See documentation to understand behavior for repeated sequences."
+                )
+            os.chdir(bids_scan_directory)
+
+            dicomFileDict = list_xnat_resources(connection, host, resourcesURL, label=label)
+
+            # Download DICOMs
+            _logger.info("Downloading files")
+            dicomFileList = list(dicomFileDict.items())
+            (name, pathDict) = dicomFileList[0]
             download(connection, name, pathDict)
-            bidsify_dicom_headers(name, seriesdesc)
 
-        _logger.info("Done.")
+            resource_seriesdesc = add_magphase_part_entity(scans, name, resource_seriesdesc)
+            bidsify_dicom_headers(name, resource_seriesdesc)
 
-        mrsFileDict = list_xnat_resources(connection, host, resourcesURL, filetype="rawMRS")
+            # Download remaining DICOMs
+            for name, pathDict in dicomFileList[1:]:
+                download(connection, name, pathDict)
+                bidsify_dicom_headers(name, resource_seriesdesc)
+
+            _logger.info("Done.")
+
+            # if we are only exporting refaced DICOMs, we want to skip DICOM
+            if reface_mode == "refaced":
+                break
+
+        mrsFileDict = list_xnat_resources(connection, host, resourcesURL, label="MRS")
 
         # If there is raw MRS data, download it
         if mrsFileDict:
