@@ -30,7 +30,7 @@ $ xnat2bids [OPTIONS] {session} {bids_root_dir}
 * `--export-only`: Run DICOM Export without subsequent BIDS conversion
 * `--validate_frames`: Validate the frame counts of all acquisitions of functional bold sequences. If the final acquisition does not contain the expected number of slices, the associated DICOM file will be deleted.
 * `-d, --dicomfix-config <str>`: JSON file to correct DICOM fields. USE WITH CAUTION
-* `--reface-mode <refaced|orig|both>`: [default: refaced]
+* `--reface-mode <refaced|orig|both>`: If you ran MRI Reface on XNAT, you can choose which DICOM resources to export: &#x27;refaced&#x27; exports only refaced DICOMs where present; &#x27;orig&#x27; exports only the original DICOMs; &#x27;both&#x27; exports both when available.  [default: refaced]
 * `--install-completion`: Install completion for the current shell.
 * `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 * `--help`: Show this message and exit.
