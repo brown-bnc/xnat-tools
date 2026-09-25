@@ -849,7 +849,7 @@
 <li><code>--export-only</code>: Run DICOM Export without subsequent BIDS conversion</li>
 <li><code>--validate_frames</code>: Validate the frame counts of all acquisitions of functional bold sequences. If the final acquisition does not contain the expected number of slices, the associated DICOM file will be deleted.</li>
 <li><code>-d, --dicomfix-config &lt;str&gt;</code>: JSON file to correct DICOM fields. USE WITH CAUTION</li>
-<li><code>--reface-mode &lt;refaced|orig|both&gt;</code>: [default: refaced]</li>
+<li><code>--reface-mode &lt;refaced|orig|both&gt;</code>: If you ran MRI Reface on XNAT, you can choose which DICOM resources to export: &#x27;refaced&#x27; exports only refaced DICOMs where present; &#x27;orig&#x27; exports only the original DICOMs; &#x27;both&#x27; exports both when available.  [default: refaced]</li>
 <li><code>--install-completion</code>: Install completion for the current shell.</li>
 <li><code>--show-completion</code>: Show completion for the current shell, to copy it or customize the installation.</li>
 <li><code>--help</code>: Show this message and exit.</li>
