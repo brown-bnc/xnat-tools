@@ -14,7 +14,7 @@ import logging
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import List
+from typing import Annotated, List, Literal
 
 import typer
 
@@ -102,6 +102,10 @@ def dicom_export(
     correct_dicoms_config: str = typer.Option(
         "", "-d", "--dicomfix-config", help="JSON file to correct DICOM fields. USE WITH CAUTION"
     ),
+    reface_mode: Annotated[
+        Literal["refaced", "orig", "both"],
+        typer.Option(case_sensitive=False),
+    ] = "refaced",
 ):
 
     """
@@ -164,10 +168,11 @@ def dicom_export(
         scans,
         build_dir,
         export_session_dir,
+        reface_mode=reface_mode,
     )
 
     if validate_frames:
-        validate_frame_counts(scans, export_session_dir)
+        validate_frame_counts(export_session_dir)
 
     # If a configuration file is passed, correct DICOM headers of
     # specified files
