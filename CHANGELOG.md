@@ -1,3 +1,9 @@
+## v2.3.1 (2026-09-30)
+
+### Fix
+
+- add reface-mode helptext
+
 ## v2.3.0 (2026-03-23)
 
 ### Feat
