@@ -613,66 +613,80 @@ def read_dicom_header(file_path: str):
 
 def validate_frame_counts(bids_session_dir: str) -> None:
 
-    for sequence_dir in os.scandir(bids_session_dir):
-        if not sequence_dir.is_dir() or "func" not in sequence_dir.name:
-            continue
+    with os.scandir(bids_session_dir) as sequence_dirs:
+        for sequence_dir in sequence_dirs:
 
-        bids_scan_dir = sequence_dir.path
+            if not sequence_dir.is_dir() or "func" not in sequence_dir.name:
+                continue
 
-        with os.scandir(bids_scan_dir) as sequence_dirs:
-            dicom_files = sorted(
-                [
-                    sequence_dir.name
-                    for sequence_dir in sequence_dirs
-                    if sequence_dir.is_file() and sequence_dir.name.endswith(".dcm")
-                ],
-                key=extract_slice_number,
-            )
-            # Compare frame counts of first and all other DICOMs. Remove other DICOMs if unequal.
-            # Should generally only be the last DICOM, unless data is multiecho and/or mag/phase
-            if dicom_files:
-                volume_temporal_idx = []
-                bad_vols = set()
+            bids_scan_dir = sequence_dir.path
 
-                first_dicom = read_dicom_header(os.path.join(bids_scan_dir, dicom_files[0]))
-                # read the DICOM field that reports the number of frames (slices)
-                first_frame_count = first_dicom.get((0x0028, 0x0008), None)
-
-                # this grabs the DICOM field that reports the volume number (1-indexed) for the
-                # first frame in the volume (and assumes that all frames have the same value)
-                volume_temporal_idx.append(
-                    first_dicom.PerFrameFunctionalGroupsSequence[0]
-                    .FrameContentSequence[0]
-                    .TemporalPositionIndex
+            with os.scandir(bids_scan_dir) as sequence_dirs:
+                dicom_files = sorted(
+                    [
+                        sequence_dir.name
+                        for sequence_dir in sequence_dirs
+                        if sequence_dir.is_file() and sequence_dir.name.endswith(".dcm")
+                    ],
+                    key=extract_slice_number,
                 )
+                # Compare frame counts of first and all other DICOMs. Remove unequal DICOMs.
+                # Should generally only be the last DICOM, unless data is multiecho and/or mag/phase
+                if dicom_files:
+                    volume_temporal_idx = []
+                    bad_vols = set()
 
-                for dicomfile in dicom_files[1:]:
-                    subsequent_dicom = read_dicom_header(os.path.join(bids_scan_dir, dicomfile))
-                    curr_frame_count = subsequent_dicom.get((0x0028, 0x0008), None)
-                    curr_temporal_idx = (
-                        subsequent_dicom.PerFrameFunctionalGroupsSequence[0]
+                    _logger.info(f"Validating frame counts for {sequence_dir.name}")
+
+                    first_dicom = read_dicom_header(os.path.join(bids_scan_dir, dicom_files[0]))
+
+                    # Frame count validation only applies to enhanced DICOMs with
+                    # per-frame functional group information.
+                    if not hasattr(first_dicom, "PerFrameFunctionalGroupsSequence"):
+                        _logger.debug(
+                            f"Skipping frame count validation for {sequence_dir.name}: "
+                            "no PerFrameFunctionalGroupsSequence"
+                        )
+                        continue
+
+                    # read the DICOM field that reports the number of frames (slices)
+                    first_frame_count = first_dicom.get((0x0028, 0x0008), None)
+
+                    # this grabs the DICOM field that reports the volume number (1-indexed)
+                    # for the first frame in the volume
+                    volume_temporal_idx.append(
+                        first_dicom.PerFrameFunctionalGroupsSequence[0]
                         .FrameContentSequence[0]
                         .TemporalPositionIndex
                     )
-                    volume_temporal_idx.append(curr_temporal_idx)
 
-                    if curr_frame_count != first_frame_count:
-                        bad_vols.add(curr_temporal_idx)
-
-                # any DICOM, regardless of its frame count, that comes from a volume with
-                # a partial DICOM needs to be deleted (handles multi-echo data)
-                dicoms_to_drop = [
-                    dicom_files[i] for i, n in enumerate(volume_temporal_idx) if n in bad_vols
-                ]
-
-                for dcmfile in dicoms_to_drop:
-                    partial_file_path = os.path.join(bids_scan_dir, dcmfile)
-
-                    if os.path.exists(partial_file_path):
-                        _logger.info(
-                            f"Detected discrepant frame counts. Removing {partial_file_path}"
+                    for dicomfile in dicom_files[1:]:
+                        subsequent_dicom = read_dicom_header(os.path.join(bids_scan_dir, dicomfile))
+                        curr_frame_count = subsequent_dicom.get((0x0028, 0x0008), None)
+                        curr_temporal_idx = (
+                            subsequent_dicom.PerFrameFunctionalGroupsSequence[0]
+                            .FrameContentSequence[0]
+                            .TemporalPositionIndex
                         )
-                        os.remove(partial_file_path)
+                        volume_temporal_idx.append(curr_temporal_idx)
+
+                        if curr_frame_count != first_frame_count:
+                            bad_vols.add(curr_temporal_idx)
+
+                    # any DICOM, regardless of its frame count, that comes from a volume with
+                    # a partial DICOM needs to be deleted (handles multi-echo data)
+                    dicoms_to_drop = [
+                        dicom_files[i] for i, n in enumerate(volume_temporal_idx) if n in bad_vols
+                    ]
+
+                    for dcmfile in dicoms_to_drop:
+                        partial_file_path = os.path.join(bids_scan_dir, dcmfile)
+
+                        if os.path.exists(partial_file_path):
+                            _logger.info(
+                                f"Detected discrepant frame counts. Removing {partial_file_path}"
+                            )
+                            os.remove(partial_file_path)
 
 
 def list_xnat_resources(connection, host, resourcesURL, label=None):
