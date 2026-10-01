@@ -1,3 +1,9 @@
+## v2.3.2 (2026-10-01)
+
+### Fix
+
+- apply validate frames to true func data
+
 ## v2.3.1 (2026-09-30)
 
 ### Fix
