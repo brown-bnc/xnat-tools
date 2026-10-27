@@ -1,91 +1,91 @@
-name: publish 
+name: publish
 on: [workflow_dispatch]
 
 env:
   IMAGE_NAME: brownbnc/xnat-tools
 
-jobs: 
+jobs:
   publish:
     runs-on: ubuntu-latest
-    name: 'Bump version and create changelog with commitizen'
+    name: "Bump version and create changelog with commitizen"
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: Create bump and changelog
-      uses: commitizen-tools/commitizen-action@0.18.0
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Store recent changelog changes
-      run: |
-        echo 'CHANGELOG<<EOF' >> $GITHUB_ENV
-        grep -B10000 -m2 "^## v"  CHANGELOG.md | sed '$d' >> $GITHUB_ENV
-        echo 'EOF' >> $GITHUB_ENV
-    - name: Store VERSION
-      run: |
-        echo "VERSION=$(cat pyproject.toml | grep version | head -1 | awk -F: '{ print $1 }'| sed 's/[\",]//g'| tr -d 'version = ')" >> $GITHUB_ENV
-    - name: Release to GitHub
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: 'v${{ env.VERSION }}'
-        release_name: 'v${{ env.VERSION }}'
-        body: ${{ env.CHANGELOG }}
-        draft: false
-        prerelease: false
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Create bump and changelog
+        uses: commitizen-tools/commitizen-action@0.18.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Store recent changelog changes
+        run: |
+          echo 'CHANGELOG<<EOF' >> $GITHUB_ENV
+          grep -B10000 -m2 "^## v"  CHANGELOG.md | sed '$d' >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+      - name: Store VERSION
+        run: |
+          echo "VERSION=$(cat pyproject.toml | grep version | head -1 | awk -F: '{ print $1 }'| sed 's/[\",]//g'| tr -d 'version = ')" >> $GITHUB_ENV
+      - name: Release to GitHub
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v${{ env.VERSION }}"
+          release_name: "v${{ env.VERSION }}"
+          body: ${{ env.CHANGELOG }}
+          draft: false
+          prerelease: false
 
-    # DOCS
-    - name: Set up Python 3.10 
-      uses: actions/setup-python@v4
-      with:
-        python-version-file: '.python-version' # Read python version from a file .python-version
-    - name: Install uv
-      uses: astral-sh/setup-uv@v5
-    - name: Install docs dependencies via uv
-      run: |
+      # DOCS
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version-file: ".python-version" # Read python version from a file .python-version
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Install docs dependencies via uv
+        run: |
           uv pip install .[docs]
           uv pip install typer-cli
-      env:
-        UV_SYSTEM_PYTHON: 1
-    - name: Set up mkdocs config 
-      run: (envsubst 'v${VERSION}' < mkdocs-template.yml) > mkdocs.yml
-    - name: Sync 
-      run: | 
-        git pull
-        mkdocs-versioning sync
-        rm -rf ./site/.git/
-    - name: Build
-      run: mkdocs build
-    - name: Deploy
-      run: mkdocs-versioning -v deploy
+        env:
+          UV_SYSTEM_PYTHON: 1
+      - name: Set up mkdocs config
+        run: (envsubst 'v${VERSION}' < mkdocs-template.yml) > mkdocs.yml
+      - name: Sync
+        run: |
+          git pull
+          mkdocs-versioning sync
+          rm -rf ./site/.git/
+      - name: Build
+        run: mkdocs build
+      - name: Deploy
+        run: mkdocs-versioning -v deploy
 
-    ## Docker   
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
+      ## Docker
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-    - name: Log in to the Container registry
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKERHUB_USER }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Log in to the Container registry
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Extract metadata (tags, labels) for Docker
-      id: meta
-      uses: docker/metadata-action@v3
-      with:
-        images: ${{ env.IMAGE_NAME }}
-        tags: |     
-          type=semver,pattern={{raw}},value=v${{ env.VERSION }}
-    
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        platforms: linux/amd64,linux/arm64
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{raw}},value=v${{ env.VERSION }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

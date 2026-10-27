@@ -1,14 +1,14 @@
-name: dev-docs 
+name: dev-docs
 on:
   push:
     branches-ignore:
       - main
-jobs: 
-  build: 
-    name: Build and Deploy Documentation 
-    runs-on: ubuntu-latest 
-    steps: 
-      - name: Checkout Main 
+jobs:
+  build:
+    name: Build and Deploy Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Main
         uses: actions/checkout@v4
       - name: Check CLI files that changed
         uses: dorny/paths-filter@v3.0.2
@@ -24,10 +24,10 @@ jobs:
               - 'xnat_tools/run_heudiconv.py'
             bids_postprocess:
               - 'xnat_tools/bids_postprocess.py'
-      - name: Set up Python 3.10
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version-file: '.python-version' # Read python version from a file .python-version
+          python-version-file: ".python-version" # Read python version from a file .python-version
       - name: Install uv
         uses: astral-sh/setup-uv@v5
       - name: Install docs dependencies via uv
@@ -37,26 +37,26 @@ jobs:
         env:
           UV_SYSTEM_PYTHON: 1
       - name: Set up mkdocs config
-        run: | 
+        run: |
           export VERSION=dev
           echo "Making docs for version $VERSION"
           (envsubst '${VERSION}' < mkdocs-template.yml) > mkdocs.yml
-      - name: xnat2bids CLI docs  
+      - name: xnat2bids CLI docs
         if: steps.filter.outputs.xnat2bids == 'true'
         run: |
           typer xnat_tools/xnat2bids.py utils docs --name xnat2bids --output docs/xnat2bids.md
           sed -i -e 's|\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9]\{4\}\)-\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)|current date - MM-DD-YYYY-HH-MM-SS|' docs/xnat2bids.md
-      - name: dicom_export CLI docs  
+      - name: dicom_export CLI docs
         if: steps.filter.outputs.dicom_export == 'true'
         run: |
           typer xnat_tools/dicom_export.py utils docs --name dicom_export --output docs/dicom_export.md
           sed -i -e 's|\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9]\{4\}\)-\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)|current date - MM-DD-YYYY-HH-MM-SS|' docs/dicom_export.md
-      - name: run_heudiconv CLI docs  
+      - name: run_heudiconv CLI docs
         if: steps.filter.outputs.run_heudiconv == 'true'
         run: |
           typer xnat_tools/run_heudiconv.py utils docs --name run_heudiconv --output docs/run_heudiconv.md
           sed -i -e 's|\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9]\{4\}\)-\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)|current date - MM-DD-YYYY-HH-MM-SS|' docs/run_heudiconv.md
-      - name: bids_postprocess CLI docs  
+      - name: bids_postprocess CLI docs
         if: steps.filter.outputs.bids_postprocess == 'true'
         run: |
           typer xnat_tools/bids_postprocess.py utils docs --name bids_postprocess --output docs/bids_postprocess.md
@@ -68,7 +68,7 @@ jobs:
 
           git diff --quiet && git diff --staged --quiet || git commit -am "docs: Update CLI docs"
           git push
-      - name: Sync 
+      - name: Sync
         run: |
           git pull
           mkdocs-versioning sync
