@@ -28,14 +28,18 @@ def test_postprocessing():
 
     os.mkdir(bids_root_dir)
 
-    xnat2bids_cmd = f"{subj5_session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -s 6"
+    xnat2bids_cmd = (
+        f"{subj5_session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -s 6"
+    )
 
     xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
 
     r = runner.invoke(xnat2bids_app, xnat2bids_split_cmd)
     print(r.stdout)
 
-    xnat2bids_cmd = f"{subj5_session2} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -s 6"
+    xnat2bids_cmd = (
+        f"{subj5_session2} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -s 6"
+    )
 
     xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
 
@@ -254,10 +258,10 @@ def cleanIntendedForData(fieldmaps: list):
                 data = json.load(f)
                 if "IntendedFor" in data:
                     del data["IntendedFor"]
-                f.close
+                f.close()
             with open(json_file, "w") as f:
                 json.dump(data, f, indent=4, sort_keys=True)
-                f.close
+                f.close()
 
 
 def updateIntendedForData(fieldmaps: list, testData: typing.Any):
@@ -266,10 +270,10 @@ def updateIntendedForData(fieldmaps: list, testData: typing.Any):
         with open(json_file, "r") as f:
             data = json.load(f)
             data["IntendedFor"] = testData
-            f.close
+            f.close()
         with open(json_file, "w") as f:
             json.dump(data, f, indent=4, sort_keys=True)
-            f.close
+            f.close()
 
 
 def verifySkipped(fieldmaps: list):
@@ -277,7 +281,7 @@ def verifySkipped(fieldmaps: list):
         with open(json_file, "r") as f:
             data = json.load(f)
             assert "IntendedFor" not in data
-            f.close
+            f.close()
 
 
 def verifyProcessed(fieldmaps: list, testSet: list):
@@ -285,7 +289,7 @@ def verifyProcessed(fieldmaps: list, testSet: list):
         with open(json_file, "r") as f:
             data = json.load(f)
             assert sorted(data["IntendedFor"]) == sorted(testSet)
-            f.close
+            f.close()
 
 
 def check_json_data(fieldmaps: list, op: str, value: str):
@@ -295,4 +299,4 @@ def check_json_data(fieldmaps: list, op: str, value: str):
         with open(json_file, "r") as f:
             data = json.load(f)
             assert rel_ops[op](data["IntendedFor"], value)
-            f.close
+            f.close()

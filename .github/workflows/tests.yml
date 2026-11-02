@@ -1,12 +1,12 @@
-name: tests 
-on: 
+name: tests
+on:
   pull_request:
   push:
-    branches: 
-      - 'main'
+    branches:
+      - "main"
 env:
-  XNAT_USER: '${{secrets.XNAT_USER}}'
-  XNAT_PASS: '${{secrets.XNAT_PASS}}'
+  XNAT_USER: "${{secrets.XNAT_USER}}"
+  XNAT_PASS: "${{secrets.XNAT_PASS}}"
   REGISTRY: ghcr.io
   IMAGE_NAME: brown-bnc/xnat-tools
 
@@ -59,19 +59,19 @@ jobs:
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
 
-  test: 
-    name: Run unit and integration tests 
+  test:
+    name: Run unit and integration tests
     needs: [docker]
     runs-on: self-hosted
     container:
       image: "${{ needs.docker.outputs.full_image_id }}"
-    steps: 
-      - name: Run pytest  
+    steps:
+      - name: Run pytest
         run: |
           cd /xnat-tools
           pytest -x -s -o log_cli=true --log-cli-level=INFO
 
-  bids-validation: 
+  bids-validation:
     name: Run system test for bids-validator
     needs: [docker]
     runs-on: self-hosted
@@ -79,9 +79,9 @@ jobs:
     container:
       image: "${{ needs.docker.outputs.full_image_id }}"
     env:
-        BIDS_ROOT: '/xnat2bids'
-    steps: 
-      - name: Run xnat2bids          
+      BIDS_ROOT: "/xnat2bids"
+    steps:
+      - name: Run xnat2bids
         run: |
           cd /xnat-tools
           mkdir /xnat2bids/
@@ -97,6 +97,5 @@ jobs:
         run: npm install -g bids-validator
 
       - name: Run bids-validator
-        run: 
-          cd /xnat-tools
+        run: cd /xnat-tools
           bids-validator ${BIDS_ROOT}
