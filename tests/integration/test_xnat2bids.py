@@ -111,14 +111,14 @@ def test_xnat2bids():
         with open(json_file, "r") as f:
             data = json.load(f)
             assert sorted(data["IntendedFor"]) == sorted(session1_bold_intendedfor)
-            f.close
+            f.close()
 
     # Verify session1 diffusion fmaps have been processed.
     for json_file in subj_005_session1_fmaps[3:]:
         with open(json_file, "r") as f:
             data = json.load(f)
             assert sorted(data["IntendedFor"]) == sorted(session1_diff_intendedfor)
-            f.close
+            f.close()
 
 
 def test_xnat2bids_export_only():
@@ -213,14 +213,14 @@ def test_xnat2bids_skip_export():
         with open(json_file, "r") as f:
             data = json.load(f)
             assert sorted(data["IntendedFor"]) == sorted(session1_bold_intendedfor)
-            f.close
+            f.close()
 
     # Verify session1 diffusion fmaps have been processed.
     for json_file in subj_005_session1_fmaps[3:]:
         with open(json_file, "r") as f:
             data = json.load(f)
             assert sorted(data["IntendedFor"]) == sorted(session1_diff_intendedfor)
-            f.close
+            f.close()
 
 
 def test_xnat2bids_eeg():
