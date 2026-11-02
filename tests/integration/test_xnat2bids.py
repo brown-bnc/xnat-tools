@@ -59,7 +59,7 @@ def test_xnat2bids():
     assert len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
 
     # ***************************************************************************
-    # Test for correctess of sequence number given by skiplist
+    # Test for correctness of sequence number given by skiplist
     # ***************************************************************************
     xnat_export_path = glob.glob(
         f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
@@ -75,9 +75,9 @@ def test_xnat2bids():
             idx = series_idx(f)
             assert str(idx) not in skiplist
             if series_desc.__contains__("SBRef"):
-                assert dataset.data_element("ProtocolName").value == series_desc.replace(
-                    "_SBRef", ""
-                )
+                assert dataset.data_element(
+                    "ProtocolName"
+                ).value == series_desc.replace("_SBRef", "")
                 assert dataset.data_element("SeriesDescription").value == series_desc
             else:
                 assert dataset.data_element("ProtocolName").value == series_desc
@@ -159,9 +159,9 @@ def test_xnat2bids_export_only():
             idx = series_idx(f)
             assert str(idx) not in skiplist
             if series_desc.__contains__("SBRef"):
-                assert dataset.data_element("ProtocolName").value == series_desc.replace(
-                    "_SBRef", ""
-                )
+                assert dataset.data_element(
+                    "ProtocolName"
+                ).value == series_desc.replace("_SBRef", "")
                 assert dataset.data_element("SeriesDescription").value == series_desc
             else:
                 assert dataset.data_element("ProtocolName").value == series_desc
@@ -228,6 +228,7 @@ def test_xnat2bids_eeg():
 
     xnat_user = os.environ.get("XNAT_USER", "")
     xnat_pass = os.environ.get("XNAT_PASS", "")
+    # NOTE: "BNC Demo Dataset" does not contain EEG data, test against a session that does
     session = os.environ.get("XNAT_SESSION", "XNAT_E00474")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "01")
     bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
