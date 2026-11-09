@@ -1,37 +1,26 @@
 import glob
 import os
 import shlex
-import shutil
 
-import requests  # type: ignore
-from dotenv import load_dotenv
+import requests
 from typer.testing import CliRunner
 
+from tests.helpers import series_idx
 from xnat_tools.dicom_export import app as export_app
 from xnat_tools.dicom_export import dicom_export
 from xnat_tools.run_heudiconv import app as heudi_app
 from xnat_tools.xnat_utils import establish_connection, get
 
-from .test_xnat2bids import series_idx
-
-load_dotenv()
 runner = CliRunner()
 
 
-def test_dicom_export():
+def test_dicom_export(xnat_user, xnat_password, xnat_bids_root):
     """Integration test for xnat-dicom-export"""
-    xnat_user = os.environ.get("XNAT_USER", "")
-    xnat_pass = os.environ.get("XNAT_PASS", "")
+
     project = os.environ.get("XNAT_PROJECT", "bnc_demodat")
     subject = os.environ.get("XNAT_SUBJECT", "005")
     session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "-1")
-    bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
-
-    if os.path.exists(bids_root_dir):
-        shutil.rmtree(bids_root_dir, ignore_errors=True)
-
-    os.mkdir(bids_root_dir)
 
     # ***************************************************************************
     # Test for successful execution
@@ -42,9 +31,9 @@ def test_dicom_export():
 
     p, s, ss = dicom_export(
         session,
-        bids_root_dir,
+        xnat_bids_root,
         user=xnat_user,
-        password=xnat_pass,
+        password=xnat_password,
         host="https://xnat.bnc.brown.edu",
         session_suffix=session_suffix,
         bidsmap_file="",
@@ -63,7 +52,10 @@ def test_dicom_export():
 
     filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
 
-    assert len(glob.glob(f"{filepath}/*/*.IMA")) > 0 or len(glob.glob(f"{filepath}/*/*.dcm")) > 0
+    assert (
+        len(glob.glob(f"{filepath}/*/*.IMA")) > 0
+        or len(glob.glob(f"{filepath}/*/*.dcm")) > 0
+    )
     subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
     assert len(subdirs) == 1
@@ -77,11 +69,11 @@ def test_dicom_export():
     # Here we test using typer's CLIRunner
     # ***************************************************************************
 
-    cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -i 8 -v"
-
-    split_cmd = shlex.split(cmd)
-
-    r = runner.invoke(export_app, split_cmd)
+    export_cmd = shlex.split(
+        f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} -i 8 -v"
+    )
+    print("Running dicom_export application:", export_cmd)
+    r = runner.invoke(export_app, export_cmd)
     print(r.stdout)
 
     filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
@@ -98,11 +90,11 @@ def test_dicom_export():
     # # Test that overwrite flag is wiping the xnat-export directory
     # # ***************************************************************************
 
-    cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -v -i 10 --overwrite"
-
-    split_cmd = shlex.split(cmd)
-
-    r = runner.invoke(export_app, split_cmd)
+    export_cmd = shlex.split(
+        f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} -v -i 10 --overwrite"
+    )
+    print("Running dicom_export application:", export_cmd)
+    r = runner.invoke(export_app, export_cmd)
     print(r.stdout)
 
     filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
@@ -116,26 +108,29 @@ def test_dicom_export():
             assert idx == "10"
 
 
-def test_heudiconv():
+def test_heudiconv(xnat_bids_root):
     """Integration test for running the run-heudiconv
     executable on the output of xnat-dicom-export"""
+
     project = os.environ.get("XNAT_PROJECT", "bnc_demodat")
     subject = os.environ.get("XNAT_SUBJECT", "005")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "session1")
-    bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
 
     # ***************************************************************************
     # Test for successful execution
     # ***************************************************************************
-    cmd = f"{project} {subject} {bids_root_dir} --session-suffix {session_suffix}"
 
-    split_cmd = shlex.split(cmd)
-
-    r = runner.invoke(heudi_app, split_cmd)
+    run_heudiconv_cmd = shlex.split(
+        f"{project} {subject} {xnat_bids_root} --session-suffix {session_suffix}"
+    )
+    print("Running run_heudiconv application:", run_heudiconv_cmd)
+    r = runner.invoke(heudi_app, run_heudiconv_cmd)
     print(r.stdout)
 
     try:
-        filepath = glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}")[0]
+        filepath = glob.glob(
+            f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}"
+        )[0]
     except Exception:
         cmd = "ls tests/xnat2bids/bnc/study-demodat/bids/sub-005/ses-session1"
         os.system(cmd)
@@ -147,16 +142,19 @@ def test_heudiconv():
     assert r.exit_code == 0
 
     assert (
-        len(glob.glob(f"{filepath}/*/*.json")) > 0 or len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
+        len(glob.glob(f"{filepath}/*/*.json")) > 0
+        or len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
     )
 
     # # ***************************************************************************
     # # Test for RuntimeError Heudiconv doesn't allow overwrite
     # # ***************************************************************************
-    cmd = f"{project} {subject} {bids_root_dir} --session-suffix {session_suffix}"
 
-    split_cmd = shlex.split(cmd)
-    r = runner.invoke(heudi_app, split_cmd)
+    run_heudiconv_cmd = shlex.split(
+        f"{project} {subject} {xnat_bids_root} --session-suffix {session_suffix}"
+    )
+    print("Running run_heudiconv application:", run_heudiconv_cmd)
+    r = runner.invoke(heudi_app, run_heudiconv_cmd)
     print(r.stdout)
 
     assert r.exit_code == 1
@@ -164,23 +162,22 @@ def test_heudiconv():
     # # ***************************************************************************
     # # Test overwrite is working
     # # ***************************************************************************
-    cmd = f"{project} {subject} {bids_root_dir} --session-suffix {session_suffix} --overwrite"
 
-    split_cmd = shlex.split(cmd)
-    r = runner.invoke(heudi_app, split_cmd)
+    run_heudiconv_cmd = shlex.split(
+        f"{project} {subject} {xnat_bids_root} --session-suffix {session_suffix} --overwrite"
+    )
+    print("Running run_heudiconv application:", run_heudiconv_cmd)
+    r = runner.invoke(heudi_app, run_heudiconv_cmd)
     print(r.stdout)
+
     assert r.exit_code == 0
 
-    # cleanup output -- for debugging comment this out
-    shutil.rmtree(bids_root_dir, ignore_errors=True)
 
-
-def test_unauthorized_user_exception_handling():
+# TODO: This should go in a different file
+def test_unauthorized_user_exception_handling(xnat_host):
     """Test unauthorized user HTTPError response"""
-    host = "https://xnat.bnc.brown.edu"
     session = "XNAT_E00114"
-    url = f"{host}/data/experiments/{session}"
-
+    url = f"{xnat_host}/data/experiments/{session}"
     user = "bad_user"
     password = "bad_password"
 
@@ -190,28 +187,33 @@ def test_unauthorized_user_exception_handling():
         get(
             connection,
             url,
-            params={"format": "json", "handler": "values", "columns": "project,subject_ID"},
+            params={
+                "format": "json",
+                "handler": "values",
+                "columns": "project,subject_ID",
+            },
         )
-    except (requests.HTTPError) as e:
-        assert e.response.status_code == 401
+    except requests.HTTPError as e:
+        assert e.response and e.response.status_code == 401
 
 
-def test_xnat_reachable_exception_handling():
+# TODO: This should go in a different file
+def test_xnat_reachable_exception_handling(xnat_host, xnat_user, xnat_password):
     """Test unauthorized user HTTPError response"""
-    host = "https://xnat.bnc.brown.edu"
     session = "XNAT_BADPROJECT"
-    url = f"{host}/data/experiments/{session}"
+    url = f"{xnat_host}/data/experiments/{session}"
 
-    user = os.environ.get("XNAT_USER", "")
-    password = os.environ.get("XNAT_PASS", "")
-
-    connection = establish_connection(user, password)
+    connection = establish_connection(xnat_user, xnat_password)
 
     try:
         get(
             connection,
             url,
-            params={"format": "json", "handler": "values", "columns": "project,subject_ID"},
+            params={
+                "format": "json",
+                "handler": "values",
+                "columns": "project,subject_ID",
+            },
         )
-    except (requests.HTTPError) as e:
-        assert e.response.status_code == 404
+    except requests.HTTPError as e:
+        assert e.response and e.response.status_code == 404

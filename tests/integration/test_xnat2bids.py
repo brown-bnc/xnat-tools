@@ -2,50 +2,33 @@ import glob
 import json
 import os
 import shlex
-import shutil
 
 import pydicom
-from dotenv import load_dotenv
 from typer.testing import CliRunner
 
+from tests.helpers import series_idx
 from xnat_tools.xnat2bids import app
 
 runner = CliRunner()
-load_dotenv()
+
+# TODO: Do I need to have session and session_suffix as environment variables?
+# TODO: Seems okay to hard-code them?
 
 
-def series_idx(f):
-    """Return series index from filename"""
-    ext = f.split(".")[-1]
-    if ext == "dcm":
-        return f.split("-")[1]
-    elif ext == "IMA":
-        return f.split(".")[3]
-    else:
-        return 0
-
-
-def test_xnat2bids():
+def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root):
     """Integration test for xnat2bids executable"""
 
-    xnat_user = os.environ.get("XNAT_USER", "")
-    xnat_pass = os.environ.get("XNAT_PASS", "")
     session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "session1")
-    bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
-    skiplist = ["6"]
 
-    if os.path.exists(bids_root_dir):
-        shutil.rmtree(bids_root_dir, ignore_errors=True)
+    skipseq = ["6"]
 
-    os.mkdir(bids_root_dir)
-
-    xnat2bids_cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} \
-        -s {' -s '.join(skiplist)}"
-
-    xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
-    print(xnat2bids_split_cmd)
-    r = runner.invoke(app, xnat2bids_split_cmd)
+    xnat2bids_cmd = shlex.split(
+        f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
+        -s {' -s '.join(skipseq)}"
+    )
+    print("Running xnat2bids application:", xnat2bids_cmd)
+    r = runner.invoke(app, xnat2bids_cmd)
     print(r.stdout)
 
     assert r.exit_code == 0
@@ -59,7 +42,7 @@ def test_xnat2bids():
     assert len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
 
     # ***************************************************************************
-    # Test for correctness of sequence number given by skiplist
+    # Test for correctness of sequence number given by skipseq
     # ***************************************************************************
     xnat_export_path = glob.glob(
         f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
@@ -73,7 +56,7 @@ def test_xnat2bids():
         for f in os.listdir(d):
             dataset = pydicom.dcmread(os.path.join(d, f))
             idx = series_idx(f)
-            assert str(idx) not in skiplist
+            assert str(idx) not in skipseq
             if series_desc.__contains__("SBRef"):
                 assert dataset.data_element(
                     "ProtocolName"
@@ -121,25 +104,18 @@ def test_xnat2bids():
             f.close()
 
 
-def test_xnat2bids_export_only():
-    xnat_user = os.environ.get("XNAT_USER", "")
-    xnat_pass = os.environ.get("XNAT_PASS", "")
+def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root):
     session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "session1")
-    bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
-    skiplist = ["6"]
 
-    if os.path.exists(bids_root_dir):
-        shutil.rmtree(bids_root_dir, ignore_errors=True)
+    skipseq = ["6"]
 
-    os.mkdir(bids_root_dir)
-
-    xnat2bids_cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} \
-        -s {' -s '.join(skiplist)} --export-only"
-
-    xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
-    print(xnat2bids_split_cmd)
-    r = runner.invoke(app, xnat2bids_split_cmd)
+    xnat2bids_cmd = shlex.split(
+        f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
+        -s {' -s '.join(skipseq)} --export-only"
+    )
+    print("Running xnat2bids application:", xnat2bids_cmd)
+    r = runner.invoke(app, xnat2bids_cmd)
     print(r.stdout)
 
     assert r.exit_code == 0
@@ -157,7 +133,7 @@ def test_xnat2bids_export_only():
         for f in os.listdir(d):
             dataset = pydicom.dcmread(os.path.join(d, f))
             idx = series_idx(f)
-            assert str(idx) not in skiplist
+            assert str(idx) not in skipseq
             if series_desc.__contains__("SBRef"):
                 assert dataset.data_element(
                     "ProtocolName"
@@ -168,19 +144,16 @@ def test_xnat2bids_export_only():
                 assert dataset.data_element("SeriesDescription").value == series_desc
 
 
-def test_xnat2bids_skip_export():
-    xnat_user = os.environ.get("XNAT_USER", "")
-    xnat_pass = os.environ.get("XNAT_PASS", "")
+def test_xnat2bids_skip_export(xnat_user, xnat_password, xnat_bids_root):
     session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
-    bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
-    skiplist = ["6"]
+    skipseq = ["6"]
 
-    xnat2bids_cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} \
-        -s {' -s '.join(skiplist)} --skip-export"
-
-    xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
-    print(xnat2bids_split_cmd)
-    r = runner.invoke(app, xnat2bids_split_cmd)
+    xnat2bids_cmd = shlex.split(
+        f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
+        -s {' -s '.join(skipseq)} --skip-export"
+    )
+    print("Running xnat2bids application:", xnat2bids_cmd)
+    r = runner.invoke(app, xnat2bids_cmd)
     print(r.stdout)
 
     assert r.exit_code == 0
@@ -223,28 +196,21 @@ def test_xnat2bids_skip_export():
             f.close()
 
 
-def test_xnat2bids_eeg():
+def test_xnat2bids_eeg(xnat_user, xnat_password, xnat_bids_root):
     """Integration test for xnat2bids executable converting EEG data to BIDS"""
 
-    xnat_user = os.environ.get("XNAT_USER", "")
-    xnat_pass = os.environ.get("XNAT_PASS", "")
     # NOTE: "BNC Demo Dataset" does not contain EEG data, test against a session that does
     session = os.environ.get("XNAT_SESSION", "XNAT_E00474")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "01")
-    bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
-    skiplist = ["6"]
 
-    if os.path.exists(bids_root_dir):
-        shutil.rmtree(bids_root_dir, ignore_errors=True)
+    skipseq = ["6"]
 
-    os.mkdir(bids_root_dir)
-
-    xnat2bids_cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} \
-        -s {' -s '.join(skiplist)}"
-
-    xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
-    print(xnat2bids_split_cmd)
-    r = runner.invoke(app, xnat2bids_split_cmd)
+    xnat2bids_cmd = shlex.split(
+        f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
+        -s {' -s '.join(skipseq)}"
+    )
+    print("Running xnat2bids application:", xnat2bids_cmd)
+    r = runner.invoke(app, xnat2bids_cmd)
     print(r.stdout)
 
     assert r.exit_code == 0
@@ -276,25 +242,19 @@ def test_xnat2bids_eeg():
         assert os.path.isfile(eeg_file)
 
 
-def test_xnat2bids_correct_dicom_header():
-    xnat_user = os.environ.get("XNAT_USER", "")
-    xnat_pass = os.environ.get("XNAT_PASS", "")
+def test_xnat2bids_correct_dicom_header(xnat_user, xnat_password, xnat_bids_root):
     session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "session1")
-    bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
+
     includeseq = "17"
     dicom_fix_config_file = "./tests/dicom_fix_config_invalid_value.json"
-    if os.path.exists(bids_root_dir):
-        shutil.rmtree(bids_root_dir, ignore_errors=True)
 
-    os.mkdir(bids_root_dir)
-
-    xnat2bids_cmd = f"{session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} \
+    xnat2bids_cmd = shlex.split(
+        f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
         -i {includeseq} --export-only --dicomfix-config {dicom_fix_config_file}"
-
-    xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
-    print(xnat2bids_split_cmd)
-    r = runner.invoke(app, xnat2bids_split_cmd)
+    )
+    print("Running xnat2bids application:", xnat2bids_cmd)
+    r = runner.invoke(app, xnat2bids_cmd)
     print(r.stdout)
 
     xnat_export_path = glob.glob(
