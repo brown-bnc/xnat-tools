@@ -112,25 +112,19 @@ def test_add_rec_refaced_entity_for_refaced_exports():
 
 
 def test_add_rec_refaced_entity_noop_for_non_refaced_exports():
-    assert (
-        add_rec_refaced_entity("anat_acq-MPRAGE_T1w", "DICOM") == "anat_acq-MPRAGE_T1w"
-    )
+    assert add_rec_refaced_entity("anat_acq-MPRAGE_T1w", "DICOM") == "anat_acq-MPRAGE_T1w"
 
 
 def test_add_rec_refaced_entity_no_duplicate():
     assert (
-        add_rec_refaced_entity(
-            "func_task-rest_rec-refaced_run-01_bold", "REFACED_DICOM"
-        )
+        add_rec_refaced_entity("func_task-rest_rec-refaced_run-01_bold", "REFACED_DICOM")
         == "func_task-rest_rec-refaced_run-01_bold"
     )
 
 
 def test_add_rec_refaced_entity_after_ce_before_run():
     assert (
-        add_rec_refaced_entity(
-            "func_task-rest_acq-spiral_ce-gad_run-01_bold", "REFACED_DICOM"
-        )
+        add_rec_refaced_entity("func_task-rest_acq-spiral_ce-gad_run-01_bold", "REFACED_DICOM")
         == "func_task-rest_acq-spiral_ce-gad_rec-refaced_run-01_bold"
     )
 
@@ -344,10 +338,7 @@ def test_scan_contains_dicom_refaced(fake_host):
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert (
-        scan_contains_dicom(connection, fake_host, session, scanid, "REFACED_DICOM")
-        is True
-    )
+    assert scan_contains_dicom(connection, fake_host, session, scanid, "REFACED_DICOM") is True
 
 
 @responses.activate
@@ -376,10 +367,7 @@ def test_scan_contains_dicom_checks_requested_label(fake_host):
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert (
-        scan_contains_dicom(connection, fake_host, session, scanid, "REFACED_DICOM")
-        is True
-    )
+    assert scan_contains_dicom(connection, fake_host, session, scanid, "REFACED_DICOM") is True
     assert scan_contains_dicom(connection, fake_host, session, scanid, "DICOM") is True
 
 
@@ -404,10 +392,7 @@ def test_scan_contains_dicom_missing_requested_label(fake_host):
     responses.add(responses.GET, url, json=payload, status=200)
     connection = requests.Session()
 
-    assert (
-        scan_contains_dicom(connection, fake_host, session, scanid, "REFACED_DICOM")
-        is True
-    )
+    assert scan_contains_dicom(connection, fake_host, session, scanid, "REFACED_DICOM") is True
     assert scan_contains_dicom(connection, fake_host, session, scanid, "DICOM") is False
 
 

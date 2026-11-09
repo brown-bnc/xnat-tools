@@ -58,9 +58,9 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root):
             idx = series_idx(f)
             assert str(idx) not in skipseq
             if series_desc.__contains__("SBRef"):
-                assert dataset.data_element(
-                    "ProtocolName"
-                ).value == series_desc.replace("_SBRef", "")
+                assert dataset.data_element("ProtocolName").value == series_desc.replace(
+                    "_SBRef", ""
+                )
                 assert dataset.data_element("SeriesDescription").value == series_desc
             else:
                 assert dataset.data_element("ProtocolName").value == series_desc
@@ -135,9 +135,9 @@ def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root):
             idx = series_idx(f)
             assert str(idx) not in skipseq
             if series_desc.__contains__("SBRef"):
-                assert dataset.data_element(
-                    "ProtocolName"
-                ).value == series_desc.replace("_SBRef", "")
+                assert dataset.data_element("ProtocolName").value == series_desc.replace(
+                    "_SBRef", ""
+                )
                 assert dataset.data_element("SeriesDescription").value == series_desc
             else:
                 assert dataset.data_element("ProtocolName").value == series_desc

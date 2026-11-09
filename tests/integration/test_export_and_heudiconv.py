@@ -52,10 +52,7 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root):
 
     filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
 
-    assert (
-        len(glob.glob(f"{filepath}/*/*.IMA")) > 0
-        or len(glob.glob(f"{filepath}/*/*.dcm")) > 0
-    )
+    assert len(glob.glob(f"{filepath}/*/*.IMA")) > 0 or len(glob.glob(f"{filepath}/*/*.dcm")) > 0
     subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
     assert len(subdirs) == 1
@@ -128,9 +125,7 @@ def test_heudiconv(xnat_bids_root):
     print(r.stdout)
 
     try:
-        filepath = glob.glob(
-            f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}"
-        )[0]
+        filepath = glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}")[0]
     except Exception:
         cmd = "ls tests/xnat2bids/bnc/study-demodat/bids/sub-005/ses-session1"
         os.system(cmd)
@@ -142,8 +137,7 @@ def test_heudiconv(xnat_bids_root):
     assert r.exit_code == 0
 
     assert (
-        len(glob.glob(f"{filepath}/*/*.json")) > 0
-        or len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
+        len(glob.glob(f"{filepath}/*/*.json")) > 0 or len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
     )
 
     # # ***************************************************************************

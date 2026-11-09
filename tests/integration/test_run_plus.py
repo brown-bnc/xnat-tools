@@ -32,6 +32,4 @@ def test_run_plus(xnat_user, xnat_password, xnat_bids_root):
 
     assert os.path.isdir(os.path.join(os.getcwd(), xnat_export_path))
     for i in range(1, len(seqlist) + 1):
-        assert os.path.isdir(
-            os.path.join(os.getcwd(), xnat_export_path, f"{task_name}-{i:02}")
-        )
+        assert os.path.isdir(os.path.join(os.getcwd(), xnat_export_path, f"{task_name}-{i:02}"))
