@@ -26,4 +26,4 @@ default_language_version:
 # TODO: Need a .flake8 file (etc.) so IDE auto-formatting matches the settings here
 # TODO?: Use prek instead of precommit?
 # TODO?: Use ruff instead for linting and formatting?
-# TODO?: Better type library? pyrefly instead of mypy?
+# TODO?: Better type library? ty instead of mypy? pyrefly?
