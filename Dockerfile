@@ -5,7 +5,7 @@ WORKDIR /xnat-tools
 ENV DCM2NIIX_VERSION=v1.0.20241211
 ENV DENO_VERSION=2.3.7
 
-ADD xnat_tools ./xnat_tools 
+ADD xnat_tools ./xnat_tools
 ADD pyproject.toml tests ./
 ADD tests/ ./tests
 

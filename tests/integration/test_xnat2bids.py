@@ -59,7 +59,7 @@ def test_xnat2bids():
     assert len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
 
     # ***************************************************************************
-    # Test for correctess of sequence number given by skiplist
+    # Test for correctness of sequence number given by skiplist
     # ***************************************************************************
     xnat_export_path = glob.glob(
         f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
@@ -111,14 +111,14 @@ def test_xnat2bids():
         with open(json_file, "r") as f:
             data = json.load(f)
             assert sorted(data["IntendedFor"]) == sorted(session1_bold_intendedfor)
-            f.close
+            f.close()
 
     # Verify session1 diffusion fmaps have been processed.
     for json_file in subj_005_session1_fmaps[3:]:
         with open(json_file, "r") as f:
             data = json.load(f)
             assert sorted(data["IntendedFor"]) == sorted(session1_diff_intendedfor)
-            f.close
+            f.close()
 
 
 def test_xnat2bids_export_only():
@@ -213,14 +213,14 @@ def test_xnat2bids_skip_export():
         with open(json_file, "r") as f:
             data = json.load(f)
             assert sorted(data["IntendedFor"]) == sorted(session1_bold_intendedfor)
-            f.close
+            f.close()
 
     # Verify session1 diffusion fmaps have been processed.
     for json_file in subj_005_session1_fmaps[3:]:
         with open(json_file, "r") as f:
             data = json.load(f)
             assert sorted(data["IntendedFor"]) == sorted(session1_diff_intendedfor)
-            f.close
+            f.close()
 
 
 def test_xnat2bids_eeg():
@@ -228,6 +228,7 @@ def test_xnat2bids_eeg():
 
     xnat_user = os.environ.get("XNAT_USER", "")
     xnat_pass = os.environ.get("XNAT_PASS", "")
+    # NOTE: "BNC Demo Dataset" does not contain EEG data, test against a session that does
     session = os.environ.get("XNAT_SESSION", "XNAT_E00474")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "01")
     bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
