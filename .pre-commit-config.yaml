@@ -1,24 +1,29 @@
 repos:
-    - repo: https://github.com/timothycrosley/isort
-      rev: 5.12.0
-      hooks:
-        - id: isort
-    - repo: https://github.com/ambv/black
-      rev: 22.6.0
-      hooks:
-        - id: black
-    - repo: https://github.com/pycqa/flake8
-      rev: 5.0.4
-      hooks:
-        - id: flake8
-          args:
+  - repo: https://github.com/timothycrosley/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+  - repo: https://github.com/ambv/black
+    rev: 22.6.0
+    hooks:
+      - id: black
+  - repo: https://github.com/pycqa/flake8
+    rev: 5.0.4
+    hooks:
+      - id: flake8
+        args:
           - "--max-line-length=100"
           - "--extend-ignore=E203"
-    - repo: https://github.com/pre-commit/mirrors-mypy
-      rev: "v1.5.1"
-      hooks:
-        - id: mypy
-          args: [--no-strict-optional, --ignore-missing-imports]
-          additional_dependencies: [types-requests==2.28.8,pandas-stubs==2.0.1.230501]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: "v1.5.1"
+    hooks:
+      - id: mypy
+        args: [--no-strict-optional, --ignore-missing-imports]
+        additional_dependencies: [types-requests==2.28.8, pandas-stubs==2.0.1.230501]
 default_language_version:
-    python: python3
+  python: python3
+
+# TODO: Need a .flake8 file (etc.) so IDE auto-formatting matches the settings here
+# TODO?: Use prek instead of precommit?
+# TODO?: Use ruff instead for linting and formatting?
+# TODO?: Better type library? pyrefly instead of mypy?
