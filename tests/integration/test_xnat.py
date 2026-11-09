@@ -23,7 +23,7 @@ def test_unauthorized_user_exception_handling(xnat_host):
             },
         )
     except requests.HTTPError as e:
-        assert e.response and e.response.status_code == 401
+        assert e.response is not None and e.response.status_code == 401
 
 
 def test_xnat_reachable_exception_handling(xnat_host, xnat_user, xnat_password):
