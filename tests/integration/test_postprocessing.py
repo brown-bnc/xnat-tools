@@ -34,7 +34,7 @@ def test_postprocessing(xnat_user, xnat_password, xnat_bids_root):
     r = runner.invoke(xnat2bids_app, xnat2bids_split_cmd)
     print(r.stdout)
 
-    bids_dir = f"${xnat_bids_root}/bnc/study-demodat/bids"
+    bids_dir = f"{xnat_bids_root}/bnc/study-demodat/bids"
 
     subj_005_session1_fmaps = [
         f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_phasediff.json",
