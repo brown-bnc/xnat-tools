@@ -1,10 +1,10 @@
 site_name: XNAT Tools
 site_description: Documentation for the xnat-tools model
-site_url: http://brown-bnc.github.io/xnat-tools
+site_url: https://brown-bnc.github.io/xnat-tools
 theme:
   name: material
   palette:
-    primary: 'pink'
+    primary: "pink"
   icon:
     repo: fontawesome/brands/github-alt
   features:
@@ -14,11 +14,11 @@ theme:
 
 repo_name: brown-bnc/xnat-tools
 repo_url: https://github.com/brown-bnc/xnat-tools
-edit_uri: ''
+edit_uri: ""
 
 watch:
   - xnat_tools
-  
+
 plugins:
   - search
   - markdownextradata
@@ -43,20 +43,20 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github-alt
-      link: 'https://github.com/brown-bnc/xnat-tools' 
+      link: "https://github.com/brown-bnc/xnat-tools"
   mdvars:
     version: ${VERSION}
 nav:
   - Getting Started:
-    - Overview: index.md
-    - Installation: installation.md
+      - Overview: index.md
+      - Installation: installation.md
   - Usage:
-    - Overview: usage_overview.md
-    - xnat2bids: xnat2bids.md
-    - xnat-dicom-export: dicom_export.md
-    - xnat-heudiconv: run_heudiconv.md
-    - bids-postprocess: bids_postprocess.md
+      - Overview: usage_overview.md
+      - xnat2bids: xnat2bids.md
+      - xnat-dicom-export: dicom_export.md
+      - xnat-heudiconv: run_heudiconv.md
+      - bids-postprocess: bids_postprocess.md
   - Development:
-    - Setting Up: dev_setup.md
-    - Code standards: code_standards.md 
+      - Setting Up: dev_setup.md
+      - Code standards: code_standards.md
   - Version Selector: "../"
