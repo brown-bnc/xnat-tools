@@ -1,4 +1,8 @@
-from xnat_tools.xnat_utils import establish_connection, filter_scans, get_project_subject_session
+from xnat_tools.xnat_utils import (
+    establish_connection,
+    filter_scans,
+    get_project_subject_session,
+)
 
 
 def phony_scan_data(scan_count=10):
