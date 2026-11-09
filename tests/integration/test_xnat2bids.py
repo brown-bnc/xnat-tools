@@ -75,9 +75,9 @@ def test_xnat2bids():
             idx = series_idx(f)
             assert str(idx) not in skiplist
             if series_desc.__contains__("SBRef"):
-                assert dataset.data_element(
-                    "ProtocolName"
-                ).value == series_desc.replace("_SBRef", "")
+                assert dataset.data_element("ProtocolName").value == series_desc.replace(
+                    "_SBRef", ""
+                )
                 assert dataset.data_element("SeriesDescription").value == series_desc
             else:
                 assert dataset.data_element("ProtocolName").value == series_desc
@@ -159,9 +159,9 @@ def test_xnat2bids_export_only():
             idx = series_idx(f)
             assert str(idx) not in skiplist
             if series_desc.__contains__("SBRef"):
-                assert dataset.data_element(
-                    "ProtocolName"
-                ).value == series_desc.replace("_SBRef", "")
+                assert dataset.data_element("ProtocolName").value == series_desc.replace(
+                    "_SBRef", ""
+                )
                 assert dataset.data_element("SeriesDescription").value == series_desc
             else:
                 assert dataset.data_element("ProtocolName").value == series_desc
