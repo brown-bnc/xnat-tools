@@ -2,14 +2,12 @@ import glob
 import os
 import shlex
 
-import requests
 from typer.testing import CliRunner
 
 from tests.helpers import series_idx
 from xnat_tools.dicom_export import app as export_app
 from xnat_tools.dicom_export import dicom_export
 from xnat_tools.run_heudiconv import app as heudi_app
-from xnat_tools.xnat_utils import establish_connection, get
 
 runner = CliRunner()
 
@@ -52,7 +50,10 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root):
 
     filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
 
-    assert len(glob.glob(f"{filepath}/*/*.IMA")) > 0 or len(glob.glob(f"{filepath}/*/*.dcm")) > 0
+    assert (
+        len(glob.glob(f"{filepath}/*/*.IMA")) > 0
+        or len(glob.glob(f"{filepath}/*/*.dcm")) > 0
+    )
     subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
     assert len(subdirs) == 1
@@ -125,7 +126,9 @@ def test_heudiconv(xnat_bids_root):
     print(r.stdout)
 
     try:
-        filepath = glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}")[0]
+        filepath = glob.glob(
+            f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}"
+        )[0]
     except Exception:
         cmd = "ls tests/xnat2bids/bnc/study-demodat/bids/sub-005/ses-session1"
         os.system(cmd)
@@ -137,7 +140,8 @@ def test_heudiconv(xnat_bids_root):
     assert r.exit_code == 0
 
     assert (
-        len(glob.glob(f"{filepath}/*/*.json")) > 0 or len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
+        len(glob.glob(f"{filepath}/*/*.json")) > 0
+        or len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
     )
 
     # # ***************************************************************************
@@ -165,49 +169,3 @@ def test_heudiconv(xnat_bids_root):
     print(r.stdout)
 
     assert r.exit_code == 0
-
-
-# TODO: This should go in a different file
-def test_unauthorized_user_exception_handling(xnat_host):
-    """Test unauthorized user HTTPError response"""
-    session = "XNAT_E00114"
-    url = f"{xnat_host}/data/experiments/{session}"
-    user = "bad_user"
-    password = "bad_password"
-
-    connection = establish_connection(user, password)
-
-    try:
-        get(
-            connection,
-            url,
-            params={
-                "format": "json",
-                "handler": "values",
-                "columns": "project,subject_ID",
-            },
-        )
-    except requests.HTTPError as e:
-        assert e.response and e.response.status_code == 401
-
-
-# TODO: This should go in a different file
-def test_xnat_reachable_exception_handling(xnat_host, xnat_user, xnat_password):
-    """Test unauthorized user HTTPError response"""
-    session = "XNAT_BADPROJECT"
-    url = f"{xnat_host}/data/experiments/{session}"
-
-    connection = establish_connection(xnat_user, xnat_password)
-
-    try:
-        get(
-            connection,
-            url,
-            params={
-                "format": "json",
-                "handler": "values",
-                "columns": "project,subject_ID",
-            },
-        )
-    except requests.HTTPError as e:
-        assert e.response and e.response.status_code == 404
