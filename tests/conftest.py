@@ -38,4 +38,8 @@ def xnat_bids_root():
 @pytest.fixture
 def xnat_host():
     return "https://xnat.bnc.brown.edu"
-    # TODO: THere's a lot of callers for this we still need to update
+
+
+@pytest.fixture
+def fake_host():
+    return "https://example.com/xnat"

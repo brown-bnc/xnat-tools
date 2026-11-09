@@ -29,13 +29,11 @@ def insert_intended_for_fmap(
     """Insert the IntendedFor field to JSON sidecart for fieldmap data"""
 
     for subj in sub_list:
-
         # makes list of the json files to edit
 
         sessions = build_sessions_list(bids_dir, subj, session, sess_list)
 
         for sess in sessions:
-
             fmap_path = f"{bids_dir}/sub-{subj}/{sess}/fmap"
             func_path = f"{bids_dir}/sub-{subj}/{sess}/func"
             dwi_path = f"{bids_dir}/sub-{subj}/{sess}/dwi"
@@ -51,24 +49,32 @@ def insert_intended_for_fmap(
 
             # Separate fmaps into distinct geometries
             fmap_files = [
-                os.path.join(fmap_path, f) for f in os.listdir(fmap_path) if f.endswith("json")
+                os.path.join(fmap_path, f)
+                for f in os.listdir(fmap_path)
+                if f.endswith("json")
             ]
 
             bold_fmap_files = [
                 f
                 for f in fmap_files
-                if get_acquisition_tag(f.split("_")).__contains__("bold") and f.endswith(".json")
+                if get_acquisition_tag(f.split("_")).__contains__("bold")
+                and f.endswith(".json")
             ]
 
-            fmap_bold_acq_files = {get_acquisition_tag(f.split("_")) for f in bold_fmap_files}
+            fmap_bold_acq_files = {
+                get_acquisition_tag(f.split("_")) for f in bold_fmap_files
+            }
 
             diff_fmap_files = [
                 f
                 for f in fmap_files
-                if get_acquisition_tag(f.split("_")).__contains__("diff") and f.endswith(".json")
+                if get_acquisition_tag(f.split("_")).__contains__("diff")
+                and f.endswith(".json")
             ]
 
-            fmap_diff_acq_files = {get_acquisition_tag(f.split("_")) for f in diff_fmap_files}
+            fmap_diff_acq_files = {
+                get_acquisition_tag(f.split("_")) for f in diff_fmap_files
+            }
 
             # Log JSON file lists
             _logger.info(f"List of BOLD JSON files to amend {bold_fmap_files}")
@@ -137,7 +143,6 @@ def ensure_json_field(json_path, field, default):
 
 def append_phase_units_field(bids_dir, sub_list=None, session="", sess_list=None):
     for subj in sub_list:
-
         # makes list of the sessions to process
         sessions = build_sessions_list(bids_dir, subj, session, sess_list)
 
@@ -162,7 +167,9 @@ def append_phase_units_field(bids_dir, sub_list=None, session="", sess_list=None
                     ensure_json_field(path, "Units", "arbitrary")
 
 
-def remove_func_acquisition_duration_field(bids_dir, sub_list=None, session="", sess_list=None):
+def remove_func_acquisition_duration_field(
+    bids_dir, sub_list=None, session="", sess_list=None
+):
     """Remove AcquisitionDuration from func jsons if RepetitionTime is defined"""
 
     for subj in sub_list:
@@ -173,17 +180,20 @@ def remove_func_acquisition_duration_field(bids_dir, sub_list=None, session="", 
         _logger.info(f"List of sessions sub-directories {sessions}")
 
         for sess in sessions:
-
             func_path = f"{bids_dir}/sub-{subj}/{sess}/func"
 
             # Don't do anything if this session doesn't contain a func folder
             if not os.path.exists(func_path):
                 continue
 
-            log_info(f"Removing AcquisitionDuration field from jsons at path {func_path}")
+            log_info(
+                f"Removing AcquisitionDuration field from jsons at path {func_path}"
+            )
 
             func_jsons = [
-                os.path.join(func_path, f) for f in os.listdir(func_path) if f.endswith("json")
+                os.path.join(func_path, f)
+                for f in os.listdir(func_path)
+                if f.endswith("json")
             ]
 
             task_bold_jsons = glob.glob(os.path.join(bids_dir, "task*_bold.json"))
@@ -198,7 +208,9 @@ def remove_func_acquisition_duration_field(bids_dir, sub_list=None, session="", 
                 with open(js, "r") as rj:
                     log_info(f"\nProcessing file {rj.name}")
                     data = json.load(rj)
-                    if all(key in data for key in ("AcquisitionDuration", "RepetitionTime")):
+                    if all(
+                        key in data for key in ("AcquisitionDuration", "RepetitionTime")
+                    ):
                         del data["AcquisitionDuration"]
                         log_info(
                             ">> AcquisitionDuration and RepetitionTime are mutually "
@@ -213,9 +225,13 @@ def remove_func_acquisition_duration_field(bids_dir, sub_list=None, session="", 
                     rj.close()
 
 
-def correct_for_bids_schema_validator(bids_dir, sub_list=None, session="", sess_list=None):
+def correct_for_bids_schema_validator(
+    bids_dir, sub_list=None, session="", sess_list=None
+):
     if sub_list is None:
-        sub_list = [x.removeprefix("sub-") for x in os.listdir(bids_dir) if x.startswith("sub-")]
+        sub_list = [
+            x.removeprefix("sub-") for x in os.listdir(bids_dir) if x.startswith("sub-")
+        ]
 
     remove_func_acquisition_duration_field(bids_dir, sub_list, session, sess_list)
     append_phase_units_field(bids_dir, sub_list, session, sess_list)
@@ -272,6 +288,7 @@ def process_fmap_json_files(fmap_files: list, nii_files: list, overwrite: bool):
 
 
 # Verify all acquisition tags of a given list match.
+# TODO: Fix misspelled word
 def check_fmap_acquistion_tags(fieldmaps: list):
     for fmap in fieldmaps:
         acq_tag = get_acquisition_tag(fieldmaps[0].split("_"))
@@ -356,13 +373,17 @@ def prepare_heudiconv_output_path(
         heudi_source_dir = os.path.join(heudi_study_dir, "bids/sourcedata")
         source_subject_dir = os.path.join(heudi_source_dir, subject_prefix)
         source_session_dir = os.path.join(source_subject_dir, session_prefix)
-        print("Overwrite - Removing sourcedata session directory %s" % source_session_dir)
+        print(
+            "Overwrite - Removing sourcedata session directory %s" % source_session_dir
+        )
         shutil.rmtree(source_session_dir, ignore_errors=True)
         if os.path.isdir(source_session_dir):
             warnings.warn(f"Something went wrong: {source_session_dir} was not removed")
 
         heudi_hidden_dir = os.path.join(heudi_study_dir, "bids/.heudiconv")
-        hidden_subject_dir = os.path.join(heudi_hidden_dir, subject_prefix.split("-")[1])
+        hidden_subject_dir = os.path.join(
+            heudi_hidden_dir, subject_prefix.split("-")[1]
+        )
         hidden_session_dir = os.path.join(hidden_subject_dir, session_prefix)
         print("Overwrite - Removing hidden session directory %s" % hidden_session_dir)
         shutil.rmtree(hidden_session_dir, ignore_errors=True)
@@ -504,7 +525,9 @@ def bidsify_dicom_headers(filename, series_description):
         # within series_description. To avoid redundant derivative tagging
         # for SBRef, skip assigning series_description to DICOM ProtocolName.
         if series_description.__contains__("SBRef"):
-            dataset.data_element("ProtocolName").value = series_description.replace("_SBRef", "")
+            dataset.data_element("ProtocolName").value = series_description.replace(
+                "_SBRef", ""
+            )
             dataset.data_element("SeriesDescription").value = series_description
         else:
             dataset.data_element("ProtocolName").value = series_description
@@ -525,12 +548,16 @@ def scan_contains_dicom(connection, host, session, scanid, label):
 
     if label == "REFACED_DICOM":
         dicomResourceList = [
-            r for r in resources if r["format"] == "DICOM" and r["label"] == "REFACED_DICOM"
+            r
+            for r in resources
+            if r["format"] == "DICOM" and r["label"] == "REFACED_DICOM"
         ]
     else:
         # this allows DICOM/ or secondary/ (MRS) files
         dicomResourceList = [
-            r for r in resources if r["format"] == "DICOM" and r["label"] != "REFACED_DICOM"
+            r
+            for r in resources
+            if r["format"] == "DICOM" and r["label"] != "REFACED_DICOM"
         ]
 
     _logger.debug(f"Found DICOM resources: {dicomResourceList}")
@@ -615,7 +642,6 @@ def validate_frame_counts(bids_session_dir: str) -> None:
 
     with os.scandir(bids_session_dir) as sequence_dirs:
         for sequence_dir in sequence_dirs:
-
             if not sequence_dir.is_dir() or "func" not in sequence_dir.name:
                 continue
 
@@ -638,7 +664,9 @@ def validate_frame_counts(bids_session_dir: str) -> None:
 
                     _logger.info(f"Validating frame counts for {sequence_dir.name}")
 
-                    first_dicom = read_dicom_header(os.path.join(bids_scan_dir, dicom_files[0]))
+                    first_dicom = read_dicom_header(
+                        os.path.join(bids_scan_dir, dicom_files[0])
+                    )
 
                     # Frame count validation only applies to enhanced DICOMs with
                     # per-frame functional group information.
@@ -661,7 +689,9 @@ def validate_frame_counts(bids_session_dir: str) -> None:
                     )
 
                     for dicomfile in dicom_files[1:]:
-                        subsequent_dicom = read_dicom_header(os.path.join(bids_scan_dir, dicomfile))
+                        subsequent_dicom = read_dicom_header(
+                            os.path.join(bids_scan_dir, dicomfile)
+                        )
                         curr_frame_count = subsequent_dicom.get((0x0028, 0x0008), None)
                         curr_temporal_idx = (
                             subsequent_dicom.PerFrameFunctionalGroupsSequence[0]
@@ -676,7 +706,9 @@ def validate_frame_counts(bids_session_dir: str) -> None:
                     # any DICOM, regardless of its frame count, that comes from a volume with
                     # a partial DICOM needs to be deleted (handles multi-echo data)
                     dicoms_to_drop = [
-                        dicom_files[i] for i, n in enumerate(volume_temporal_idx) if n in bad_vols
+                        dicom_files[i]
+                        for i, n in enumerate(volume_temporal_idx)
+                        if n in bad_vols
                     ]
 
                     for dcmfile in dicoms_to_drop:
@@ -703,12 +735,16 @@ def list_xnat_resources(connection, host, resourcesURL, label=None):
 
     elif label == "REFACED_DICOM":
         resourceList = [
-            r for r in resources if r["format"] == "DICOM" and r["label"] == "REFACED_DICOM"
+            r
+            for r in resources
+            if r["format"] == "DICOM" and r["label"] == "REFACED_DICOM"
         ]
 
     elif label == "DICOM":
         resourceList = [
-            r for r in resources if r["format"] == "DICOM" and r["label"] != "REFACED_DICOM"
+            r
+            for r in resources
+            if r["format"] == "DICOM" and r["label"] != "REFACED_DICOM"
         ]
 
         if resourceList:
@@ -778,7 +814,6 @@ def assign_bids_name(
         resourcesURL = host + f"/data/experiments/{session}/scans/{scanid}/resources/"
 
         for label in dicom_label[reface_mode]:
-
             if not scan_contains_dicom(connection, host, session, scanid, label):
                 continue
 
@@ -803,7 +838,9 @@ def assign_bids_name(
                 )
             os.chdir(bids_scan_directory)
 
-            dicomFileDict = list_xnat_resources(connection, host, resourcesURL, label=label)
+            dicomFileDict = list_xnat_resources(
+                connection, host, resourcesURL, label=label
+            )
 
             # Download DICOMs
             _logger.info("Downloading files")
@@ -811,7 +848,9 @@ def assign_bids_name(
             (name, pathDict) = dicomFileList[0]
             download(connection, name, pathDict)
 
-            resource_seriesdesc = add_magphase_part_entity(scans, name, resource_seriesdesc)
+            resource_seriesdesc = add_magphase_part_entity(
+                scans, name, resource_seriesdesc
+            )
             bidsify_dicom_headers(name, resource_seriesdesc)
 
             # Download remaining DICOMs
@@ -939,7 +978,6 @@ def process_dicom_file(dicom_path, dicom_field, new_value):
 
     # Check if the specified field exists
     if hasattr(ds, dicom_field):
-
         # Capture warnings
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
@@ -948,10 +986,14 @@ def process_dicom_file(dicom_path, dicom_field, new_value):
             # Check for warnings
             if any("Invalid value" in str(warning.message) for warning in w):
                 _logger.warning(f"{[str(warning.message) for warning in w]}")
-                _logger.warning("The requested new value is not valid. DICOM not modified")
+                _logger.warning(
+                    "The requested new value is not valid. DICOM not modified"
+                )
             else:
                 # Print the modified value of the field if no warnings were raised
-                _logger.info(f"Modified {dicom_field} in {dicom_path}: {getattr(ds, dicom_field)}")
+                _logger.info(
+                    f"Modified {dicom_field} in {dicom_path}: {getattr(ds, dicom_field)}"
+                )
 
                 # Save the modified DICOM file in place
                 ds.save_as(dicom_path)
@@ -983,14 +1025,20 @@ def convert_mrs(
 
     # create mrs directory within bids/sourcedata to copy DICOMS into
     mrs_sourcedata_dir = os.path.join(
-        bids_experiment_dir, "sourcedata", f"sub-{subject}", f"ses-{session_suffix}", "mrs"
+        bids_experiment_dir,
+        "sourcedata",
+        f"sub-{subject}",
+        f"ses-{session_suffix}",
+        "mrs",
     )
 
     if not os.path.exists(mrs_sourcedata_dir):
         os.makedirs(mrs_sourcedata_dir, exist_ok=True)
 
     # create mrs directory within bids session directory
-    session_dir = os.path.join(bids_experiment_dir, f"sub-{subject}", f"ses-{session_suffix}")
+    session_dir = os.path.join(
+        bids_experiment_dir, f"sub-{subject}", f"ses-{session_suffix}"
+    )
 
     mrs_bids_dir = os.path.join(session_dir, "mrs")
 
@@ -1003,7 +1051,8 @@ def convert_mrs(
 
     if len(mrs_dicomfiles) > 1:
         _logger.warning(
-            "More than one spectroscopy DICOM per scan." f"Processing only {mrs_dicomfiles[0]}"
+            "More than one spectroscopy DICOM per scan."
+            f"Processing only {mrs_dicomfiles[0]}"
         )
 
     mrs_keys = str.split(mrs_scan_name, "_")
@@ -1011,7 +1060,7 @@ def convert_mrs(
     bids_mrs_scan_name = (
         f"sub-{subject}_ses-{session_suffix}_"
         f"{'_'.join(mrs_keys[1:])}_"
-        f"{str.split(mrs_keys[0],'-')[-1]}"
+        f"{str.split(mrs_keys[0], '-')[-1]}"
     )
 
     mrs_bids_dicomfile = f"{mrs_sourcedata_dir}/{bids_mrs_scan_name}.dcm"
@@ -1023,7 +1072,6 @@ def convert_mrs(
     )
 
     if rawMrsFileList:
-
         rda_count = sum(1 for r in rawMrsFileList if r.lower().endswith(".rda"))
         dat_count = sum(1 for r in rawMrsFileList if r.lower().endswith(".dat"))
 
@@ -1054,10 +1102,10 @@ def convert_mrs(
                 mrsTarName = increment_tar_name(mrsTarName)
 
     # convert MRS DICOM to NIFTI-MRS and place in bids mrs directory
-    spec2nii_command = (
-        f"spec2nii dicom -j -f {bids_mrs_scan_name} -o {mrs_bids_dir} {mrs_bids_dicomfile}"
+    spec2nii_command = f"spec2nii dicom -j -f {bids_mrs_scan_name} -o {mrs_bids_dir} {mrs_bids_dicomfile}"
+    result = subprocess.run(
+        spec2nii_command, shell=True, capture_output=True, text=True
     )
-    result = subprocess.run(spec2nii_command, shell=True, capture_output=True, text=True)
     if result.returncode:
         _logger.warning(f"spec2nii failed to convert MRS DICOM {mrs_bids_dicomfile}")
     _logger.debug(result)
@@ -1070,9 +1118,13 @@ def convert_mrs(
 
         # use heudiconv functions to extract info for _scans.tsv file and add to file
         new_row = {
-            f"mrs/{bids_mrs_scan_name}.nii.gz": get_formatted_scans_key_row(mrs_bids_dicomfile)
+            f"mrs/{bids_mrs_scan_name}.nii.gz": get_formatted_scans_key_row(
+                mrs_bids_dicomfile
+            )
         }
-        add_rows_to_scans_keys_file(os.path.join(session_dir, scans_tsv_filename), new_row)
+        add_rows_to_scans_keys_file(
+            os.path.join(session_dir, scans_tsv_filename), new_row
+        )
 
 
 def convert_tb1tfl(subject, session_suffix, bids_experiment_dir, tb1tfl_tarbase):
@@ -1081,7 +1133,9 @@ def convert_tb1tfl(subject, session_suffix, bids_experiment_dir, tb1tfl_tarbase)
     # modality-specific-files/magnetic-resonance-imaging-data.html#tb1tfl-and-tb1rfm-\
     # specific-notes
 
-    tb1tfl_dir = Path(tb1tfl_tarbase)  # directory where tgz extracts (and where dcm2niix writes)
+    tb1tfl_dir = Path(
+        tb1tfl_tarbase
+    )  # directory where tgz extracts (and where dcm2niix writes)
     tgz_path = Path(f"{tb1tfl_tarbase}.dicom.tgz")  # keep your naming convention
 
     session_dir = Path(bids_experiment_dir) / f"sub-{subject}" / f"ses-{session_suffix}"
@@ -1104,7 +1158,8 @@ def convert_tb1tfl(subject, session_suffix, bids_experiment_dir, tb1tfl_tarbase)
                 )
             else:
                 _logger.warning(
-                    "Could not find the two TB1TFL DICOM files. " "Skipping TB1TFL BIDS conversion."
+                    "Could not find the two TB1TFL DICOM files. "
+                    "Skipping TB1TFL BIDS conversion."
                 )
             return
 
@@ -1132,11 +1187,15 @@ def convert_tb1tfl(subject, session_suffix, bids_experiment_dir, tb1tfl_tarbase)
                 keyvals = [acq_val if k.startswith("acq-") else k for k in keyvals]
 
             else:
-                ses_idx = next((i for i, v in enumerate(keyvals) if v.startswith("ses-")), None)
+                ses_idx = next(
+                    (i for i, v in enumerate(keyvals) if v.startswith("ses-")), None
+                )
                 if ses_idx is not None:
                     insert_idx = ses_idx + 1
                 else:
-                    sub_idx = next((i for i, v in enumerate(keyvals) if v.startswith("sub-")), None)
+                    sub_idx = next(
+                        (i for i, v in enumerate(keyvals) if v.startswith("sub-")), None
+                    )
                     if sub_idx is not None:
                         insert_idx = sub_idx + 1
                     else:
@@ -1193,7 +1252,9 @@ def convert_tb1tfl(subject, session_suffix, bids_experiment_dir, tb1tfl_tarbase)
                         dicom_reference
                     )
                 }
-                add_rows_to_scans_keys_file(os.path.join(session_dir, scans_tsv_filename), new_row)
+                add_rows_to_scans_keys_file(
+                    os.path.join(session_dir, scans_tsv_filename), new_row
+                )
 
         _logger.info("Conversion of TB1TFL DICOMs complete")
 
