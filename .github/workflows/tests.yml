@@ -1,6 +1,5 @@
 name: 🧪 Tests
-on:
-  pull_request:
+on: pull_request
 # TODO: I don't believe this needs to run on merge with main anymore? To be confirmed
 # push:
 #   branches:
@@ -17,28 +16,23 @@ env:
   # TODO: Is it safe to use GHCR here? Better?
   REGISTRY: ghcr.io
   REPOSITORY: ${{ github.repository }}
-  # IMAGE_NAME: brown-bnc/xnat-tools
 
 jobs:
   docker:
     name: Build Docker Image
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
-    # outputs:
-    #   full_image_id: ${{ steps.save_full_image_id.outputs.full_image_id }}
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v7
 
-      # TODO: We don't need this anymore?
-      # TODO: Just hard-code the architecture k8s uses?
-      # - name: Set up QEMU
-      # uses: docker/setup-qemu-action@v2
+      - name: 🛠️ Set up QEMU
+        uses: docker/setup-qemu-action@v2
 
-      - name: 🛠️ Setup Docker Buildx
+      - name: 🛠️ Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Log into the container registry
+      - name: 🔑 Log into GHCR
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
