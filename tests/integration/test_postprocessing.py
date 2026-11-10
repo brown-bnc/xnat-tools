@@ -15,7 +15,7 @@ runner = CliRunner()
 
 # TODO #185: This appears to be doing multiple passes at the export?
 # TODO #185: They should live as their own tests
-def test_postprocessing(xnat_user, xnat_password, xnat_bids_root):
+def test_postprocessing(xnat_user, xnat_password, xnat_bids_root, xnat_host):
     """Integration test for bids-postprocessing executable"""
 
     # Define target session
@@ -160,7 +160,7 @@ def test_postprocessing(xnat_user, xnat_password, xnat_bids_root):
         bids_dir,
         xnat_user,
         xnat_password,
-        host="https://xnat.bnc.brown.edu",
+        host=xnat_host,
         session="",
         includesess=["session1"],
         includesubj=["005"],
@@ -188,7 +188,7 @@ def test_postprocessing(xnat_user, xnat_password, xnat_bids_root):
         bids_dir,
         xnat_user,
         xnat_password,
-        host="https://xnat.bnc.brown.edu",
+        host=xnat_host,
         session="",
         includesess=[],
         includesubj=["005"],
@@ -216,7 +216,7 @@ def test_postprocessing(xnat_user, xnat_password, xnat_bids_root):
         bids_dir,
         xnat_user,
         xnat_password,
-        host="https://xnat.bnc.brown.edu",
+        host=xnat_host,
         session="XNAT_E00114",
         includesess=[],
         includesubj=[],

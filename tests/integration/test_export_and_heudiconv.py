@@ -12,7 +12,7 @@ from xnat_tools.run_heudiconv import app as heudi_app
 runner = CliRunner()
 
 
-def test_dicom_export(xnat_user, xnat_password, xnat_bids_root):
+def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host):
     """Integration test for xnat-dicom-export"""
 
     # Define target session
@@ -36,7 +36,7 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root):
         xnat_bids_root,
         user=xnat_user,
         password=xnat_password,
-        host="https://xnat.bnc.brown.edu",
+        host=xnat_host,
         session_suffix=session_suffix,
         bidsmap_file="",
         includeseq=["10"],
