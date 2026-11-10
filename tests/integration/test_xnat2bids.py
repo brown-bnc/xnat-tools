@@ -66,7 +66,7 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root):
                 assert dataset.data_element("ProtocolName").value == series_desc
                 assert dataset.data_element("SeriesDescription").value == series_desc
 
-    bids_dir = glob.glob("{xnat_bids_root}/*/study-*/bids")[0]
+    bids_dir = glob.glob(f"{xnat_bids_root}/*/study-*/bids")[0]
 
     subj_005_session1_fmaps = [
         f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_phasediff.json",
