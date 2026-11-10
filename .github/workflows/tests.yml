@@ -39,8 +39,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🏗️ Extract Docker Metadata
-        uses: docker/metadata-action@v6
         id: meta
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}
           tags: |
@@ -85,7 +85,6 @@ jobs:
 
   # TODO: This is the only test that actually validates if the xnat2bids data conforms to spec
   # TODO: This should be its own test within pytest itself?
-
   bids-validation:
     name: 🧪 Bids-validator Test
     needs: [docker]

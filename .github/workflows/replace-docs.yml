@@ -1,3 +1,5 @@
+# TODO: It doesn't look like this has ever been run? Is it needed?
+
 name: 🚀📃 Publish Docs
 on: [workflow_dispatch]
 jobs:
@@ -32,10 +34,8 @@ jobs:
         env:
           UV_SYSTEM_PYTHON: 1
 
-      - name: Set up mkdocs config
-        run: |
-          (envsubst 'v${VERSION}' < mkdocs-template.yml) > mkdocs.yml
-          cat mkdocs.yml
+      - name: 📃 Set up mkdocs config
+        run: (envsubst 'v${VERSION}' < mkdocs-template.yml) > mkdocs.yml
 
       - name: 🔄️ Sync mkdocs versions
         run: mkdocs-versioning sync
