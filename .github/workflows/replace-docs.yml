@@ -1,6 +1,6 @@
 # TODO: It doesn't look like this has ever been run? Is it needed?
 
-name: 🚀📃 Publish Docs
+name: 🚀📃 Publish Documentation
 on: [workflow_dispatch]
 jobs:
   replace-docs:
@@ -13,8 +13,7 @@ jobs:
           fetch-depth: 0
 
       - name: 💾 Store VERSION
-        run: |
-          echo "VERSION=$(cat pyproject.toml | grep version | head -1 | awk -F: '{ print $1 }'| sed 's/[\",]//g'| tr -d 'version = ')" >> $GITHUB_ENV
+        run: echo "VERSION=$(python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')" >> "$GITHUB_ENV"
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v7
@@ -35,7 +34,7 @@ jobs:
           UV_SYSTEM_PYTHON: 1
 
       - name: 📃 Set up mkdocs config
-        run: (envsubst 'v${VERSION}' < mkdocs-template.yml) > mkdocs.yml
+        run: (envsubst '${VERSION}' < mkdocs-template.yml) > mkdocs.yml
 
       - name: 🔄️ Sync mkdocs versions
         run: mkdocs-versioning sync

@@ -1,17 +1,32 @@
-name: dev-docs
+name: Publish Development Documentation
+
 on:
   push:
     branches-ignore:
       - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  VERSION: dev
+
+permissions:
+  contents: write
+
 jobs:
   build:
-    name: Build and Deploy Documentation
+    name: 🚀📃 Publish Development Documentation
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Main
-        uses: actions/checkout@v4
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
       - name: Check CLI files that changed
-        uses: dorny/paths-filter@v3.0.2
+        uses: dorny/paths-filter@v4
         id: filter
         with:
           base: ${{ github.ref }}
@@ -24,57 +39,74 @@ jobs:
               - 'xnat_tools/run_heudiconv.py'
             bids_postprocess:
               - 'xnat_tools/bids_postprocess.py'
-      - name: Set up Python
-        uses: actions/setup-python@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v7
         with:
-          python-version-file: ".python-version" # Read python version from a file .python-version
-      - name: Install uv
+          python-version-file: ".python-version"
+
+      - name: ☀️ Setup UV
         uses: astral-sh/setup-uv@v5
-      - name: Install docs dependencies via uv
-        run: |
-          uv pip install .[docs]
-          uv pip install typer-cli
+
+      - name: 📥 Install docs dependencies
+        run: uv pip install .[docs]
         env:
           UV_SYSTEM_PYTHON: 1
-      - name: Set up mkdocs config
-        run: |
-          export VERSION=dev
-          echo "Making docs for version $VERSION"
-          (envsubst '${VERSION}' < mkdocs-template.yml) > mkdocs.yml
-      - name: xnat2bids CLI docs
+
+      - name: 📥 Install typer-cli
+        run: uv pip install typer-cli
+        env:
+          UV_SYSTEM_PYTHON: 1
+
+      - name: 📃 Set up mkdocs config
+        run: (envsubst '${VERSION}' < mkdocs-template.yml) > mkdocs.yml
+
+      - name: ✍️ Update the xnat2bids CLI docs
         if: steps.filter.outputs.xnat2bids == 'true'
+        # NOTE: The sed command replaces any MM-DD-YYYY-HH-MM-SS timestamp with "current date"
         run: |
           typer xnat_tools/xnat2bids.py utils docs --name xnat2bids --output docs/xnat2bids.md
           sed -i -e 's|\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9]\{4\}\)-\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)|current date - MM-DD-YYYY-HH-MM-SS|' docs/xnat2bids.md
-      - name: dicom_export CLI docs
+
+      - name: ✍️ Update the dicom_export CLI docs
         if: steps.filter.outputs.dicom_export == 'true'
+        # NOTE: The sed command replaces any MM-DD-YYYY-HH-MM-SS timestamp with "current date"
         run: |
           typer xnat_tools/dicom_export.py utils docs --name dicom_export --output docs/dicom_export.md
           sed -i -e 's|\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9]\{4\}\)-\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)|current date - MM-DD-YYYY-HH-MM-SS|' docs/dicom_export.md
-      - name: run_heudiconv CLI docs
+
+      - name: ✍️ Update the run_heudiconv CLI docs
         if: steps.filter.outputs.run_heudiconv == 'true'
+        # NOTE: The sed command replaces any MM-DD-YYYY-HH-MM-SS timestamp with "current date"
         run: |
           typer xnat_tools/run_heudiconv.py utils docs --name run_heudiconv --output docs/run_heudiconv.md
           sed -i -e 's|\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9]\{4\}\)-\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)|current date - MM-DD-YYYY-HH-MM-SS|' docs/run_heudiconv.md
-      - name: bids_postprocess CLI docs
+
+      - name: ✍️ Update the bids_postprocess CLI docs
         if: steps.filter.outputs.bids_postprocess == 'true'
+        # NOTE: The sed command replaces any MM-DD-YYYY-HH-MM-SS timestamp with "current date"
         run: |
           typer xnat_tools/bids_postprocess.py utils docs --name bids_postprocess --output docs/bids_postprocess.md
           sed -i -e 's|\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9]\{4\}\)-\([0-9][0-9]\)-\([0-9][0-9]\)-\([0-9][0-9]\)|current date - MM-DD-YYYY-HH-MM-SS|' docs/bids_postprocess.md
-      - name: Push to remote
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git diff --quiet && git diff --staged --quiet || git commit -am "docs: Update CLI docs"
-          git push
-      - name: Sync
+        # TODO: We should pull the user here from the workflow?
+
+      - name: 💾 Commit CLI docs
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "docs: Automatic update of the CLI docs"
+          file_pattern: docs/*.md
+
+      - name: 🔄️ Sync mkdocs versions
+        run: mkdocs-versioning sync
+
+      - name: 🧹 Clean Docs
         run: |
-          git pull
-          mkdocs-versioning sync
           rm -rf ./site/dev/
           rm -rf ./site/.git/
-      - name: Build
+
+      - name: 🏗️ Build Docs
         run: mkdocs build
-      - name: Deploy
+
+      - name: 🚀 Deploy Docs
         run: mkdocs-versioning -v deploy

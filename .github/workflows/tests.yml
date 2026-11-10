@@ -1,12 +1,17 @@
 name: 🧪 Tests
 
-# TODO: IS there a reason this was running on push to main? Shouldn't be necessary?
+# TODO: Is there a reason this was running on push to main? Shouldn't be necessary?
 on: pull_request
 # on:
 #   pull_request:
 #   push:
 #     branches:
 #       - "main"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   XNAT_USER: "${{secrets.XNAT_USER}}"
   XNAT_PASS: "${{secrets.XNAT_PASS}}"
