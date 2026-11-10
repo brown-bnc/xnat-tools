@@ -55,8 +55,7 @@ jobs:
         with:
           context: .
           target: test
-          # This image is just used for running the tests, doesn't need to be pushed anywhere
-          push: false
+          push: true
           # One plain manifest, so deleting the pr-<N> version in cleanup leaves no orphaned attestations
           provenance: false
           tags: ${{ steps.meta.outputs.tags }}
@@ -93,7 +92,7 @@ jobs:
 
       - name: 🧪 Run Pytest
         working-directory: /xnat-tools
-        run: uv run pytest tests -x -s -o log_cli=true --log-cli-level=INFO
+        run: pytest tests -x -s -o log_cli=true --log-cli-level=INFO
 
   # TODO #188: This hasn't actually been running the tests lately?
   # TODO #188: bids-validator node package is archived
