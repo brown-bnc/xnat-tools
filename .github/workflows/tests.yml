@@ -71,7 +71,7 @@ jobs:
             type=registry,ref=${{ steps.image_id.outputs.image_id }}:buildcache,mode=max
 
   test:
-    name: 🧪 Run unit and integration tests
+    name: 🧪 Pytest Tests
     needs: [docker]
     runs-on: self-hosted
     container:
@@ -87,7 +87,7 @@ jobs:
   # TODO: This should be its own test within pytest itself?
 
   bids-validation:
-    name: 🧪 Run the bids-validator test
+    name: 🧪 Bids-validator Test
     needs: [docker]
     runs-on: self-hosted
     container:
