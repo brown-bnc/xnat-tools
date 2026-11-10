@@ -19,9 +19,10 @@ env:
 
 jobs:
   docker:
-    name: Build Docker Image
+    name: 🐳 Test Docker Image
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
+    outputs:
+      image: ${{ steps.meta.outputs.tags }}
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v7
@@ -53,7 +54,9 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          push: true
+          target: test
+          # This image is just used for running the tests, doesn't need to be pushed anywhere
+          push: false
           # One plain manifest, so deleting the pr-<N> version in cleanup leaves no orphaned attestations
           provenance: false
           tags: ${{ steps.meta.outputs.tags }}
@@ -63,26 +66,33 @@ jobs:
           cache-to: type=gha,mode=max
 
   test:
-    name: Run unit and integration tests
+    name: 🧪 Pytest Tests
+    needs: [docker]
     runs-on: self-hosted
     # NOTE: Guards self-hosted runners from running on forks
     if: github.event.pull_request.head.repo.full_name == github.repository
+    container:
+      image: ${{ needs.docker.outputs.image }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: ⬇️ Checkout repo
-        uses: actions/checkout@v7
+      # - name: ⬇️ Checkout repo
+      #   uses: actions/checkout@v7
 
-      - name: 🐍 Set up Python
-        uses: actions/setup-python@v7
-        with:
-          python-version-file: ".python-version"
+      # - name: 🐍 Set up Python
+      #   uses: actions/setup-python@v7
+      #   with:
+      #     python-version-file: ".python-version"
 
-      - name: ☀️ Set up UV
-        uses: astral-sh/setup-uv@v5
+      # - name: ☀️ Set up UV
+      #   uses: astral-sh/setup-uv@v5
 
-      - name: 📥 Install dependencies
-        run: uv sync --locked --extra dev
+      # - name: 📥 Install dependencies
+      #   run: uv sync --locked --extra dev
 
       - name: 🧪 Run Pytest
+        working-directory: /xnat-tools
         run: uv run pytest tests -x -s -o log_cli=true --log-cli-level=INFO
 
   # TODO #188: This hasn't actually been running the tests lately?
