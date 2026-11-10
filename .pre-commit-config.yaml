@@ -13,7 +13,6 @@ repos:
     rev: "v1.5.1"
     hooks:
       - id: mypy
-        args: [--no-strict-optional, --ignore-missing-imports]
         additional_dependencies: [types-requests==2.28.8, pandas-stubs==2.0.1.230501]
 
   # Ruff formatting and linting
