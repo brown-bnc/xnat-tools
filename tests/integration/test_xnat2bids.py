@@ -151,8 +151,8 @@ def test_xnat2bids_skip_export(xnat_user, xnat_password, xnat_bids_root):
     # Define target session
     session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
 
-    # TODO #187: This test relies on the previous test (test_xnat2bids_export_only) seeding the xnat_bids_root directory
-    # TODO #187: This needs to seed its own dicom export to be independent
+    # TODO #187: This test relies on the previous test (test_xnat2bids_export_only) seeding the
+    # TODO #187 xnat_bids_root directory. This needs to seed its own dicom export to be independent
 
     skipseq = ["6"]
     xnat2bids_cmd = shlex.split(

@@ -241,7 +241,7 @@ def test_postprocessing(xnat_user, xnat_password, xnat_bids_root, xnat_host):
     # docker run -ti --rm -v ${bids_directory}:/data:ro bids/validator /data
 
 
-#################### HELPERS ####################
+# -------------------- HELPERS --------------------
 
 
 def cleanIntendedForData(fieldmaps: list):

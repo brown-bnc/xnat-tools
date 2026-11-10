@@ -116,8 +116,8 @@ def test_heudiconv(xnat_bids_root):
     subject = os.environ.get("XNAT_SUBJECT", "005")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "session1")
 
-    # TODO #186: This test relies on the previous test (test_dicom_export) seeding the xnat_bids_root directory
-    # TODO #186: This needs to seed its own dicom export to be independent
+    # TODO #186: This test relies on the previous test (test_dicom_export) seeding the
+    # TODO #186: xnat_bids_root directory. This needs to seed its own dicom export to be independent
 
     # ***************************************************************************
     # Test for successful execution
