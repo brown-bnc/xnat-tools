@@ -1,101 +1,111 @@
-name: tests
+name: 🧪 Tests
 on:
   pull_request:
-  push:
-    branches:
-      - "main"
+# TODO: I don't believe this needs to run on merge with main anymore? To be confirmed
+# push:
+#   branches:
+#     - "main"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
-  XNAT_USER: "${{secrets.XNAT_USER}}"
-  XNAT_PASS: "${{secrets.XNAT_PASS}}"
+  XNAT_USER: ${{secrets.XNAT_USER}}
+  XNAT_PASS: ${{secrets.XNAT_PASS}}
+  # TODO: The real release uses DockerHub
+  # TODO: Is it safe to use GHCR here? Better?
   REGISTRY: ghcr.io
-  IMAGE_NAME: brown-bnc/xnat-tools
+  REPOSITORY: ${{ github.repository }}
+  # IMAGE_NAME: brown-bnc/xnat-tools
 
 jobs:
   docker:
     name: Build Docker Image
     runs-on: ubuntu-latest
-    outputs:
-      full_image_id: ${{ steps.save_full_image_id.outputs.full_image_id }}
+    if: github.event.pull_request.draft == false
+    # outputs:
+    #   full_image_id: ${{ steps.save_full_image_id.outputs.full_image_id }}
     steps:
-      - uses: actions/checkout@v2
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v7
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+      # TODO: We don't need this anymore?
+      # TODO: Just hard-code the architecture k8s uses?
+      # - name: Set up QEMU
+      # uses: docker/setup-qemu-action@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: 🛠️ Setup Docker Buildx
+        uses: docker/setup-buildx-action@v4
 
       - name: Log into the container registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
+      - name: 🏗️ Extract Docker Metadata
+        uses: docker/metadata-action@v6
         id: meta
-        uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{major}}.{{minor}}
+          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}
+          # NOTE: These image tags must NEVER touch :latest. Only the tag "pr-<N>" is pushed.
+          flavor: latest=false
+          tags: type=ref,event=pr
 
-      # NOTE: We are tapping into json output because tags could become a list if prior step is modified
-      - id: save_full_image_id
-        run: echo "::set-output name=full_image_id::${{ fromJSON(steps.meta.outputs.json).tags[0] }}"
-
-      - name: print_tag
-        run: echo "${{fromJSON(steps.meta.outputs.json).tags[0] }}"
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
+      - name: 🐳 Build and Push Docker Image
+        id: build_and_push
+        uses: docker/build-push-action@v7
         with:
           context: .
+          platforms: linux/amd64 # This must match the K8s environment's hardware
           push: true
+          # One plain manifest, so deleting the pr-<N> version in cleanup leaves no orphaned attestations
+          provenance: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
+          # NOTE: Cache is read from main and the branch but only written to its own cache
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   test:
     name: Run unit and integration tests
-    needs: [docker]
     runs-on: self-hosted
-    container:
-      image: "${{ needs.docker.outputs.full_image_id }}"
+    # NOTE: Guards self-hosted runners from running on forks
+    if: github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - name: Run pytest
-        run: |
-          cd /xnat-tools
-          pytest -x -s -o log_cli=true --log-cli-level=INFO
+        run: 🧪 pytest -x -s -o log_cli=true --log-cli-level=INFO
 
-  bids-validation:
-    name: Run system test for bids-validator
-    needs: [docker]
-    runs-on: self-hosted
-    if: ${{ github.ref == 'refs/heads/main' }}
-    container:
-      image: "${{ needs.docker.outputs.full_image_id }}"
-    env:
-      BIDS_ROOT: "/xnat2bids"
-    steps:
-      - name: Run xnat2bids
-        run: |
-          cd /xnat-tools
-          mkdir /xnat2bids/
-          xnat2bids XNAT_E00114 ${BIDS_ROOT} -u ${{ env.XNAT_USER }} -p ${{ env.XNAT_PASS }} -s 6
-          xnat2bids XNAT_E00152 ${BIDS_ROOT} -u ${{ env.XNAT_USER }} -p ${{ env.XNAT_PASS }} -s 6
+  # TODO: This hasn't actually been running the tests lately?
+  # TODO: bids-validator node package is archived
+  # TODO:
+  # bids-validation:
+  #   name: Run system test for bids-validator
+  #   needs: [docker]
+  #   runs-on: self-hosted
+  #   if: ${{ github.ref == 'refs/heads/main' }}
+  #   container:
+  #     image: "${{ needs.docker.outputs.full_image_id }}"
+  #   env:
+  #     BIDS_ROOT: "/xnat2bids"
+  #   steps:
+  #     - name: Run xnat2bids
+  #       run: |
+  #         cd /xnat-tools
+  #         mkdir /xnat2bids/
+  #         xnat2bids XNAT_E00114 ${BIDS_ROOT} -u ${{ env.XNAT_USER }} -p ${{ env.XNAT_PASS }} -s 6
+  #         xnat2bids XNAT_E00152 ${BIDS_ROOT} -u ${{ env.XNAT_USER }} -p ${{ env.XNAT_PASS }} -s 6
 
-      - name: Set up node action
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
+  #     - name: Set up node action
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 18
 
-      - name: Install bids-validator
-        run: npm install -g bids-validator
+  #     - name: Install bids-validator
+  #       run: npm install -g bids-validator
 
-      - name: Run bids-validator
-        run: cd /xnat-tools
-          bids-validator ${BIDS_ROOT}
+  #     - name: Run bids-validator
+  #       run: cd /xnat-tools
+  #         bids-validator ${BIDS_ROOT}
