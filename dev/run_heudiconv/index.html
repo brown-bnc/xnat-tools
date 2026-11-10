@@ -824,19 +824,19 @@
 <h1 id="run_heudiconv"><code>run_heudiconv</code><a class="headerlink" href="#run_heudiconv" title="Permanent link">&para;</a></h1>
 <p>Run Heudiconv</p>
 <p><strong>Usage</strong>:</p>
-<div class="codehilite"><pre><span></span><code><span class="gp">$ </span>run_heudiconv<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>PROJECT<span class="w"> </span>SUBJECT<span class="w"> </span>BIDS_ROOT_DIR
+<div class="codehilite"><pre><span></span><code><span class="gp">$ </span>run_heudiconv<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span><span class="o">{</span>project<span class="o">}</span><span class="w"> </span><span class="o">{</span>subject<span class="o">}</span><span class="w"> </span><span class="o">{</span>bids_root_dir<span class="o">}</span>
 </code></pre></div>
 
 <p><strong>Arguments</strong>:</p>
 <ul>
-<li><code>PROJECT</code>: XNAT&#x27;s Project ID  [required]</li>
-<li><code>SUBJECT</code>: XNAT&#x27;s subject ID  [required]</li>
-<li><code>BIDS_ROOT_DIR</code>: Root output directory for exporting files  [required]</li>
+<li><code>project &lt;str&gt;</code>: XNAT&#x27;s Project ID  [required]</li>
+<li><code>subject &lt;str&gt;</code>: XNAT&#x27;s subject ID  [required]</li>
+<li><code>bids_root_dir &lt;str&gt;</code>: Root output directory for exporting files  [required]</li>
 </ul>
 <p><strong>Options</strong>:</p>
 <ul>
-<li><code>-S, --session-suffix TEXT</code>: The session_suffix is initially set to -1.              This will signify an unspecified session_suffix and default to sess-01.              For multi-session studies, the session label will be pulled from XNAT  [default: -1]</li>
-<li><code>--log-id TEXT</code>: ID or suffix to append to logfile. If empty, current date is used  [default: current date - MM-DD-YYYY-HH-MM-SS]</li>
+<li><code>-S, --session-suffix &lt;str&gt;</code>: The session_suffix is initially set to -1.              This will signify an unspecified session_suffix and default to sess-01.              For multi-session studies, the session label will be pulled from XNAT  [default: -1]</li>
+<li><code>--log-id &lt;str&gt;</code>: ID or suffix to append to logfile. If empty, current date is used  [default: current date - MM-DD-YYYY-HH-MM-SS]</li>
 <li><code>--overwrite / --no-overwrite</code>: Remove directories where prior results for session/participant may exist  [default: no-overwrite]</li>
 <li><code>--cleanup / --no-cleanup</code>: Remove xnat-export folder and move logs to derivatives/xnat/logs  [default: no-cleanup]</li>
 <li><code>--install-completion</code>: Install completion for the current shell.</li>
