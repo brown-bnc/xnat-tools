@@ -834,7 +834,7 @@
 <li>Export to a <a href="https://github.com/nipy/heudiconv">Heudiconv</a> friendly directory structure. We follow the structure suggested by the <a href="https://github.com/ReproNim/reproin">ReproIn guide</a>, enabling us to use their <a href="https://github.com/nipy/heudiconv/blob/master/heudiconv/heuristics/reproin.py">heuristic file</a>. This step is encapsulated in <code>xnat_tools/dicom_export.py</code></li>
 <li>We run Heudiconv using ReproIn heuristic. This step is encapsulated in <code>xnat_tools/run_heudiconv.py</code></li>
 </ol>
-<p>In general, users will be interacting only with <code>xnat2bids</code>. However, in cases where troubleshooting is necessary, it may be convenient to run the two steps separately. The first step, <code>dicom_export</code>,  is time consuming as all the data needs to be downloaded form the server. If the user can verify that the export looks correct, and the errors happen only when executing <code>run_heudiconv</code>, then running the two steps separately can save significant time.</p>
+<p>In general, users will be interacting only with <code>xnat2bids</code>. However, in cases where troubleshooting is necessary, it may be convenient to run the two steps separately. The first step, <code>dicom_export</code>,  is time consuming as all the data needs to be downloaded form the server. If the user can verify that the export looks correct, and the errors happen only when executing <code>run_heudiconv</code>, then running the two steps separately can save significant time. </p>
 <p>At the moment <code>bids-postprocess</code> is used to insert the <code>IntendedFor</code> field to JSON sidecart for fieldmap data.</p>
 
 
