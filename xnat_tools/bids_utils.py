@@ -1098,6 +1098,7 @@ def convert_tb1tfl(subject, session_suffix, bids_experiment_dir, tb1tfl_tarbase)
                 _logger.warning(
                     "Could not find the two TB1TFL DICOM files. Skipping TB1TFL BIDS conversion."
                 )
+
             return
 
         # Run dcm2niix (no shell=True)

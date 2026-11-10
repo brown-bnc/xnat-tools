@@ -16,8 +16,8 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v7
 
-      - name: 🐍 Setup Python
-        uses: actions/setup-python@v7
+      - name: ☀️ Setup UV
+        uses: astral-sh/setup-uv@v5
 
       - name: 🔬 Run Pre-commit
         uses: pre-commit/action@v3.0.1

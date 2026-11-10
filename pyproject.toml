@@ -66,3 +66,7 @@ exclude=["site",]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
+
+[tool.mypy]
+strict_optional = false
+ignore_missing_imports = true
