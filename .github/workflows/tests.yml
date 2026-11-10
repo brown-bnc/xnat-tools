@@ -1,9 +1,5 @@
 name: 🧪 Tests
 on: pull_request
-# TODO: I don't believe this needs to run on merge with main anymore? To be confirmed
-# push:
-#   branches:
-#     - "main"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -76,20 +72,6 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      # - name: ⬇️ Checkout repo
-      #   uses: actions/checkout@v7
-
-      # - name: 🐍 Set up Python
-      #   uses: actions/setup-python@v7
-      #   with:
-      #     python-version-file: ".python-version"
-
-      # - name: ☀️ Set up UV
-      #   uses: astral-sh/setup-uv@v5
-
-      # - name: 📥 Install dependencies
-      #   run: uv sync --locked --extra dev
-
       - name: 🧪 Run Pytest
         working-directory: /xnat-tools
         run: pytest tests -x -s -o log_cli=true --log-cli-level=INFO
