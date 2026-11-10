@@ -165,7 +165,7 @@ def test_xnat2bids_skip_export(xnat_user, xnat_password, xnat_bids_root):
 
     assert r.exit_code == 0
 
-    bids_dir = glob.glob("{xnat_bids_root}/*/study-*/bids")[0]
+    bids_dir = glob.glob(f"{xnat_bids_root}/*/study-*/bids")[0]
 
     subj_005_session1_fmaps = [
         f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_phasediff.json",
@@ -236,7 +236,7 @@ def test_xnat2bids_eeg(xnat_user, xnat_password, xnat_bids_root):
     # ***************************************************************************
     # Test for successful BIDS conversion of EEG data
     # ***************************************************************************
-    bids_dir = glob.glob("{xnat_bids_root}/*/study-*/bids")[0]
+    bids_dir = glob.glob(f"{xnat_bids_root}/*/study-*/bids")[0]
 
     subj_bncmethods_ses_01_eeg = [
         f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-todo_eeg.eeg",
