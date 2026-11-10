@@ -68,8 +68,22 @@ jobs:
     # NOTE: Guards self-hosted runners from running on forks
     if: github.event.pull_request.head.repo.full_name == github.repository
     steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v7
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: ".python-version"
+
+      - name: ☀️ Set up UV
+        uses: astral-sh/setup-uv@v5
+
+      - name: 📥 Install dependencies
+        run: uv sync --locked --dev
+
       - name: 🧪 Run Pytest
-        run: pytest -x -s -o log_cli=true --log-cli-level=INFO
+        run: uv run pytest tests -x -s -o log_cli=true --log-cli-level=INFO
 
   # TODO #188: This hasn't actually been running the tests lately?
   # TODO #188: bids-validator node package is archived
