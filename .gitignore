@@ -4,7 +4,7 @@
 */.DS_Store
 
 # tests results
-tests/xnat2bids/
+xnat2bids/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
