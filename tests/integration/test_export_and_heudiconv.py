@@ -52,12 +52,9 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host):
     assert s == subject
     assert ss == "session1"
 
-    filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
+    filepath = glob.glob(f"{xnat_bids_root}/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
 
-    assert (
-        len(glob.glob(f"{filepath}/*/*.IMA")) > 0
-        or len(glob.glob(f"{filepath}/*/*.dcm")) > 0
-    )
+    assert len(glob.glob(f"{filepath}/*/*.IMA")) > 0 or len(glob.glob(f"{filepath}/*/*.dcm")) > 0
     subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
     assert len(subdirs) == 1
@@ -78,7 +75,7 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host):
     r = runner.invoke(export_app, export_cmd)
     print(r.stdout)
 
-    filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
+    filepath = glob.glob(f"{xnat_bids_root}/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
     subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
     assert len(subdirs) == 2
@@ -99,7 +96,7 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host):
     r = runner.invoke(export_app, export_cmd)
     print(r.stdout)
 
-    filepath = glob.glob(f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
+    filepath = glob.glob(f"{xnat_bids_root}/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
     subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
     assert len(subdirs) == 1
@@ -134,22 +131,19 @@ def test_heudiconv(xnat_bids_root):
     print(r.stdout)
 
     try:
-        filepath = glob.glob(
-            f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}"
-        )[0]
+        filepath = glob.glob(f"{xnat_bids_root}/*/study-*/bids/sub-*/ses-{session_suffix}")[0]
     except Exception:
-        cmd = "ls tests/xnat2bids/bnc/study-demodat/bids/sub-005/ses-session1"
+        cmd = f"ls {xnat_bids_root}/bnc/study-demodat/bids/sub-005/ses-session1"
         os.system(cmd)
         print(
             "Index error at: ",
-            glob.glob(f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}"),
+            glob.glob(f"{xnat_bids_root}/*/study-*/bids/sub-*/ses-{session_suffix}"),
         )
 
     assert r.exit_code == 0
 
     assert (
-        len(glob.glob(f"{filepath}/*/*.json")) > 0
-        or len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
+        len(glob.glob(f"{filepath}/*/*.json")) > 0 or len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
     )
 
     # # ***************************************************************************

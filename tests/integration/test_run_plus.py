@@ -30,12 +30,10 @@ def test_run_plus(xnat_user, xnat_password, xnat_bids_root):
     print(r.stdout)
 
     xnat_export_path = (
-        f"tests/xnat2bids/bnc/study-demodat/xnat-export/sub-005/ses-{session_suffix}/"
+        f"{xnat_bids_root}/bnc/study-demodat/xnat-export/sub-005/ses-{session_suffix}/"
     )
     task_name = "func-bold_task-checks_run"
 
     assert os.path.isdir(os.path.join(os.getcwd(), xnat_export_path))
     for i in range(1, len(seqlist) + 1):
-        assert os.path.isdir(
-            os.path.join(os.getcwd(), xnat_export_path, f"{task_name}-{i:02}")
-        )
+        assert os.path.isdir(os.path.join(os.getcwd(), xnat_export_path, f"{task_name}-{i:02}"))

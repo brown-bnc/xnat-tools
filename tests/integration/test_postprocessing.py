@@ -236,8 +236,8 @@ def test_postprocessing(xnat_user, xnat_password, xnat_bids_root, xnat_host):
     # Verify session2 fmaps have not been processed.
     verifySkipped(subj_005_session2_fmaps)
 
-    # you can locally run bids-validator
-    # bids_directory=${PWD}/tests/xnat2bids/study-demodat/bids/
+    # NOTE: you can locally run bids-validator
+    # bids_directory=f"{PWD}/{xnat_bids_root}/study-demodat/bids/
     # docker run -ti --rm -v ${bids_directory}:/data:ro bids/validator /data
 
 

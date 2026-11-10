@@ -33,7 +33,7 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root):
 
     assert r.exit_code == 0
 
-    filepath = f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}"
+    filepath = f"{xnat_bids_root}/*/study-*/bids/sub-*/ses-{session_suffix}"
 
     # ***************************************************************************
     # Test for successful execution
@@ -45,7 +45,7 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root):
     # Test for correctness of sequence number given by skipseq
     # ***************************************************************************
     xnat_export_path = glob.glob(
-        f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
+        f"{xnat_bids_root}/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
     )[0]
     assert os.path.isdir(os.path.join(os.getcwd(), xnat_export_path))
 
@@ -58,15 +58,15 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root):
             idx = series_idx(f)
             assert str(idx) not in skipseq
             if series_desc.__contains__("SBRef"):
-                assert dataset.data_element(
-                    "ProtocolName"
-                ).value == series_desc.replace("_SBRef", "")
+                assert dataset.data_element("ProtocolName").value == series_desc.replace(
+                    "_SBRef", ""
+                )
                 assert dataset.data_element("SeriesDescription").value == series_desc
             else:
                 assert dataset.data_element("ProtocolName").value == series_desc
                 assert dataset.data_element("SeriesDescription").value == series_desc
 
-    bids_dir = glob.glob("tests/xnat2bids/*/study-*/bids")[0]
+    bids_dir = glob.glob("{xnat_bids_root}/*/study-*/bids")[0]
 
     subj_005_session1_fmaps = [
         f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_phasediff.json",
@@ -124,7 +124,7 @@ def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root):
     assert r.exit_code == 0
 
     xnat_export_path = glob.glob(
-        f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
+        f"{xnat_bids_root}/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
     )[0]
 
     assert os.path.isdir(os.path.join(os.getcwd(), xnat_export_path))
@@ -138,9 +138,9 @@ def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root):
             idx = series_idx(f)
             assert str(idx) not in skipseq
             if series_desc.__contains__("SBRef"):
-                assert dataset.data_element(
-                    "ProtocolName"
-                ).value == series_desc.replace("_SBRef", "")
+                assert dataset.data_element("ProtocolName").value == series_desc.replace(
+                    "_SBRef", ""
+                )
                 assert dataset.data_element("SeriesDescription").value == series_desc
             else:
                 assert dataset.data_element("ProtocolName").value == series_desc
@@ -165,7 +165,7 @@ def test_xnat2bids_skip_export(xnat_user, xnat_password, xnat_bids_root):
 
     assert r.exit_code == 0
 
-    bids_dir = glob.glob("tests/xnat2bids/*/study-*/bids")[0]
+    bids_dir = glob.glob("{xnat_bids_root}/*/study-*/bids")[0]
 
     subj_005_session1_fmaps = [
         f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_phasediff.json",
@@ -225,7 +225,7 @@ def test_xnat2bids_eeg(xnat_user, xnat_password, xnat_bids_root):
 
     assert r.exit_code == 0
 
-    filepath = f"tests/xnat2bids/*/study-*/bids/sub-*/ses-{session_suffix}"
+    filepath = f"{xnat_bids_root}/*/study-*/bids/sub-*/ses-{session_suffix}"
 
     # ***************************************************************************
     # Test for successful execution
@@ -236,7 +236,7 @@ def test_xnat2bids_eeg(xnat_user, xnat_password, xnat_bids_root):
     # ***************************************************************************
     # Test for successful BIDS conversion of EEG data
     # ***************************************************************************
-    bids_dir = glob.glob("tests/xnat2bids/*/study-*/bids")[0]
+    bids_dir = glob.glob("{xnat_bids_root}/*/study-*/bids")[0]
 
     subj_bncmethods_ses_01_eeg = [
         f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-todo_eeg.eeg",
@@ -270,8 +270,10 @@ def test_xnat2bids_correct_dicom_header(xnat_user, xnat_password, xnat_bids_root
     r = runner.invoke(app, xnat2bids_cmd)
     print(r.stdout)
 
+    assert r.exit_code == 0
+
     xnat_export_path = glob.glob(
-        f"tests/xnat2bids/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
+        f"{xnat_bids_root}/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
     )[0]
 
     export_subdirs = [f.path for f in os.scandir(xnat_export_path) if f.is_dir()]
