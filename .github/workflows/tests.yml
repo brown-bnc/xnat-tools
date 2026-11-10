@@ -71,9 +71,9 @@ jobs:
       - name: 🧪 Run Pytest
         run: pytest -x -s -o log_cli=true --log-cli-level=INFO
 
-  # TODO: This hasn't actually been running the tests lately?
-  # TODO: bids-validator node package is archived
-  # TODO:
+  # TODO #188: This hasn't actually been running the tests lately?
+  # TODO #188: bids-validator node package is archived
+  # TODO #188: Perhaps we can run it in Python directly? https://bids.neuroimaging.io/tools/validator.html
   # bids-validation:
   #   name: Run system test for bids-validator
   #   needs: [docker]
