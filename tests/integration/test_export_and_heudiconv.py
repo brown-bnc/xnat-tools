@@ -4,7 +4,7 @@ import shlex
 
 from typer.testing import CliRunner
 
-from tests.helpers import series_idx
+from tests.helpers import reset_directory, series_idx
 from xnat_tools.dicom_export import app as export_app
 from xnat_tools.dicom_export import dicom_export
 from xnat_tools.run_heudiconv import app as heudi_app
@@ -15,10 +15,14 @@ runner = CliRunner()
 def test_dicom_export(xnat_user, xnat_password, xnat_bids_root):
     """Integration test for xnat-dicom-export"""
 
+    # Define target session
     project = os.environ.get("XNAT_PROJECT", "bnc_demodat")
     subject = os.environ.get("XNAT_SUBJECT", "005")
     session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "-1")
+
+    # Reset the xnat_bids_root directory
+    reset_directory(xnat_bids_root)
 
     # ***************************************************************************
     # Test for successful execution
@@ -107,12 +111,16 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root):
 
 
 def test_heudiconv(xnat_bids_root):
-    """Integration test for running the run-heudiconv
-    executable on the output of xnat-dicom-export"""
+    """Integration test for running the run-heudiconv executable on the output
+    of xnat-dicom-export"""
 
+    # Define target session
     project = os.environ.get("XNAT_PROJECT", "bnc_demodat")
     subject = os.environ.get("XNAT_SUBJECT", "005")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "session1")
+
+    # TODO #186: This test relies on the previous test (test_dicom_export) seeding the xnat_bids_root directory
+    # TODO #186: This needs to seed its own dicom export to be independent
 
     # ***************************************************************************
     # Test for successful execution

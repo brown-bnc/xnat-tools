@@ -6,23 +6,23 @@ import shlex
 import pydicom
 from typer.testing import CliRunner
 
-from tests.helpers import series_idx
+from tests.helpers import reset_directory, series_idx
 from xnat_tools.xnat2bids import app
 
 runner = CliRunner()
-
-# TODO: Do I need to have session and session_suffix as environment variables?
-# TODO: Seems okay to hard-code them?
 
 
 def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root):
     """Integration test for xnat2bids executable"""
 
+    # Define target session
     session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "session1")
 
-    skipseq = ["6"]
+    # Reset the xnat_bids_root directory
+    reset_directory(xnat_bids_root)
 
+    skipseq = ["6"]
     xnat2bids_cmd = shlex.split(
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
         -s {' -s '.join(skipseq)}"
@@ -105,11 +105,14 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root):
 
 
 def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root):
+    # Define target session
     session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "session1")
 
-    skipseq = ["6"]
+    # Reset the xnat_bids_root directory
+    reset_directory(xnat_bids_root)
 
+    skipseq = ["6"]
     xnat2bids_cmd = shlex.split(
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
         -s {' -s '.join(skipseq)} --export-only"
@@ -145,9 +148,13 @@ def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root):
 
 
 def test_xnat2bids_skip_export(xnat_user, xnat_password, xnat_bids_root):
+    # Define target session
     session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
-    skipseq = ["6"]
 
+    # TODO #187: This test relies on the previous test (test_xnat2bids_export_only) seeding the xnat_bids_root directory
+    # TODO #187: This needs to seed its own dicom export to be independent
+
+    skipseq = ["6"]
     xnat2bids_cmd = shlex.split(
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
         -s {' -s '.join(skipseq)} --skip-export"
@@ -199,12 +206,15 @@ def test_xnat2bids_skip_export(xnat_user, xnat_password, xnat_bids_root):
 def test_xnat2bids_eeg(xnat_user, xnat_password, xnat_bids_root):
     """Integration test for xnat2bids executable converting EEG data to BIDS"""
 
+    # Define target session
     # NOTE: "BNC Demo Dataset" does not contain EEG data, test against a session that does
     session = os.environ.get("XNAT_SESSION", "XNAT_E00474")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "01")
 
-    skipseq = ["6"]
+    # Reset the xnat_bids_root directory
+    reset_directory(xnat_bids_root)
 
+    skipseq = ["6"]
     xnat2bids_cmd = shlex.split(
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
         -s {' -s '.join(skipseq)}"
@@ -243,12 +253,15 @@ def test_xnat2bids_eeg(xnat_user, xnat_password, xnat_bids_root):
 
 
 def test_xnat2bids_correct_dicom_header(xnat_user, xnat_password, xnat_bids_root):
+    # Define target session
     session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
     session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "session1")
 
+    # Reset the xnat_bids_root directory
+    reset_directory(xnat_bids_root)
+
     includeseq = "17"
     dicom_fix_config_file = "./tests/dicom_fix_config_invalid_value.json"
-
     xnat2bids_cmd = shlex.split(
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
         -i {includeseq} --export-only --dicomfix-config {dicom_fix_config_file}"

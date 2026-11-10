@@ -1,5 +1,4 @@
 import os
-import shutil
 
 import pytest
 from dotenv import load_dotenv
@@ -25,13 +24,9 @@ def xnat_password():
 @pytest.fixture
 def xnat_bids_root():
     """The root directory to store the bids data"""
-    # TODO: THis is going to make a different subfolder? How to make it in the base?
-    # xnat_bids_root = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
+    # TODO: Can we change this to be at the root of the repo?
     xnat_bids_root = os.environ.get("XNAT_BIDS_ROOT", "tests/xnat2bids")
 
-    # Clean directory if it exists before the tests start
-    shutil.rmtree(xnat_bids_root, ignore_errors=True)
-    os.mkdir(xnat_bids_root)
     return xnat_bids_root
 
 

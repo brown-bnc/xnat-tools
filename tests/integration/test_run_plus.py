@@ -3,6 +3,7 @@ import shlex
 
 from typer.testing import CliRunner
 
+from tests.helpers import reset_directory
 from xnat_tools.xnat2bids import app
 
 runner = CliRunner()
@@ -11,12 +12,15 @@ runner = CliRunner()
 def test_run_plus(xnat_user, xnat_password, xnat_bids_root):
     """Integration test for sequence list"""
 
+    # Define target session
     session = "XNAT_E00114"
     session_suffix = "session1"
 
+    # Reset the xnat_bids_root directory
+    reset_directory(xnat_bids_root)
+
     seqlist = ["10", "11"]
     skiplist = ["6"]
-
     xnat2bids_cmd = shlex.split(
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
                       -i {' -i '.join(seqlist)} -s {' -s '.join(skiplist)}"

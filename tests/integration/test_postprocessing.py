@@ -2,21 +2,28 @@ import json
 import operator
 import os
 import shlex
-import shutil
 import typing
 
 from typer.testing import CliRunner
 
+from tests.helpers import reset_directory
 from xnat_tools.bids_postprocess import bids_postprocess
 from xnat_tools.xnat2bids import app as xnat2bids_app
 
 runner = CliRunner()
 
 
+# TODO #185: This appears to be doing multiple passes at the export?
+# TODO #185: They should live as their own tests
 def test_postprocessing(xnat_user, xnat_password, xnat_bids_root):
     """Integration test for bids-postprocessing executable"""
+
+    # Define target session
     subj5_session = "XNAT_E00114"
     subj5_session2 = "XNAT_E00152"
+
+    # Reset the xnat_bids_root directory
+    reset_directory(xnat_bids_root)
 
     # Run xnat2bids against session 1
     xnat2bids_cmd = shlex.split(
@@ -229,12 +236,12 @@ def test_postprocessing(xnat_user, xnat_password, xnat_bids_root):
     # Verify session2 fmaps have not been processed.
     verifySkipped(subj_005_session2_fmaps)
 
-    # cleanup output -- for debugging commsent this out
-    shutil.rmtree(xnat_bids_root, ignore_errors=True)
-
     # you can locally run bids-validator
     # bids_directory=${PWD}/tests/xnat2bids/study-demodat/bids/
     # docker run -ti --rm -v ${bids_directory}:/data:ro bids/validator /data
+
+
+#################### HELPERS ####################
 
 
 def cleanIntendedForData(fieldmaps: list):
