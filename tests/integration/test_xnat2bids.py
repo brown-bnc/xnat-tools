@@ -27,7 +27,7 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root):
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
         -s {' -s '.join(skipseq)}"
     )
-    print("Running xnat2bids application:", xnat2bids_cmd)
+    print("Running xnat2bids application:")
     r = runner.invoke(app, xnat2bids_cmd)
     print(r.stdout)
 
@@ -58,9 +58,9 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root):
             idx = series_idx(f)
             assert str(idx) not in skipseq
             if series_desc.__contains__("SBRef"):
-                assert dataset.data_element("ProtocolName").value == series_desc.replace(
-                    "_SBRef", ""
-                )
+                assert dataset.data_element(
+                    "ProtocolName"
+                ).value == series_desc.replace("_SBRef", "")
                 assert dataset.data_element("SeriesDescription").value == series_desc
             else:
                 assert dataset.data_element("ProtocolName").value == series_desc
@@ -114,7 +114,7 @@ def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root):
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
         -s {' -s '.join(skipseq)} --export-only"
     )
-    print("Running xnat2bids application:", xnat2bids_cmd)
+    print("Running xnat2bids application:")
     r = runner.invoke(app, xnat2bids_cmd)
     print(r.stdout)
 
@@ -135,9 +135,9 @@ def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root):
             idx = series_idx(f)
             assert str(idx) not in skipseq
             if series_desc.__contains__("SBRef"):
-                assert dataset.data_element("ProtocolName").value == series_desc.replace(
-                    "_SBRef", ""
-                )
+                assert dataset.data_element(
+                    "ProtocolName"
+                ).value == series_desc.replace("_SBRef", "")
                 assert dataset.data_element("SeriesDescription").value == series_desc
             else:
                 assert dataset.data_element("ProtocolName").value == series_desc
@@ -152,7 +152,7 @@ def test_xnat2bids_skip_export(xnat_user, xnat_password, xnat_bids_root):
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
         -s {' -s '.join(skipseq)} --skip-export"
     )
-    print("Running xnat2bids application:", xnat2bids_cmd)
+    print("Running xnat2bids application:")
     r = runner.invoke(app, xnat2bids_cmd)
     print(r.stdout)
 
@@ -209,7 +209,7 @@ def test_xnat2bids_eeg(xnat_user, xnat_password, xnat_bids_root):
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
         -s {' -s '.join(skipseq)}"
     )
-    print("Running xnat2bids application:", xnat2bids_cmd)
+    print("Running xnat2bids application:")
     r = runner.invoke(app, xnat2bids_cmd)
     print(r.stdout)
 
@@ -253,7 +253,7 @@ def test_xnat2bids_correct_dicom_header(xnat_user, xnat_password, xnat_bids_root
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
         -i {includeseq} --export-only --dicomfix-config {dicom_fix_config_file}"
     )
-    print("Running xnat2bids application:", xnat2bids_cmd)
+    print("Running xnat2bids application:")
     r = runner.invoke(app, xnat2bids_cmd)
     print(r.stdout)
 

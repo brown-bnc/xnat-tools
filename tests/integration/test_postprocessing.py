@@ -22,7 +22,7 @@ def test_postprocessing(xnat_user, xnat_password, xnat_bids_root):
     xnat2bids_cmd = shlex.split(
         f"{subj5_session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} -s 6"
     )
-    print("Running xnat2bids application:", xnat2bids_cmd)
+    print("Running xnat2bids application:")
     r = runner.invoke(xnat2bids_app, xnat2bids_cmd)
     print(r.stdout)
 
@@ -30,7 +30,7 @@ def test_postprocessing(xnat_user, xnat_password, xnat_bids_root):
     xnat2bids_split_cmd = shlex.split(
         f"{subj5_session2} {xnat_bids_root} -u {xnat_user} -p {xnat_password} -s 6"
     )
-    print("Running xnat2bids application:", xnat2bids_cmd)
+    print("Running xnat2bids application:")
     r = runner.invoke(xnat2bids_app, xnat2bids_split_cmd)
     print(r.stdout)
 

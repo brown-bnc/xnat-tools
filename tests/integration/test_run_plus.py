@@ -21,7 +21,7 @@ def test_run_plus(xnat_user, xnat_password, xnat_bids_root):
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
                       -i {' -i '.join(seqlist)} -s {' -s '.join(skiplist)}"
     )
-    print("Running xnat2bids application:", xnat2bids_cmd)
+    print("Running xnat2bids application:")
     r = runner.invoke(app, xnat2bids_cmd)
     print(r.stdout)
 
@@ -32,4 +32,6 @@ def test_run_plus(xnat_user, xnat_password, xnat_bids_root):
 
     assert os.path.isdir(os.path.join(os.getcwd(), xnat_export_path))
     for i in range(1, len(seqlist) + 1):
-        assert os.path.isdir(os.path.join(os.getcwd(), xnat_export_path, f"{task_name}-{i:02}"))
+        assert os.path.isdir(
+            os.path.join(os.getcwd(), xnat_export_path, f"{task_name}-{i:02}")
+        )
