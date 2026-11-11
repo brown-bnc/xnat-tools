@@ -12,12 +12,12 @@ dependencies = [
     "pydicom==3.0.1",
     "pytest-mock>=3.8.2",
     "six>=1.16.0",
+    # TODO: Switch type library to ty?
     "typer>=0.15.2",
-    "isort>=6.0.1",
     # TODO: Should this pin a major version instead? Minor?
     "mne-bids==0.16.0",
     "pandas>=2.2.2",
-    "spec2nii>=0.8.0"
+    "spec2nii>=0.8.0",
 ]
 
 [project.scripts]
@@ -25,15 +25,19 @@ xnat2bids = "xnat_tools.xnat2bids:main"
 
 [project.optional-dependencies]
 dev = [
+    # TODO: Delete in favor of ruff
     "black>=22.6.0,<23",
     "commitizen>=2.31.0,<3",
+    # TODO: Delete in favor of ruff
     "flake8>=5.0.4,<6",
+    # TODO: Switch type library to ty?
     "mypy>=1.5.1,<2",
     "pre-commit>=2.20.0,<3",
     "pytest>=7.1.2,<8",
     "python-dotenv>=0.20.0,<0.21",
     "responses>=0.21.0,<0.22",
-    "pandas-stubs>=2.0.1.230501,<3"
+    "pandas-stubs>=2.0.1.230501,<3",
+    "ruff>=0.17.4,<1",
 ]
 
 docs = [
@@ -55,29 +59,14 @@ version_files = [
     "xnat_tools/__init__.py"
 ]
 
-[tool.flake8]
-max-line-length = 100
-
-[tool.black]
+[tool.ruff]
 line-length = 100
-target-version = ['py310']
-exclude = '''
-/(
-    \.git
-  | \.vscode
-  | \.venv
-  | \.mypy_cache
-  | \.pytest_cache
-  | build
-  | dist
-  | site
-)/
-'''
+target-version = "py310"
+exclude=["site",]
 
-[tool.isort]
-line_length = 100
-multi_line_output = 3
-use_parentheses = true
-include_trailing_comma = true
-force_grid_wrap = 0
-known_third_party = [ "pytest"]
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.mypy]
+strict_optional = false
+ignore_missing_imports = true
