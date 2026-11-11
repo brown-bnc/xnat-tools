@@ -25,11 +25,7 @@ xnat2bids = "xnat_tools.xnat2bids:main"
 
 [project.optional-dependencies]
 dev = [
-    # TODO: Delete in favor of ruff
-    "black>=22.6.0,<23",
     "commitizen>=2.31.0,<3",
-    # TODO: Delete in favor of ruff
-    "flake8>=5.0.4,<6",
     # TODO: Switch type library to ty?
     "mypy>=1.5.1,<2",
     "pre-commit>=2.20.0,<3",

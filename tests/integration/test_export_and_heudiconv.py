@@ -192,7 +192,7 @@ def test_unauthorized_user_exception_handling():
             url,
             params={"format": "json", "handler": "values", "columns": "project,subject_ID"},
         )
-    except (requests.HTTPError) as e:
+    except requests.HTTPError as e:
         assert e.response.status_code == 401
 
 
@@ -213,5 +213,5 @@ def test_xnat_reachable_exception_handling():
             url,
             params={"format": "json", "handler": "values", "columns": "project,subject_ID"},
         )
-    except (requests.HTTPError) as e:
+    except requests.HTTPError as e:
         assert e.response.status_code == 404

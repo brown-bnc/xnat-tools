@@ -146,9 +146,10 @@ def run_heudiconv(
     logdir = str(Path(heudi_output_dir).parent) + "/logs"
     logfile = f"{logdir}/heudiconv-{log_id}.log"
 
-    with Popen(heudi_cmd, stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True) as p, open(
-        logfile, "a", encoding="utf-8"
-    ) as file:
+    with (
+        Popen(heudi_cmd, stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True) as p,
+        open(logfile, "a", encoding="utf-8") as file,
+    ):
         stdout, stderr = p.communicate()
         sys.stdout.write(stdout)
         file.write(stdout)
@@ -163,7 +164,6 @@ def run_heudiconv(
     bids_datatypes = ["anat", "func", "dwi", "fmap", "perf", "mrs"]
 
     for s in skip_dirs:
-
         first, rest = (
             s.name.split("_", 1) if "_" in s.name else (s.name, "")
         )  # get first key or key-value pair

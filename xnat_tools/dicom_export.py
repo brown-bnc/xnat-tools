@@ -9,6 +9,7 @@ Description: Export a XNAT session into BIDS directory format
 Original file lives here:
 https://bitbucket.org/nrg_customizations/nrg_pipeline_dicomtobids/src/default/scripts/catalog/DicomToBIDS/scripts/dcm2bids_wholeSession.py
 """
+
 import json
 import logging
 import os
@@ -107,7 +108,6 @@ def dicom_export(
         typer.Option(case_sensitive=False),
     ] = "refaced",
 ):
-
     """
     Export XNAT DICOM images in an experiment to a BIDS friendly format
     """
