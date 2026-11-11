@@ -1,11 +1,23 @@
 name: pre-commit
 
-on: [push]
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v4
-      - uses: pre-commit/action@v3.0.0
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v7
+
+      - name: ☀️ Setup UV
+        uses: astral-sh/setup-uv@v5
+
+      - name: 🔬 Run Pre-commit
+        uses: pre-commit/action@v3.0.1
