@@ -2,47 +2,46 @@ import json
 import operator
 import os
 import shlex
-import shutil
 import typing
 
-from dotenv import load_dotenv
 from typer.testing import CliRunner
 
+from tests.helpers import reset_directory
 from xnat_tools.bids_postprocess import bids_postprocess
 from xnat_tools.xnat2bids import app as xnat2bids_app
 
 runner = CliRunner()
-load_dotenv()
 
 
-def test_postprocessing():
+# TODO #185: This appears to be doing multiple passes at the export?
+# TODO #185: They should live as their own tests
+def test_postprocessing(xnat_user, xnat_password, xnat_bids_root, xnat_host):
     """Integration test for bids-postprocessing executable"""
-    xnat_user = os.environ.get("XNAT_USER", "")
-    xnat_pass = os.environ.get("XNAT_PASS", "")
+
+    # Define target session
     subj5_session = "XNAT_E00114"
     subj5_session2 = "XNAT_E00152"
-    bids_root_dir = os.environ.get("XNAT_BIDS_ROOT", "./tests/xnat2bids")
 
-    if os.path.exists(bids_root_dir):
-        shutil.rmtree(bids_root_dir, ignore_errors=True)
+    # Reset the xnat_bids_root directory
+    reset_directory(xnat_bids_root)
 
-    os.mkdir(bids_root_dir)
+    # Run xnat2bids against session 1
+    xnat2bids_cmd = shlex.split(
+        f"{subj5_session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} -s 6"
+    )
+    print("Running xnat2bids application:")
+    r = runner.invoke(xnat2bids_app, xnat2bids_cmd)
+    print(r.stdout)
 
-    xnat2bids_cmd = f"{subj5_session} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -s 6"
-
-    xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
-
+    # Run xnat2bids against session 2
+    xnat2bids_split_cmd = shlex.split(
+        f"{subj5_session2} {xnat_bids_root} -u {xnat_user} -p {xnat_password} -s 6"
+    )
+    print("Running xnat2bids application:")
     r = runner.invoke(xnat2bids_app, xnat2bids_split_cmd)
     print(r.stdout)
 
-    xnat2bids_cmd = f"{subj5_session2} {bids_root_dir} -u {xnat_user} -p {xnat_pass} -s 6"
-
-    xnat2bids_split_cmd = shlex.split(xnat2bids_cmd)
-
-    r = runner.invoke(xnat2bids_app, xnat2bids_split_cmd)
-    print(r.stdout)
-
-    bids_dir = "tests/xnat2bids/bnc/study-demodat/bids"
+    bids_dir = f"{xnat_bids_root}/bnc/study-demodat/bids"
 
     subj_005_session1_fmaps = [
         f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_phasediff.json",
@@ -83,7 +82,7 @@ def test_postprocessing():
     bids_postprocess(
         bids_dir,
         xnat_user,
-        xnat_pass,
+        xnat_password,
         session="",
         includesess=[],
         includesubj=[],
@@ -97,14 +96,14 @@ def test_postprocessing():
     # Verify all IntendedFor fields across all fieldmaps have been populated.
     check_json_data(all_fieldmaps, "!=", "")
 
-    # Reset each fieldmap's IntendedFor property to an test string.
+    # Reset each fieldmaps' IntendedFor property to an test string.
     updateIntendedForData(all_fieldmaps, "test string")
 
     # Run post-processing with no override.
     bids_postprocess(
         bids_dir,
         xnat_user,
-        xnat_pass,
+        xnat_password,
         session="",
         includesess=[],
         includesubj=[],
@@ -122,7 +121,7 @@ def test_postprocessing():
     bids_postprocess(
         bids_dir,
         xnat_user,
-        xnat_pass,
+        xnat_password,
         session="",
         includesess=[],
         includesubj=[],
@@ -136,14 +135,14 @@ def test_postprocessing():
     # Verify all IntendedFor fields across all fieldmaps have been overwritten.
     check_json_data(all_fieldmaps, "!=", "test string")
 
-    # Delete each fieldmap's IntendedFor property.
+    # Delete each fieldmaps' IntendedFor property.
     cleanIntendedForData(all_fieldmaps)
 
     # Run post-processing, skipping subject 005.
     bids_postprocess(
         bids_dir,
         xnat_user,
-        xnat_pass,
+        xnat_password,
         session="",
         includesess=[],
         includesubj=[],
@@ -160,8 +159,8 @@ def test_postprocessing():
     bids_postprocess(
         bids_dir,
         xnat_user,
-        xnat_pass,
-        host="https://xnat.bnc.brown.edu",
+        xnat_password,
+        host=xnat_host,
         session="",
         includesess=["session1"],
         includesubj=["005"],
@@ -181,15 +180,15 @@ def test_postprocessing():
     # Verify session2 fmap has not been processed.
     verifySkipped(subj_005_session2_fmaps)
 
-    # Delete each fieldmap's IntendedFor property.
+    # Delete each fieldmaps' IntendedFor property.
     cleanIntendedForData(all_fieldmaps)
 
     # Run post-processing with includesubj and skipsess.
     bids_postprocess(
         bids_dir,
         xnat_user,
-        xnat_pass,
-        host="https://xnat.bnc.brown.edu",
+        xnat_password,
+        host=xnat_host,
         session="",
         includesess=[],
         includesubj=["005"],
@@ -209,15 +208,15 @@ def test_postprocessing():
     # Verify session2 fmap has not been processed.
     verifySkipped(subj_005_session2_fmaps)
 
-    # Delete each fieldmap's IntendedFor property.
+    # Delete each fieldmaps' IntendedFor property.
     cleanIntendedForData(all_fieldmaps)
 
     # Run bids_postprocess for a single session.
     bids_postprocess(
         bids_dir,
         xnat_user,
-        xnat_pass,
-        host="https://xnat.bnc.brown.edu",
+        xnat_password,
+        host=xnat_host,
         session="XNAT_E00114",
         includesess=[],
         includesubj=[],
@@ -237,16 +236,16 @@ def test_postprocessing():
     # Verify session2 fmaps have not been processed.
     verifySkipped(subj_005_session2_fmaps)
 
-    # cleanup output -- for debugging commsent this out
-    shutil.rmtree(bids_root_dir, ignore_errors=True)
-
-    # you can locally run bids-validator
-    # bids_directory=${PWD}/tests/xnat2bids/study-demodat/bids/
+    # NOTE: you can locally run bids-validator
+    # bids_directory=f"{PWD}/{xnat_bids_root}/study-demodat/bids/
     # docker run -ti --rm -v ${bids_directory}:/data:ro bids/validator /data
 
 
+# -------------------- HELPERS --------------------
+
+
 def cleanIntendedForData(fieldmaps: list):
-    # Delete each fieldmap's IntendedFor property.
+    # Delete each fieldmaps' IntendedFor property.
     for json_file in fieldmaps:
         if os.path.isfile(json_file):
             os.chmod(json_file, 0o664)
