@@ -24,8 +24,8 @@ def xnat_password():
 @pytest.fixture
 def xnat_bids_root():
     """The root directory to store the bids data"""
-    # TODO: Can we change this to be at the root of the repo?
-    xnat_bids_root = os.environ.get("XNAT_BIDS_ROOT", "./xnat2bids")
+    # TODO: This should be at the root of the repository
+    xnat_bids_root = os.environ.get("XNAT_BIDS_ROOT", "tests/xnat2bids")
 
     return xnat_bids_root
 
