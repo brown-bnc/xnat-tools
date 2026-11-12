@@ -10,7 +10,6 @@ _logger = logging.getLogger(__name__)
 
 
 class XNATPass:
-
     DEFAULT = "Prompt if not specified"
 
     def __init__(self, value=DEFAULT):
