@@ -16,4 +16,4 @@ def series_idx(f):
 def reset_directory(path):
     """Delete and recreate a directory. Use to reset xnat_bids_root between tests"""
     shutil.rmtree(path, ignore_errors=True)
-    os.makedirs(path, exist_ok=True)
+    os.makedirs(path)
