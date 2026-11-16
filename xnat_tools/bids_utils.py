@@ -268,6 +268,7 @@ def process_fmap_json_files(fmap_files: list, nii_files: list, overwrite: bool):
 
 
 # Verify all acquisition tags of a given list match.
+# TODO: Fix misspelled word
 def check_fmap_acquistion_tags(fieldmaps: list):
     for fmap in fieldmaps:
         acq_tag = get_acquisition_tag(fieldmaps[0].split("_"))
@@ -976,7 +977,11 @@ def convert_mrs(
 
     # create mrs directory within bids/sourcedata to copy DICOMS into
     mrs_sourcedata_dir = os.path.join(
-        bids_experiment_dir, "sourcedata", f"sub-{subject}", f"ses-{session_suffix}", "mrs"
+        bids_experiment_dir,
+        "sourcedata",
+        f"sub-{subject}",
+        f"ses-{session_suffix}",
+        "mrs",
     )
 
     if not os.path.exists(mrs_sourcedata_dir):

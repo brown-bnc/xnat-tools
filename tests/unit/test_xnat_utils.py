@@ -1,10 +1,4 @@
-import os
-
-from dotenv import load_dotenv
-
 from xnat_tools.xnat_utils import establish_connection, filter_scans, get_project_subject_session
-
-load_dotenv()
 
 
 def phony_scan_data(scan_count=10):
@@ -54,7 +48,7 @@ def test_filter_scan_seqlist_and_skiplist():
 
 
 def test_filter_scan_seqlist_discontinuity():
-    """Test filter_scans when the scans have a discontinunity in ids"""
+    """Test filter_scans when the scans have a discontinuity in ids"""
     data = phony_scan_data()
 
     # Delete the second element (index 1). Phony data should now be:
@@ -69,15 +63,13 @@ def test_filter_scan_seqlist_discontinuity():
     assert result == expected_result
 
 
-def test_fetch_proj_subj_sess():
-    host = "https://xnat.bnc.brown.edu"
+def test_fetch_proj_subj_sess(xnat_host, xnat_user, xnat_password):
     session = "XNAT_E00152"
-    user = os.environ.get("XNAT_USER", "")
-    password = os.environ.get("XNAT_PASS", "")
     session_suffix = "-1"
-    connection = establish_connection(user, password)
+
+    connection = establish_connection(xnat_user, xnat_password)
     project, subject, session_suffix = get_project_subject_session(
-        connection, host, session, session_suffix
+        connection, xnat_host, session, session_suffix
     )
 
     assert project == "BNC_DEMODAT"
