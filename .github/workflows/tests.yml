@@ -8,8 +8,6 @@ concurrency:
 env:
   XNAT_USER: ${{secrets.XNAT_USER}}
   XNAT_PASS: ${{secrets.XNAT_PASS}}
-  # TODO: The real release uses DockerHub
-  # TODO: Is it safe to use GHCR here? Better?
   REGISTRY: ghcr.io
   REPOSITORY: ${{ github.repository }}
 
