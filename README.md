@@ -9,3 +9,30 @@ XNAT tools is a Python package developed and maintained by members of the [Behav
 <!-- TODO #178: The development documentation is found here: https://brown-bnc.github.io/xnat-tools/dev/ -->
 <!-- TODO #178: We should probably move some of the basic getting started documentation into this README? -->
 <!-- TODO #178: We need to better split the documentation for "users" and "developers" -->
+
+## Local Development
+
+### Set up Your environment
+
+```bash
+uv venv
+source .venv/bin/activate
+uv sync --all-extras
+```
+
+### Environment Variables
+
+To run integration tests, you'll need to provide authentication credentials for XNAT using environment variables. These should be defined in a local `.env` file at the root of the repository.
+
+1. Copy the [.env.example](.env.example) file and rename it `.env`
+
+   ```shell
+   cp .env.example .env
+   ```
+
+2. Add your credentials
+
+   ```shell
+   XNAT_USER=your_xnat_username
+   XNAT_PASS=your_xnat_password
+   ```

@@ -20,7 +20,7 @@ Developers should use [Conventional Commits](https://www.conventionalcommits.org
 
 We use Commitizen in GitHub Actions to automatically bump the version and update the [CHANGELOG.md](changelog.md) of this package according to the commit messages. Using conventional commits guarantees than Commitizen works appropriately.  Notice that only few types of commits trigger a bump. At the moment we use the [default configuration](https://commitizen-tools.github.io/commitizen/customization/) which includes:
 
-```
+```shell
 bump_pattern = "^(break|new|fix|hotfix)"
 bump_map = {"break" = "MAJOR", "new" = "MINOR", "fix" = "PATCH", "hotfix" = "PATCH"}
 ```
@@ -29,51 +29,26 @@ When a PR is merged to the main branch, a dry-run of the Commitizen's bump actio
 
 ## Testing
 
-The unit and integration tests currently run in CI. If you would like to test locally, do the following:
+This project uses [pytest](https://docs.pytest.org/en/stable/) for testing. Both unit and integration tests are defined in [test](./tests) directory and are automatically run in CI.
 
-`pytest` is the library used for testing.
+Below are some examples of running the tests locally:
 
-Set up your environment:
-
-```bash
-uv venv
-source .venv/bin/activate
-uv pip install -e '.[dev]'
-```
-
-## Environment Variables for Local Development
-
-To run integration tests, you'll need to provide authentication credentials for XNAT using environment variables. These should be defined in a local `.env` file at the root of the repository.
-
-### Creating a `.env` File
-
-Create a file named `.env` in the project root (next to `pyproject.toml`) with the following contents:
-
-XNAT_USER=your_xnat_username
-XNAT_PASS=your_xnat_password
-
-To run all of the tests:
-
-```
+```shell
+# Run all tests
 pytest -x -s -o log_cli=true --log-cli-level=INFO
-```
-
-To run only a file
-
-
-```
+# Run the tests in a single file
 pytest -x -s -o log_cli=true --log-cli-level=INFO tests/integration/test_export_typer.py
 ```
 
-`-s` makes sure that `stdout` is printed to terminal
-`-o log_cli=true --log-cli-level=INFO` allows the logger output to go to cli
-`-x` exists on first failure
+* `-s` makes sure that `stdout` is printed to terminal
+* `-o log_cli=true --log-cli-level=INFO` allows the logger output to go to cli
+* `-x` exists on first failure
 
-You will need to have a local `.env` file where you set some environment variables, i.e. `XNAT_PASS`
+You will need to have a local `.env` file where you set some environment variables.
 
 At the moment the tests can not run bids validation. To do so, you can comment out the line that cleans the output directory and run the validator manually using docker. For instance
 
-```
+```shell
 bids_directory=${PWD}/tests/xnat2bids/ashenhav/study-1222/bids/
 docker run -ti --rm -v ${bids_directory}:/data:ro bids/validator /data
 ```
