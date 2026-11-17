@@ -80,29 +80,31 @@ docker run -ti --rm -v ${bids_directory}:/data:ro bids/validator /data
 
 ## Code Style
 
-#### Pre-Commit hooks
+#### Prek hooks
 
-This repository has pre-commit hooks configured to enforce typing and formatting.
+This repository uses [prek](https://prek.j178.dev) (configured in `prek.toml`) to enforce typing and formatting.
 
 To set up the hooks, run
 
 ```
 uv pip install -e '.[dev, docs]'
+prek install
 ```
 
-Now, you hooks will run on `git commit`
+Now, your hooks will run on `git commit`
+
+If you previously installed hooks with `pre-commit install`, run `pre-commit uninstall` first.
 
 If you would like to run on all files (not just staged ones), you can run
 
 ```
-pre-commit run --all-files
+prek run --all-files
 ```
 
 The following hooks are set up
-- [isort](https://github.com/timothycrosley/isort) - Sorting imports
-- [black](https://github.com/ambv/black) - Formatting
-- [flake8](https://gitlab.com/pycqa/flake8) - Linting
+- [ruff](https://docs.astral.sh/ruff/) - Linting and formatting
 - [mypy](https://github.com/pre-commit/mirrors-mypy) - Typing
+- [pre-commit-hooks](https://github.com/pre-commit/pre-commit-hooks) - Whitespace, YAML and large-file checks
 
 Most of these tools are installed as dev dependencies so you can also run them outside of the hooks. More details below
 

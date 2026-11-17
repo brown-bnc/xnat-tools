@@ -110,15 +110,6 @@ wheels = [
 ]
 
 [[package]]
-name = "cfgv"
-version = "3.5.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/4e/b5/721b8799b04bf9afe054a3899c6cf4e880fcf8563cc71c15610242490a0c/cfgv-3.5.0.tar.gz", hash = "sha256:d5b1034354820651caa73ede66a6294d6e95c1b00acc5e9b098e917404669132", size = 7334, upload-time = "2025-11-19T20:55:51.612Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/db/3c/33bac158f8ab7f89b2e59426d5fe2e4f63f7ed25df84c036890172b412b5/cfgv-3.5.0-py2.py3-none-any.whl", hash = "sha256:a8dc6b26ad22ff227d2634a65cb388215ce6cc96bbcc5cfde7641ae87e8dacc0", size = 7445, upload-time = "2025-11-19T20:55:50.744Z" },
-]
-
-[[package]]
 name = "chardet"
 version = "7.7.0"
 source = { registry = "https://pypi.org/simple" }
@@ -278,15 +269,6 @@ wheels = [
 ]
 
 [[package]]
-name = "distlib"
-version = "0.4.4"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/68/bc/d36966de7304047a1001a7559fbf266c464bb5d8cc85464536ef8c9bcc32/distlib-0.4.4.tar.gz", hash = "sha256:ca4175b4ac7f71223cc30ed7248c45d2b38c2439d8ee6e498ab67ed63cf3508d", size = 621304, upload-time = "2026-10-16T13:56:34.203Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c1/2b/238f02a4927fa2e27aa995371d240a468b52e42eae44a678434aff736b38/distlib-0.4.4-py2.py3-none-any.whl", hash = "sha256:cf09d55b1e85a89576b036aeb71550bfd68320f3f21761ca329eadadad918638", size = 472099, upload-time = "2026-10-16T13:56:32.053Z" },
-]
-
-[[package]]
 name = "etelemetry"
 version = "0.3.1"
 source = { registry = "https://pypi.org/simple" }
@@ -420,15 +402,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/cc/3f/2c29224acb2e2df4d2046e4c73ee2662023c58ff5b113c4c1adac0886c43/humanfriendly-10.0.tar.gz", hash = "sha256:6b0b831ce8f15f7300721aa49829fc4e83921a9a301cc7f606be6686a2288ddc", size = 360702, upload-time = "2021-09-17T21:40:43.31Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f0/0f/310fb31e39e2d734ccaa2c0fb981ee41f7bd5056ce9bc29b2248bd569169/humanfriendly-10.0-py2.py3-none-any.whl", hash = "sha256:1697e1a8a8f550fd43c2865cd84542fc175a61dcb779b6fee18cf6b6ccba1477", size = 86794, upload-time = "2021-09-17T21:40:39.897Z" },
-]
-
-[[package]]
-name = "identify"
-version = "2.6.20"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/53/35/d70c0006c7cee65999ea94a6273e60b2094f600a3d8b71b04318253fc643/identify-2.6.20.tar.gz", hash = "sha256:ad729860a923858d26917c2f4fb0a1d83d27a75b1e090c06440c573f048f3285", size = 99681, upload-time = "2026-09-26T20:29:07.187Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/fa/70/fffc9613501877c0a10a1ef73a165e6ded3e53f6e7502227fef56d973933/identify-2.6.20-py2.py3-none-any.whl", hash = "sha256:6a16b69b93187244e0548cbfd25b3e4a6f9a7a2ad784625c3bec2b8d27b81aaa", size = 99506, upload-time = "2026-09-26T20:29:06.054Z" },
 ]
 
 [[package]]
@@ -975,15 +948,6 @@ wheels = [
 ]
 
 [[package]]
-name = "nodeenv"
-version = "1.12.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/e6/99/d27cfc9518f49e4cbc25c683ec7cf8704a9d31311341c291c0e78ddf791b/nodeenv-1.12.0.tar.gz", hash = "sha256:4ea7f88339310afebc3253f2c7a91b94bacf97d73a36a5c108962abdfaca501e", size = 131292, upload-time = "2026-10-31T19:03:18.847Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/2d/6a/8a9ac7d5e2f7cf53c459bfef90ebc17a2f8cd54b665af96799d4c534840e/nodeenv-1.12.0-py3-none-any.whl", hash = "sha256:80644d65c10cc2be12e3e4b54b3367ff288c7ad24ae75c2dcc65454fc7449d4d", size = 39442, upload-time = "2026-10-31T19:03:17.427Z" },
-]
-
-[[package]]
 name = "numpy"
 version = "2.2.6"
 source = { registry = "https://pypi.org/simple" }
@@ -1116,19 +1080,20 @@ wheels = [
 ]
 
 [[package]]
-name = "pre-commit"
-version = "2.21.0"
+name = "prek"
+version = "0.5.11"
 source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "cfgv" },
-    { name = "identify" },
-    { name = "nodeenv" },
-    { name = "pyyaml" },
-    { name = "virtualenv" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/6b/00/1637ae945c6e10838ef5c41965f1c864e59301811bb203e979f335608e7c/pre_commit-2.21.0.tar.gz", hash = "sha256:31ef31af7e474a8d8995027fefdfcf509b5c913ff31f2015b4ec4beb26a6f658", size = 174966, upload-time = "2022-12-25T22:53:01.144Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/19/0d/8f661ef91334d8afe883a51f586628bb0a18c5077b39dc7c2754bc5335da/prek-0.5.11.tar.gz", hash = "sha256:99c8363ca07b881dc49cf71eb3c362670c95d0d554fc375ceee0245548081829", size = 619436, upload-time = "2026-11-16T06:42:02.693Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a6/6b/6cfe3a8b351b54f4b6c6d2ad4286804e3367f628dce379c603d3b96635f4/pre_commit-2.21.0-py2.py3-none-any.whl", hash = "sha256:e2f91727039fc39a92f58a588a25b87f936de6567eed4f0e673e0507edc75bad", size = 201938, upload-time = "2022-12-25T22:52:59.649Z" },
+    { url = "https://files.pythonhosted.org/packages/26/33/b56b4898fe9a81e250d31e39cce0ae5705ee07609aa5f013cd22cfd781bc/prek-0.5.11-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:95da482d8f1d3323beea219e95b6bbe31a27d3b14943148d3c4eac94e9f7d7ee", size = 5916762, upload-time = "2026-11-16T06:41:46.081Z" },
+    { url = "https://files.pythonhosted.org/packages/ad/24/ef97844954e5a89c79de675d22fad0aa549db21c32226dde4a12eef5da6b/prek-0.5.11-py3-none-macosx_11_0_arm64.whl", hash = "sha256:2e530bd4c8975c6ac6eae20c70fa54c50714d56279040cc3c2b0bce279c0c84e", size = 5565126, upload-time = "2026-11-16T06:41:48.031Z" },
+    { url = "https://files.pythonhosted.org/packages/15/53/57e487d315e1fe7b1b11b1df01233f3c9cda14502f61ba76c34991d80358/prek-0.5.11-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.musllinux_1_1_aarch64.whl", hash = "sha256:1cce91fe6524e1b2dfc4e5f40353caa0b62e2db9ae4b2bab314958027663a712", size = 5699656, upload-time = "2026-11-16T06:41:49.768Z" },
+    { url = "https://files.pythonhosted.org/packages/19/25/96988fbaf7bb960028fc4161ed734d0950bfda720c37206b3c6d07e044c4/prek-0.5.11-py3-none-manylinux2014_ppc64le.manylinux_2_17_ppc64le.whl", hash = "sha256:c343b4e40e5aa5851fd0526c49ad8f52c4c688cde848fa95f57db91c15c67215", size = 6130515, upload-time = "2026-11-16T06:41:51.727Z" },
+    { url = "https://files.pythonhosted.org/packages/02/f0/35e94ecd6eab935705e68cfb33af06d27db4693a49214171a9adfcecb756/prek-0.5.11-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:ca78936abfb2793ba9d6b9b4ac0e4eb13189bcfabd16d94c29aa573963bac87f", size = 5991609, upload-time = "2026-11-16T06:41:53.625Z" },
+    { url = "https://files.pythonhosted.org/packages/f9/44/a63b178a08d5bca1f4cfdef7305344195015fb6d5ff19be514b3a8a24f52/prek-0.5.11-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:c90b274d8eb35f28d6b70907b9d757072e20dccde1bdb7d19eeb85aac9c37ee3", size = 5682010, upload-time = "2026-11-16T06:41:55.592Z" },
+    { url = "https://files.pythonhosted.org/packages/f2/d6/0c8f2770bf03408e6c35ebea6e858d2f33d0e4037562a8f6092f73fd4223/prek-0.5.11-py3-none-musllinux_1_1_x86_64.whl", hash = "sha256:e5cbd96ed40c04a7909d98a9b8cd1d38e8e63d52e97932f09e1733b9f51bd6ac", size = 6146351, upload-time = "2026-11-16T06:41:57.479Z" },
+    { url = "https://files.pythonhosted.org/packages/06/a5/88d4df7a4cd2d53626031beb3be69017b688a9e13828d0e8c6e1c1c3aae2/prek-0.5.11-py3-none-win_amd64.whl", hash = "sha256:96503d57ea00e3f2b10942b340031396c7956b602ebb3719d090a401653800da", size = 5570867, upload-time = "2026-11-16T06:41:59.119Z" },
+    { url = "https://files.pythonhosted.org/packages/ae/d1/e502bce18ae966dbf4c8a11ceb4157bde87da0bd0ee1d47bcecc0fe6cca0/prek-0.5.11-py3-none-win_arm64.whl", hash = "sha256:e74faafdaf9512580c5d0fefa2891d5a092f92a4ff4e996cae6869922d830e32", size = 5515058, upload-time = "2026-11-16T06:42:01.215Z" },
 ]
 
 [[package]]
@@ -1336,18 +1301,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/0e/df/f15f80383f152452d8985b36d95cb8751f901a3e0ff4cd27f7e118f168e2/python_dateutil-3.0.0.tar.gz", hash = "sha256:7ebcb3c29a92f3ceafe79a7a48a5c45677e9e004bbeec5742ac0bbb00560b7a2", size = 271066, upload-time = "2026-10-21T23:41:45.075Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5a/17/cebee01d1c0c1441174cf0456ddc91b280d79acb65340c05e41d77866ee8/python_dateutil-3.0.0-py2.py3-none-any.whl", hash = "sha256:3c79630202e4152c6add678446984236efe4f57e84d8e892aab0637bab82e9fd", size = 94659, upload-time = "2026-10-21T23:41:43.431Z" },
-]
-
-[[package]]
-name = "python-discovery"
-version = "1.9.5"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "filelock" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/68/55/70b46fae646bc6f5cb5e82569949d925cff1c7b5ce20ec4a11e0d977f8c6/python_discovery-1.9.5.tar.gz", hash = "sha256:86279f5d2728bc067de28b7ddc571be2eacc2ae0e7048f8629d2481a0f8848a2", size = 141121, upload-time = "2026-11-06T15:32:11.331Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ac/35/25bd092ca8a7e71192afdca67fbff4f797da74408e74ac3626e13b409ec0/python_discovery-1.9.5-py3-none-any.whl", hash = "sha256:a1fae8fca11e4bc61e38491c2aafff29e430b3c5e272d51ae52fb895bc4c0fac", size = 44377, upload-time = "2026-11-06T15:32:09.821Z" },
 ]
 
 [[package]]
@@ -1707,23 +1660,6 @@ wheels = [
 ]
 
 [[package]]
-name = "virtualenv"
-version = "21.15.6"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "distlib" },
-    { name = "filelock" },
-    { name = "packaging" },
-    { name = "platformdirs" },
-    { name = "python-discovery" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/b3/bd/e40ad2df6a9efc1f859ea23d63fd7371cff68252833f182ca9af819bb4d3/virtualenv-21.15.6.tar.gz", hash = "sha256:c8b65c7d206ca6ef18de9352c160b3f04f66fff9f6b0ec8fd31f14688eba52c4", size = 5641659, upload-time = "2026-11-06T18:17:32.46Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/0a/63/fd514dee3159f74a96ac01beb8f460b65e4ef0b972f63f4fe9f0cd2aa0e3/virtualenv-21.15.6-py3-none-any.whl", hash = "sha256:4b99ab9b95ff11043939bb4cad2fa0449175fa5a478372864f62160cb6c1a7ed", size = 5680963, upload-time = "2026-11-06T18:17:30.128Z" },
-]
-
-[[package]]
 name = "watchdog"
 version = "6.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1787,7 +1723,7 @@ dev = [
     { name = "commitizen" },
     { name = "mypy" },
     { name = "pandas-stubs" },
-    { name = "pre-commit" },
+    { name = "prek" },
     { name = "pytest" },
     { name = "python-dotenv" },
     { name = "responses" },
@@ -1815,7 +1751,7 @@ requires-dist = [
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.5.1,<2" },
     { name = "pandas", specifier = ">=2.2.2" },
     { name = "pandas-stubs", marker = "extra == 'dev'", specifier = ">=2.0.1.230501,<3" },
-    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=2.20.0,<3" },
+    { name = "prek", marker = "extra == 'dev'", specifier = ">=0.3,<1" },
     { name = "pydicom", specifier = "==3.0.1" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.1.2,<8" },
     { name = "pytest-mock", specifier = ">=3.8.2" },

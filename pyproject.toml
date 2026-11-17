@@ -28,7 +28,7 @@ dev = [
     "commitizen>=2.31.0,<3",
     # TODO: Switch type library to ty?
     "mypy>=1.5.1,<2",
-    "pre-commit>=2.20.0,<3",
+    "prek>=0.3,<1",
     "pytest>=7.1.2,<8",
     "python-dotenv>=0.20.0,<0.21",
     "responses>=0.21.0,<0.22",
