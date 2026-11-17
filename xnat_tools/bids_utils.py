@@ -1001,7 +1001,7 @@ def convert_mrs(
 
     if len(mrs_dicomfiles) > 1:
         _logger.warning(
-            "More than one spectroscopy DICOM per scan." f"Processing only {mrs_dicomfiles[0]}"
+            f"More than one spectroscopy DICOM per scan.Processing only {mrs_dicomfiles[0]}"
         )
 
     mrs_keys = str.split(mrs_scan_name, "_")
@@ -1101,8 +1101,9 @@ def convert_tb1tfl(subject, session_suffix, bids_experiment_dir, tb1tfl_tarbase)
                 )
             else:
                 _logger.warning(
-                    "Could not find the two TB1TFL DICOM files. " "Skipping TB1TFL BIDS conversion."
+                    "Could not find the two TB1TFL DICOM files. Skipping TB1TFL BIDS conversion."
                 )
+
             return
 
         # Run dcm2niix (no shell=True)

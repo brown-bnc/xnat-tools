@@ -107,7 +107,6 @@ def xnat2bids(
     Export DICOM images from an XNAT experiment to a BIDS compliant directory
     """
     if not skip_export:
-
         project, subject, session_suffix = dicom_export(
             session,
             bids_root_dir,
@@ -127,7 +126,6 @@ def xnat2bids(
         )
 
     if not export_only:
-
         if "project" not in locals():
             conn = establish_connection(user, password)
             project, subject, session_suffix = get_project_subject_session(

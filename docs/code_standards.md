@@ -25,7 +25,7 @@ bump_pattern = "^(break|new|fix|hotfix)"
 bump_map = {"break" = "MAJOR", "new" = "MINOR", "fix" = "PATCH", "hotfix" = "PATCH"}
 ```
 
-When a PR is merged to the main branch, a dry-run of the Commitizen's bump action is run. If indeed a new version is created, you can manually trigger the **publish** workflow to tag a release, commit new docs and build and push the docker image to ghcr.io. 
+When a PR is merged to the main branch, a dry-run of the Commitizen's bump action is run. If indeed a new version is created, you can manually trigger the **publish** workflow to tag a release, commit new docs and build and push the docker image to ghcr.io.
 
 ## Testing
 
@@ -84,7 +84,7 @@ docker run -ti --rm -v ${bids_directory}:/data:ro bids/validator /data
 
 This repository has pre-commit hooks configured to enforce typing and formatting.
 
-To set up the hooks, run 
+To set up the hooks, run
 
 ```
 uv pip install -e '.[dev, docs]'
@@ -98,7 +98,7 @@ If you would like to run on all files (not just staged ones), you can run
 pre-commit run --all-files
 ```
 
-The following hooks are set up 
+The following hooks are set up
 - [isort](https://github.com/timothycrosley/isort) - Sorting imports
 - [black](https://github.com/ambv/black) - Formatting
 - [flake8](https://gitlab.com/pycqa/flake8) - Linting
@@ -154,7 +154,7 @@ export VERSION=dev
 (envsubst '${VERSION}' < mkdocs-template.yml) > mkdocs.yml
 mkdir site
 #bring contents from gh-pages branch
-mkdocs-versioning sync 
+mkdocs-versioning sync
 #clean dev environment and problematic .git folder
 rm -rf ./site/dev/
 rm -rf ./site/.git/
@@ -175,7 +175,7 @@ mkdocs-versioning -v deploy
 ⚠ After deployment, `mkdocs` prints
 
 ```
-[gh_deploy.py:134]: Your documentation should shortly be available at: https://brown-bnc.github.io/xnat_tools/ 
+[gh_deploy.py:134]: Your documentation should shortly be available at: https://brown-bnc.github.io/xnat_tools/
 ```
 
 However, the URL is https://brown-bnc.github.io/xnat-tools/ dash instead of underscore

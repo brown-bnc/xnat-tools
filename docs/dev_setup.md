@@ -2,7 +2,7 @@
 
 This instructions are for MacOS, while they should roughly be the same for Windows and Linux, they are untested in those environments:
 
-## 1. Package Manager 
+## 1. Package Manager
 
 [Homebrew](https://brew.sh) is a popular package manager for MacOS. It can be installed as follows:
 
@@ -85,13 +85,13 @@ pipx install uv
 Unlike Poetry, uv does not automatically manage virtual environments. You must create and activate one manually:
 
 ```bash
-uv venv 
-source .venv/bin/activate 
+uv venv
+source .venv/bin/activate
 ```
 
 You should see your shell prompt change to reflect that the virtual environment is active.
 
-### Installing Dependencies 
+### Installing Dependencies
 
 With your environment active, install your project’s dependencies:
 
