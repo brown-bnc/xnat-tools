@@ -32,7 +32,7 @@ dev = [
     "commitizen>=2.31.0,<3",
     # TODO #198: Switch type library to ty
     "mypy>=1.5.1,<2",
-    "pre-commit>=2.20.0,<3",
+    "prek>=0.3.2,<1",
     "pytest>=9.0.3,<10",
     "python-dotenv>=1.2.2,<2",
     # TODO #193: Upgrade to v0.26

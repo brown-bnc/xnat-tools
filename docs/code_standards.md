@@ -80,60 +80,52 @@ docker run -ti --rm -v ${bids_directory}:/data:ro bids/validator /data
 
 ## Code Style
 
-#### Pre-Commit hooks
-
-This repository has pre-commit hooks configured to enforce typing and formatting.
-
-To set up the hooks, run
-
-```
-uv pip install -e '.[dev, docs]'
-```
-
-Now, you hooks will run on `git commit`
-
-If you would like to run on all files (not just staged ones), you can run
-
-```
-pre-commit run --all-files
-```
-
-The following hooks are set up
-- [isort](https://github.com/timothycrosley/isort) - Sorting imports
-- [black](https://github.com/ambv/black) - Formatting
-- [flake8](https://gitlab.com/pycqa/flake8) - Linting
-- [mypy](https://github.com/pre-commit/mirrors-mypy) - Typing
-
-Most of these tools are installed as dev dependencies so you can also run them outside of the hooks. More details below
-
 ### Typing
 
 Please use [type hints](https://mypy.readthedocs.io/en/stable/) on all signatures where reasonable.  This will make sure the code is more readable, can be statically tested for type soundness, and helps fill in the documentation.
 
 Run the below to check for type errors:
-```
+
+```shell
 mypy xnat_tools
 ```
 
-### Formatting
+### Linting & Formatting
 
-### black
+[Ruff](https://docs.astral.sh/ruff/) handles both linting and formatting (it replaces black, flake8 and isort). Its configuration lives in `pyproject.toml` under `[tool.ruff]`. This is automatically checked via GitHub Actions. While it is highly recommended to use the hooks, you can also run it directly from the repository root:
 
-The code must conform to `black`'s standards and this is automatically checked via github actions.  While it is highly recommended to run the pre-commit hooks, you can also run black directly  to automatically fix files with `black .` from the root of the `xnat_tools` directory.
-
-### flake8
-The code must not have any egregious linting errors. And others should be minimized as reasonable.
-
-Check for egregious errors:
-```
-flake8 xnat_tools --count --select=E9,F63,F7,F82 --show-source --statistics
+```shell
+# Run the linter
+ruff check --fix .
+# Run the formatter
+ruff format .
 ```
 
-Check for all warnings:
-```
-flake8 xnat_tools --count --exit-zero --max-complexity=12 --max-line-length=88 --statistics
+### Prek Hooks
+
+This repository uses [prek](https://prek.j178.dev) to enforce typing and formatting. The following hooks are set up:
+
+* Built-in prek checks - Trailing whitespace, end-of-file, YAML and large-file checks
+* [ruff](https://docs.astral.sh/ruff/) - Linting, import sorting, and formatting
+* [mypy](https://github.com/pre-commit/mirrors-mypy) - Typing
+
+To set up the hooks, run:
+
+```shell
+# Install the dependencies
+uv pip install -e '.[dev,docs]'
+# Setup the git hooks
+# NOTE: The -f flag will override any old hooks
+prek install -f
 ```
 
+Now, your hooks will run on `git commit`. The same hooks run in CI, so PRs must pass them as well.
+
+If you would like to run on all files (not just staged ones), you can run
+
+```shell
+uv run prek run --all-files
+```
 
 ## Documentation
 
