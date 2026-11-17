@@ -1,5 +1,4 @@
 import os
-from typing import NamedTuple
 
 import pytest
 from dotenv import load_dotenv
@@ -29,13 +28,6 @@ def xnat_bids_root():
     xnat_bids_root = os.environ.get("XNAT_BIDS_ROOT", "tests/xnat2bids")
 
     return xnat_bids_root
-
-
-class TargetSession(NamedTuple):
-    project: str
-    subject: str
-    session: str
-    session_suffix: str
 
 
 @pytest.fixture
