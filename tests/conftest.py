@@ -34,6 +34,8 @@ def xnat_bids_root():
 def demodat_session():
     """Legacy BNC demo session: project, subject, session, session_suffix"""
     return (
+        # TODO: The values here are UPPER_CASE in XNAT but the callers use them in globs
+        # TODO: The globs should lowercase them as that's something the code actually does
         os.environ.get("XNAT_PROJECT", "bnc_demodat"),
         os.environ.get("XNAT_SUBJECT", "005"),
         os.environ.get("XNAT_SESSION", "XNAT_E00114"),
@@ -45,6 +47,8 @@ def demodat_session():
 def demodat_session2():
     """Legacy BNC demo session: project, subject, session, session_suffix"""
     return (
+        # TODO: The values here are UPPER_CASE in XNAT but the callers use them in globs
+        # TODO: The globs should lowercase them as that's something the code actually does
         os.environ.get("XNAT_PROJECT", "bnc_demodat"),
         os.environ.get("XNAT_SUBJECT", "005"),
         os.environ.get("XNAT_SESSION", "XNAT_E00152"),
