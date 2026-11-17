@@ -23,8 +23,8 @@ def test_postprocessing(
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
 
-    _, _, subj5_session = test_session
-    _, _, subj5_session2 = test_session2
+    _, _, subj5_session, _ = test_session
+    _, _, subj5_session2, _ = test_session2
 
     # Run xnat2bids against session 1
     xnat2bids_cmd = shlex.split(
