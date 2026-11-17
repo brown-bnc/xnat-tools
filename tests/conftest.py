@@ -1,4 +1,5 @@
 import os
+from typing import NamedTuple
 
 import pytest
 from dotenv import load_dotenv
@@ -28,6 +29,46 @@ def xnat_bids_root():
     xnat_bids_root = os.environ.get("XNAT_BIDS_ROOT", "tests/xnat2bids")
 
     return xnat_bids_root
+
+
+class TargetSession(NamedTuple):
+    project: str
+    subject: str
+    session: str
+    session_suffix: str
+
+
+@pytest.fixture
+def demodat_session():
+    """Legacy BNC demo session: project, subject, session, session_suffix"""
+    return (
+        os.environ.get("XNAT_PROJECT", "BNC_DEMODAT"),
+        os.environ.get("XNAT_SUBJECT", "005"),
+        os.environ.get("XNAT_SESSION", "XNAT_E00114"),
+        os.environ.get("XNAT_SESSION_SUFFIX", "SESSION1"),
+    )
+
+
+@pytest.fixture
+def demodat_session2():
+    """Legacy BNC demo session: project, subject, session, session_suffix"""
+    return (
+        os.environ.get("XNAT_PROJECT", "BNC_DEMODAT"),
+        os.environ.get("XNAT_SUBJECT", "005"),
+        os.environ.get("XNAT_SESSION", "XNAT_E00152"),
+        os.environ.get("XNAT_SESSION_SUFFIX", "SESSION2"),
+    )
+
+
+@pytest.fixture
+def eeg_session():
+    """BNC Test Session with EEG data: project, subject, session, session_suffix"""
+    return (
+        os.environ.get("XNAT_PROJECT", "BNC_XNATTEST"),
+        os.environ.get("XNAT_SUBJECT", "BNC_METHODS"),
+        os.environ.get("XNAT_SESSION", "XNAT_E00474"),
+        os.environ.get("XNAT_SESSION_SUFFIX", "01"),
+    )
 
 
 @pytest.fixture
