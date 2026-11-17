@@ -13,8 +13,7 @@ dependencies = [
     "pydicom==3.0.2",
     "pytest-mock>=3.8.2",
     "six>=1.16.0",
-    # TODO: Switch type library to ty?
-    # TODO: Otherwise upgrade to v0.29.1
+    # TODO #198: Switch type library to ty
     "typer>=0.15.2",
     # TODO: Should this pin a major version instead? Minor?
     # TODO #195: Upgrade to v0.20.0
@@ -31,8 +30,7 @@ xnat2bids = "xnat_tools.xnat2bids:main"
 dev = [
     # TODO #193: Upgrade to v4
     "commitizen>=2.31.0,<3",
-    # TODO: Switch type library to ty?
-    # TODO #193: Otherwise upgrade to v2.4.1
+    # TODO #198: Switch type library to ty
     "mypy>=1.5.1,<2",
     "pre-commit>=2.20.0,<3",
     "pytest>=9.0.3,<10",
