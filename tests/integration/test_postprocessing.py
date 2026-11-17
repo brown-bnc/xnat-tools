@@ -15,15 +15,16 @@ runner = CliRunner()
 
 # TODO #185: This appears to be doing multiple passes at the export?
 # TODO #185: They should live as their own tests
-def test_postprocessing(xnat_user, xnat_password, xnat_bids_root, xnat_host):
+def test_postprocessing(
+    xnat_user, xnat_password, xnat_bids_root, xnat_host, demodat_session, demodat_session2
+):
     """Integration test for bids-postprocessing executable"""
-
-    # Define target session
-    subj5_session = "XNAT_E00114"
-    subj5_session2 = "XNAT_E00152"
 
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
+
+    _, _, subj5_session, _ = demodat_session
+    _, _, subj5_session2, _ = demodat_session2
 
     # Run xnat2bids against session 1
     xnat2bids_cmd = shlex.split(

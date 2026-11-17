@@ -31,6 +31,43 @@ def xnat_bids_root():
 
 
 @pytest.fixture
+def demodat_session():
+    """Legacy BNC demo session: project, subject, session, session_suffix"""
+    return (
+        # TODO: The values here are UPPER_CASE in XNAT but the callers use them in globs
+        # TODO: The globs should lowercase them as that's something the code actually does
+        os.environ.get("XNAT_PROJECT", "bnc_demodat"),
+        os.environ.get("XNAT_SUBJECT", "005"),
+        os.environ.get("XNAT_SESSION", "XNAT_E00114"),
+        os.environ.get("XNAT_SESSION_SUFFIX", "session1"),
+    )
+
+
+@pytest.fixture
+def demodat_session2():
+    """Legacy BNC demo session: project, subject, session, session_suffix"""
+    return (
+        # TODO: The values here are UPPER_CASE in XNAT but the callers use them in globs
+        # TODO: The globs should lowercase them as that's something the code actually does
+        os.environ.get("XNAT_PROJECT", "bnc_demodat"),
+        os.environ.get("XNAT_SUBJECT", "005"),
+        os.environ.get("XNAT_SESSION", "XNAT_E00152"),
+        os.environ.get("XNAT_SESSION_SUFFIX", "session2"),
+    )
+
+
+@pytest.fixture
+def eeg_session():
+    """BNC Test Session with EEG data: project, subject, session, session_suffix"""
+    return (
+        os.environ.get("XNAT_PROJECT", "BNC_XNATTEST"),
+        os.environ.get("XNAT_SUBJECT", "BNC_METHODS"),
+        os.environ.get("XNAT_SESSION", "XNAT_E00474"),
+        os.environ.get("XNAT_SESSION_SUFFIX", "01"),
+    )
+
+
+@pytest.fixture
 def xnat_host():
     return "https://xnat.bnc.brown.edu"
 

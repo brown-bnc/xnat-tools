@@ -3,19 +3,16 @@ import requests
 from xnat_tools.xnat_utils import establish_connection, get
 
 
-def test_unauthorized_user_exception_handling(xnat_host):
+def test_unauthorized_user_exception_handling(xnat_host, demodat_session):
     """Test unauthorized user HTTPError response"""
-    session = "XNAT_E00114"
-    url = f"{xnat_host}/data/experiments/{session}"
-    user = "bad_user"
-    password = "bad_password"
 
-    connection = establish_connection(user, password)
+    _, _, session, _ = demodat_session
 
+    connection = establish_connection("base_user", "bad_password")
     try:
         get(
             connection,
-            url,
+            f"{xnat_host}/data/experiments/{session}",
             params={
                 "format": "json",
                 "handler": "values",
@@ -28,15 +25,14 @@ def test_unauthorized_user_exception_handling(xnat_host):
 
 def test_xnat_reachable_exception_handling(xnat_host, xnat_user, xnat_password):
     """Test unauthorized user HTTPError response"""
+
     session = "XNAT_BADPROJECT"
-    url = f"{xnat_host}/data/experiments/{session}"
 
     connection = establish_connection(xnat_user, xnat_password)
-
     try:
         get(
             connection,
-            url,
+            f"{xnat_host}/data/experiments/{session}",
             params={
                 "format": "json",
                 "handler": "values",

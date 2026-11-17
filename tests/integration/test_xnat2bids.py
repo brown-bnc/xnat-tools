@@ -12,17 +12,17 @@ from xnat_tools.xnat2bids import app
 runner = CliRunner()
 
 
-def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root):
+def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root, demodat_session):
     """Integration test for xnat2bids executable"""
-
-    # Define target session
-    session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
-    session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "session1")
 
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
 
+    _, _, session, session_suffix = demodat_session
+    # TODO: skipseq is highly dependent on the specific session we use. Pull into the fixture?
     skipseq = ["6"]
+
+    # Run xnat2bids
     xnat2bids_cmd = shlex.split(
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
         -s {' -s '.join(skipseq)}"
@@ -104,15 +104,15 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root):
             f.close()
 
 
-def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root):
-    # Define target session
-    session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
-    session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "session1")
-
+def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root, demodat_session):
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
 
+    _, _, session, session_suffix = demodat_session
+    # TODO: skipseq is highly dependent on the specific session we use. Pull into the fixture?
     skipseq = ["6"]
+
+    # Run xnat2bids
     xnat2bids_cmd = shlex.split(
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
         -s {' -s '.join(skipseq)} --export-only"
@@ -147,14 +147,16 @@ def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root):
                 assert dataset.data_element("SeriesDescription").value == series_desc
 
 
-def test_xnat2bids_skip_export(xnat_user, xnat_password, xnat_bids_root):
-    # Define target session
-    session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
+def test_xnat2bids_skip_export(xnat_user, xnat_password, xnat_bids_root, demodat_session):
 
     # TODO #187: This test relies on the previous test (test_xnat2bids_export_only) seeding the
     # TODO #187 xnat_bids_root directory. This needs to seed its own dicom export to be independent
 
+    _, _, session, _ = demodat_session
+    # TODO: skipseq is highly dependent on the specific session we use. Pull into the fixture?
     skipseq = ["6"]
+
+    # Run xnat2bids
     xnat2bids_cmd = shlex.split(
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
         -s {' -s '.join(skipseq)} --skip-export"
@@ -203,18 +205,17 @@ def test_xnat2bids_skip_export(xnat_user, xnat_password, xnat_bids_root):
             f.close()
 
 
-def test_xnat2bids_eeg(xnat_user, xnat_password, xnat_bids_root):
+def test_xnat2bids_eeg(xnat_user, xnat_password, xnat_bids_root, eeg_session):
     """Integration test for xnat2bids executable converting EEG data to BIDS"""
-
-    # Define target session
-    # NOTE: "BNC Demo Dataset" does not contain EEG data, test against a session that does
-    session = os.environ.get("XNAT_SESSION", "XNAT_E00474")
-    session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "01")
 
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
 
+    _, _, session, session_suffix = eeg_session
+    # TODO: skipseq is highly dependent on the specific session we use. Pull into the fixture?
     skipseq = ["6"]
+
+    # Run xnat2bids
     xnat2bids_cmd = shlex.split(
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
         -s {' -s '.join(skipseq)}"
@@ -252,16 +253,15 @@ def test_xnat2bids_eeg(xnat_user, xnat_password, xnat_bids_root):
         assert os.path.isfile(eeg_file)
 
 
-def test_xnat2bids_correct_dicom_header(xnat_user, xnat_password, xnat_bids_root):
-    # Define target session
-    session = os.environ.get("XNAT_SESSION", "XNAT_E00114")
-    session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "session1")
-
+def test_xnat2bids_correct_dicom_header(xnat_user, xnat_password, xnat_bids_root, demodat_session):
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
 
+    _, _, session, session_suffix = demodat_session
     includeseq = "17"
     dicom_fix_config_file = "./tests/dicom_fix_config_invalid_value.json"
+
+    # Run xnat2bids
     xnat2bids_cmd = shlex.split(
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
         -i {includeseq} --export-only --dicomfix-config {dicom_fix_config_file}"
