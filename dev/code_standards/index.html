@@ -865,17 +865,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#pre-commit-hooks" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pre-Commit hooks
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#typing" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -887,10 +876,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#formatting" class="md-nav__link">
+  <a href="#linting-formatting" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Formatting
+        Linting &amp; Formatting
       
     </span>
   </a>
@@ -898,21 +887,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#black" class="md-nav__link">
+  <a href="#prek-hooks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        black
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#flake8" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        flake8
+        Prek Hooks
       
     </span>
   </a>
@@ -1110,17 +1088,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#pre-commit-hooks" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pre-Commit hooks
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#typing" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1132,10 +1099,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#formatting" class="md-nav__link">
+  <a href="#linting-formatting" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Formatting
+        Linting &amp; Formatting
       
     </span>
   </a>
@@ -1143,21 +1110,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#black" class="md-nav__link">
+  <a href="#prek-hooks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        black
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#flake8" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        flake8
+        Prek Hooks
       
     </span>
   </a>
@@ -1271,40 +1227,38 @@ docker<span class="w"> </span>run<span class="w"> </span>-ti<span class="w"> </s
 </code></pre></div>
 
 <h2 id="code-style">Code Style<a class="headerlink" href="#code-style" title="Permanent link">&para;</a></h2>
-<h4 id="pre-commit-hooks">Pre-Commit hooks<a class="headerlink" href="#pre-commit-hooks" title="Permanent link">&para;</a></h4>
-<p>This repository has pre-commit hooks configured to enforce typing and formatting.</p>
-<p>To set up the hooks, run</p>
-<div class="codehilite"><pre><span></span><code>uv pip install -e '.[dev, docs]'
-</code></pre></div>
-
-<p>Now, you hooks will run on <code>git commit</code></p>
-<p>If you would like to run on all files (not just staged ones), you can run</p>
-<div class="codehilite"><pre><span></span><code>pre-commit run --all-files
-</code></pre></div>
-
-<p>The following hooks are set up
-- <a href="https://github.com/timothycrosley/isort">isort</a> - Sorting imports
-- <a href="https://github.com/ambv/black">black</a> - Formatting
-- <a href="https://gitlab.com/pycqa/flake8">flake8</a> - Linting
-- <a href="https://github.com/pre-commit/mirrors-mypy">mypy</a> - Typing</p>
-<p>Most of these tools are installed as dev dependencies so you can also run them outside of the hooks. More details below</p>
 <h3 id="typing">Typing<a class="headerlink" href="#typing" title="Permanent link">&para;</a></h3>
 <p>Please use <a href="https://mypy.readthedocs.io/en/stable/">type hints</a> on all signatures where reasonable.  This will make sure the code is more readable, can be statically tested for type soundness, and helps fill in the documentation.</p>
 <p>Run the below to check for type errors:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">mypy</span><span class="w"> </span><span class="n">xnat_tools</span>
+<div class="codehilite"><pre><span></span><code>mypy<span class="w"> </span>xnat_tools
 </code></pre></div>
 
-<h3 id="formatting">Formatting<a class="headerlink" href="#formatting" title="Permanent link">&para;</a></h3>
-<h3 id="black">black<a class="headerlink" href="#black" title="Permanent link">&para;</a></h3>
-<p>The code must conform to <code>black</code>'s standards and this is automatically checked via github actions.  While it is highly recommended to run the pre-commit hooks, you can also run black directly  to automatically fix files with <code>black .</code> from the root of the <code>xnat_tools</code> directory.</p>
-<h3 id="flake8">flake8<a class="headerlink" href="#flake8" title="Permanent link">&para;</a></h3>
-<p>The code must not have any egregious linting errors. And others should be minimized as reasonable.</p>
-<p>Check for egregious errors:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">flake8</span><span class="w"> </span><span class="n">xnat_tools</span><span class="w"> </span><span class="o">--</span><span class="n">count</span><span class="w"> </span><span class="o">--</span><span class="n">select</span><span class="o">=</span><span class="n">E9</span><span class="p">,</span><span class="n">F63</span><span class="p">,</span><span class="n">F7</span><span class="p">,</span><span class="n">F82</span><span class="w"> </span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">source</span><span class="w"> </span><span class="o">--</span><span class="n">statistics</span>
+<h3 id="linting-formatting">Linting &amp; Formatting<a class="headerlink" href="#linting-formatting" title="Permanent link">&para;</a></h3>
+<p><a href="https://docs.astral.sh/ruff/">Ruff</a> handles both linting and formatting (it replaces black, flake8 and isort). Its configuration lives in <code>pyproject.toml</code> under <code>[tool.ruff]</code>. This is automatically checked via GitHub Actions. While it is highly recommended to use the hooks, you can also run it directly from the repository root:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Run the linter</span>
+ruff<span class="w"> </span>check<span class="w"> </span>--fix<span class="w"> </span>.
+<span class="c1"># Run the formatter</span>
+ruff<span class="w"> </span>format<span class="w"> </span>.
 </code></pre></div>
 
-<p>Check for all warnings:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">flake8</span><span class="w"> </span><span class="n">xnat_tools</span><span class="w"> </span><span class="o">--</span><span class="n">count</span><span class="w"> </span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">zero</span><span class="w"> </span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">complexity</span><span class="o">=</span><span class="mi">12</span><span class="w"> </span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">line</span><span class="o">-</span><span class="n">length</span><span class="o">=</span><span class="mi">88</span><span class="w"> </span><span class="o">--</span><span class="n">statistics</span>
+<h3 id="prek-hooks">Prek Hooks<a class="headerlink" href="#prek-hooks" title="Permanent link">&para;</a></h3>
+<p>This repository uses <a href="https://prek.j178.dev">prek</a> to enforce typing and formatting. The following hooks are set up:</p>
+<ul>
+<li>Built-in prek checks - Trailing whitespace, end-of-file, YAML and large-file checks</li>
+<li><a href="https://docs.astral.sh/ruff/">ruff</a> - Linting, import sorting, and formatting</li>
+<li><a href="https://github.com/pre-commit/mirrors-mypy">mypy</a> - Typing</li>
+</ul>
+<p>To set up the hooks, run:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Install the dependencies</span>
+uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s1">'.[dev,docs]'</span>
+<span class="c1"># Setup the git hooks</span>
+<span class="c1"># NOTE: The -f flag will override any old hooks</span>
+prek<span class="w"> </span>install<span class="w"> </span>-f
+</code></pre></div>
+
+<p>Now, your hooks will run on <code>git commit</code>. The same hooks run in CI, so PRs must pass them as well.</p>
+<p>If you would like to run on all files (not just staged ones), you can run</p>
+<div class="codehilite"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>prek<span class="w"> </span>run<span class="w"> </span>--all-files
 </code></pre></div>
 
 <h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
