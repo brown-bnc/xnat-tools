@@ -1751,7 +1751,7 @@ requires-dist = [
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.5.1,<2" },
     { name = "pandas", specifier = ">=2.2.2" },
     { name = "pandas-stubs", marker = "extra == 'dev'", specifier = ">=2.0.1.230501,<3" },
-    { name = "prek", marker = "extra == 'dev'", specifier = ">=0.3,<1" },
+    { name = "prek", marker = "extra == 'dev'", specifier = ">=0.3.2,<1" },
     { name = "pydicom", specifier = "==3.0.1" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.1.2,<8" },
     { name = "pytest-mock", specifier = ">=3.8.2" },

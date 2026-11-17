@@ -103,7 +103,7 @@ ruff format .
 
 ### Prek Hooks
 
-This repository uses [prek](https://prek.j178.dev) (configured in `prek.toml`) to enforce typing and formatting. The following hooks are set up:
+This repository uses [prek](https://prek.j178.dev) to enforce typing and formatting. The following hooks are set up:
 
 * Built-in prek checks - Trailing whitespace, end-of-file, YAML and large-file checks
 * [ruff](https://docs.astral.sh/ruff/) - Linting, import sorting, and formatting
