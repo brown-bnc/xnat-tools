@@ -2,8 +2,8 @@
 ### BASE
 ### Enables python and installs relevant packages
 ###################################################################################################
-# !NOTE: This must match the version in the .python-version file
-FROM python:3.10.6 AS base
+# !NOTE: This must match the `requires-python` version in pyproject.toml
+FROM python:3.12.16 AS base
 
 ENV DCM2NIIX_VERSION=v1.0.20241211
 
