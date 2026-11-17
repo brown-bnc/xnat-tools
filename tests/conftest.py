@@ -34,10 +34,10 @@ def xnat_bids_root():
 def demodat_session():
     """Legacy BNC demo session: project, subject, session, session_suffix"""
     return (
-        os.environ.get("XNAT_PROJECT", "BNC_DEMODAT"),
+        os.environ.get("XNAT_PROJECT", "bnc_demodat"),
         os.environ.get("XNAT_SUBJECT", "005"),
         os.environ.get("XNAT_SESSION", "XNAT_E00114"),
-        os.environ.get("XNAT_SESSION_SUFFIX", "SESSION1"),
+        os.environ.get("XNAT_SESSION_SUFFIX", "session1"),
     )
 
 
@@ -45,10 +45,10 @@ def demodat_session():
 def demodat_session2():
     """Legacy BNC demo session: project, subject, session, session_suffix"""
     return (
-        os.environ.get("XNAT_PROJECT", "BNC_DEMODAT"),
+        os.environ.get("XNAT_PROJECT", "bnc_demodat"),
         os.environ.get("XNAT_SUBJECT", "005"),
         os.environ.get("XNAT_SESSION", "XNAT_E00152"),
-        os.environ.get("XNAT_SESSION_SUFFIX", "SESSION2"),
+        os.environ.get("XNAT_SESSION_SUFFIX", "session2"),
     )
 
 
