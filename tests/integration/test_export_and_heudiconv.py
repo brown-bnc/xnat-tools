@@ -20,10 +20,6 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host, demod
 
     # Define target session
     project, subject, session, session_suffix = demodat_session
-    # TODO: Why is this using a different session suffix ?
-    # TODO: I can't seem to find it on xnat in the first place?
-    # TODO: Can we use the other suffix instead?
-    # session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "-1")
 
     # ***************************************************************************
     # Test for successful execution

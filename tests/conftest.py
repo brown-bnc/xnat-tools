@@ -39,12 +39,12 @@ class TargetSession(NamedTuple):
 
 
 @pytest.fixture
-def demodat_session():
+def test_session():
     """Legacy BNC demo session: project, subject, session, session_suffix"""
     return (
-        os.environ.get("XNAT_PROJECT", "BNC_DEMODAT"),
+        os.environ.get("XNAT_PROJECT", "BNC_XNATTEST"),
         os.environ.get("XNAT_SUBJECT", "005"),
-        os.environ.get("XNAT_SESSION", "XNAT_E00114"),
+        os.environ.get("XNAT_SESSION", "XNAT_E03534"),
         os.environ.get("XNAT_SESSION_SUFFIX", "SESSION1"),
     )
 
@@ -66,7 +66,7 @@ def eeg_session():
     return (
         os.environ.get("XNAT_PROJECT", "BNC_XNATTEST"),
         os.environ.get("XNAT_SUBJECT", "BNC_METHODS"),
-        os.environ.get("XNAT_SESSION", "XNAT_E00474"),
+        os.environ.get("XNAT_SESSION", "XNAT_E03532"),
         os.environ.get("XNAT_SESSION_SUFFIX", "01"),
     )
 
