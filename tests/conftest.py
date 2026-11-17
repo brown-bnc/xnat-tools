@@ -34,10 +34,12 @@ def xnat_bids_root():
 def test_session():
     """Legacy BNC demo session: project, subject, session, session_suffix"""
     return (
-        os.environ.get("XNAT_PROJECT", "BNC_XNATTEST"),
+        # TODO: The values here are UPPER_CASE in XNAT but the callers use them in globs
+        # TODO: The globs should lowercase them as that's something the code actually does
+        os.environ.get("XNAT_PROJECT", "bnc_xnattest"),
         os.environ.get("XNAT_SUBJECT", "005"),
         os.environ.get("XNAT_SESSION", "XNAT_E03534"),
-        os.environ.get("XNAT_SESSION_SUFFIX", "SESSION1"),
+        os.environ.get("XNAT_SESSION_SUFFIX", "session1"),
     )
 
 
@@ -45,10 +47,12 @@ def test_session():
 def test_session2():
     """Legacy BNC demo session: project, subject, session, session_suffix"""
     return (
-        os.environ.get("XNAT_PROJECT", "BNC_DEMODAT"),
+        # TODO: The values here are UPPER_CASE in XNAT but the callers use them in globs
+        # TODO: The globs should lowercase them as that's something the code actually does
+        os.environ.get("XNAT_PROJECT", "bnc_xnattest"),
         os.environ.get("XNAT_SUBJECT", "005"),
         os.environ.get("XNAT_SESSION", "XNAT_E00152"),
-        os.environ.get("XNAT_SESSION_SUFFIX", "SESSION2"),
+        os.environ.get("XNAT_SESSION_SUFFIX", "session2"),
     )
 
 
