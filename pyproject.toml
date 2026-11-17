@@ -43,7 +43,7 @@ dev = [
 ]
 
 docs = [
-    # TODO: Switch documentation library
+    # TODO #197: Switch documentation library
     "mkdocs>=1.5,<2",
     "mkdocs-material>=9,<10",
     "mkdocstrings[python]>=0.23,<1",
