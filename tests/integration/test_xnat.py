@@ -3,10 +3,10 @@ import requests
 from xnat_tools.xnat_utils import establish_connection, get
 
 
-def test_unauthorized_user_exception_handling(xnat_host, demodat_session):
+def test_unauthorized_user_exception_handling(xnat_host, test_session):
     """Test unauthorized user HTTPError response"""
 
-    _, _, session = demodat_session
+    _, _, session = test_session
 
     connection = establish_connection("base_user", "bad_password")
     try:

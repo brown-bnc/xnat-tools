@@ -50,7 +50,7 @@ def test_session():
 
 
 @pytest.fixture
-def demodat_session2():
+def test_session2():
     """Legacy BNC demo session: project, subject, session, session_suffix"""
     return (
         os.environ.get("XNAT_PROJECT", "BNC_DEMODAT"),

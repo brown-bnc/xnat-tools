@@ -12,13 +12,13 @@ from xnat_tools.xnat2bids import app
 runner = CliRunner()
 
 
-def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root, demodat_session):
+def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root, test_session):
     """Integration test for xnat2bids executable"""
 
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
 
-    _, _, session, session_suffix = demodat_session
+    _, _, session, session_suffix = test_session
     # TODO: skipseq is highly dependent on the specific session we use. Pull into the fixture?
     skipseq = ["6"]
 
@@ -104,11 +104,11 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root, demodat_session):
             f.close()
 
 
-def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root, demodat_session):
+def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root, test_session):
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
 
-    _, _, session, session_suffix = demodat_session
+    _, _, session, session_suffix = test_session
     # TODO: skipseq is highly dependent on the specific session we use. Pull into the fixture?
     skipseq = ["6"]
 
@@ -147,12 +147,12 @@ def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root, demodat
                 assert dataset.data_element("SeriesDescription").value == series_desc
 
 
-def test_xnat2bids_skip_export(xnat_user, xnat_password, xnat_bids_root, demodat_session):
+def test_xnat2bids_skip_export(xnat_user, xnat_password, xnat_bids_root, test_session):
 
     # TODO #187: This test relies on the previous test (test_xnat2bids_export_only) seeding the
     # TODO #187 xnat_bids_root directory. This needs to seed its own dicom export to be independent
 
-    _, _, session = demodat_session
+    _, _, session = test_session
     # TODO: skipseq is highly dependent on the specific session we use. Pull into the fixture?
     skipseq = ["6"]
 
@@ -253,11 +253,11 @@ def test_xnat2bids_eeg(xnat_user, xnat_password, xnat_bids_root, eeg_session):
         assert os.path.isfile(eeg_file)
 
 
-def test_xnat2bids_correct_dicom_header(xnat_user, xnat_password, xnat_bids_root, demodat_session):
+def test_xnat2bids_correct_dicom_header(xnat_user, xnat_password, xnat_bids_root, test_session):
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
 
-    _, _, session, session_suffix = demodat_session
+    _, _, session, session_suffix = test_session
     includeseq = "17"
     dicom_fix_config_file = "./tests/dicom_fix_config_invalid_value.json"
 

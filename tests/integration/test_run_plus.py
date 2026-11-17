@@ -9,13 +9,13 @@ from xnat_tools.xnat2bids import app
 runner = CliRunner()
 
 
-def test_run_plus(xnat_user, xnat_password, xnat_bids_root, demodat_session):
+def test_run_plus(xnat_user, xnat_password, xnat_bids_root, test_session):
     """Integration test for sequence list"""
 
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
 
-    _, _, session, session_suffix = demodat_session
+    _, _, session, session_suffix = test_session
     seqlist = ["10", "11"]
     skiplist = ["6"]
 

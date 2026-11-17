@@ -12,14 +12,14 @@ from xnat_tools.run_heudiconv import app as heudi_app
 runner = CliRunner()
 
 
-def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host, demodat_session):
+def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host, test_session):
     """Integration test for xnat-dicom-export"""
 
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
 
     # Define target session
-    project, subject, session, session_suffix = demodat_session
+    project, subject, session, session_suffix = test_session
 
     # ***************************************************************************
     # Test for successful execution
@@ -104,7 +104,7 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host, demod
             assert idx == "10"
 
 
-def test_heudiconv(xnat_bids_root, demodat_session):
+def test_heudiconv(xnat_bids_root, test_session):
     """Integration test for running the run-heudiconv executable on the output
     of xnat-dicom-export"""
 
@@ -112,7 +112,7 @@ def test_heudiconv(xnat_bids_root, demodat_session):
     # TODO #186: xnat_bids_root directory. This needs to seed its own dicom export to be independent
 
     # Run run_heudiconv
-    project, subject, _, session_suffix = demodat_session
+    project, subject, _, session_suffix = test_session
     run_heudiconv_cmd = shlex.split(
         f"{project} {subject} {xnat_bids_root} --session-suffix {session_suffix}"
     )
