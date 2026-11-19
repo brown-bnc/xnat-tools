@@ -38,7 +38,7 @@ def test_session():
         # TODO: The globs should lowercase them as that's something the code actually does
         os.environ.get("XNAT_PROJECT", "bnc_xnattest"),
         os.environ.get("XNAT_SUBJECT", "005"),
-        os.environ.get("XNAT_SESSION", "XNAT_E03534"),
+        os.environ.get("XNAT_SESSION", "XNAT_E03533"),
         os.environ.get("XNAT_SESSION_SUFFIX", "session1"),
     )
 
@@ -51,7 +51,7 @@ def test_session2():
         # TODO: The globs should lowercase them as that's something the code actually does
         os.environ.get("XNAT_PROJECT", "bnc_xnattest"),
         os.environ.get("XNAT_SUBJECT", "005"),
-        os.environ.get("XNAT_SESSION", "XNAT_E00152"),
+        os.environ.get("XNAT_SESSION", "XNAT_E03534"),
         os.environ.get("XNAT_SESSION_SUFFIX", "session2"),
     )
 
