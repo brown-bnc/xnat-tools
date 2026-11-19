@@ -31,27 +31,27 @@ def xnat_bids_root():
 
 
 @pytest.fixture
-def demodat_session():
+def test_session():
     """Legacy BNC demo session: project, subject, session, session_suffix"""
     return (
         # TODO: The values here are UPPER_CASE in XNAT but the callers use them in globs
         # TODO: The globs should lowercase them as that's something the code actually does
-        os.environ.get("XNAT_PROJECT", "bnc_demodat"),
+        os.environ.get("XNAT_PROJECT", "bnc_xnattest"),
         os.environ.get("XNAT_SUBJECT", "005"),
-        os.environ.get("XNAT_SESSION", "XNAT_E00114"),
+        os.environ.get("XNAT_SESSION", "XNAT_E03533"),
         os.environ.get("XNAT_SESSION_SUFFIX", "session1"),
     )
 
 
 @pytest.fixture
-def demodat_session2():
+def test_session2():
     """Legacy BNC demo session: project, subject, session, session_suffix"""
     return (
         # TODO: The values here are UPPER_CASE in XNAT but the callers use them in globs
         # TODO: The globs should lowercase them as that's something the code actually does
-        os.environ.get("XNAT_PROJECT", "bnc_demodat"),
+        os.environ.get("XNAT_PROJECT", "bnc_xnattest"),
         os.environ.get("XNAT_SUBJECT", "005"),
-        os.environ.get("XNAT_SESSION", "XNAT_E00152"),
+        os.environ.get("XNAT_SESSION", "XNAT_E03534"),
         os.environ.get("XNAT_SESSION_SUFFIX", "session2"),
     )
 
@@ -62,7 +62,7 @@ def eeg_session():
     return (
         os.environ.get("XNAT_PROJECT", "BNC_XNATTEST"),
         os.environ.get("XNAT_SUBJECT", "BNC_METHODS"),
-        os.environ.get("XNAT_SESSION", "XNAT_E00474"),
+        os.environ.get("XNAT_SESSION", "XNAT_E03532"),
         os.environ.get("XNAT_SESSION_SUFFIX", "01"),
     )
 
