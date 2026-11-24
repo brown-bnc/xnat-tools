@@ -11,6 +11,10 @@ from xnat_tools.xnat2bids import app
 
 runner = CliRunner()
 
+# TODO: The breakdown of these tests is a little weird
+# TODO: The second test is just the first half of the first test
+# TODO: And the third test is just the second half of the first test
+
 
 def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root, test_session):
     """Integration test for xnat2bids executable"""
@@ -18,8 +22,14 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root, test_session):
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
 
-    _, _, session, session_suffix = test_session
-    # TODO: skipseq is highly dependent on the specific session we use. Pull into the fixture?
+    # Define target session
+    session_data, session_data_clean, session_path_prefixes = test_session
+    project, subject, session, session_suffix = session_data
+    project_clean, subject_clean, session_clean, session_suffix_clean = session_data_clean
+    pi_path_prefix, project_path_prefix, subject_path_prefix, session_path_prefix = (
+        session_path_prefixes
+    )
+    # TODO: skipseq is dependent on the specific session we use. Pull into the fixture?
     skipseq = ["6"]
 
     # Run xnat2bids
@@ -33,21 +43,21 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root, test_session):
 
     assert r.exit_code == 0
 
-    # TODO: Is this safe as a glob here? Or should it be a computed string
-    filepath = f"{xnat_bids_root}/*/study-*/bids/sub-*/ses-{session_suffix}"
-
     # ***************************************************************************
     # Test for successful execution
     # ***************************************************************************
-    assert len(glob.glob(f"{filepath}/*/*.json")) > 0
-    assert len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
+
+    bids_path = f"{xnat_bids_root}/{pi_path_prefix}/{project_path_prefix}/bids/{subject_path_prefix}/{session_path_prefix}"
+
+    assert len(glob.glob(f"{bids_path}/*/*.json")) > 0
+    assert len(glob.glob(f"{bids_path}/*/*.nii.gz")) > 0
 
     # ***************************************************************************
     # Test for correctness of sequence number given by skipseq
     # ***************************************************************************
-    xnat_export_path = glob.glob(
-        f"{xnat_bids_root}/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
-    )[0]
+
+    xnat_export_path = f"{xnat_bids_root}/{pi_path_prefix}/{project_path_prefix}/xnat_export/{subject_path_prefix}/{session_path_prefix}"
+
     assert os.path.isdir(os.path.join(os.getcwd(), xnat_export_path))
 
     export_subdirs = [f.path for f in os.scandir(xnat_export_path) if f.is_dir()]
@@ -66,41 +76,43 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root, test_session):
                 assert dataset.data_element("ProtocolName").value == series_desc
                 assert dataset.data_element("SeriesDescription").value == series_desc
 
-    bids_dir = glob.glob(f"{xnat_bids_root}/*/study-*/bids")[0]
+    # The base .../bids directory
+    bids_dir = f"{xnat_bids_root}/{pi_path_prefix}/{project_path_prefix}/bids"
 
-    subj_005_session1_fmaps = [
-        f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_phasediff.json",
-        f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_magnitude1.json",
-        f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_magnitude2.json",
-        f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-diffSE_dir-ap_epi.json",
-        f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-diffSE_dir-pa_epi.json",
+    session_bold_fmaps = [
+        f"{bids_dir}/{subject_path_prefix}/{session_path_prefix}/fmap/{subject_path_prefix}_{session_path_prefix}_acq-boldGRE_phasediff.json",
+        f"{bids_dir}/{subject_path_prefix}/{session_path_prefix}/fmap/{subject_path_prefix}_{session_path_prefix}_acq-boldGRE_magnitude1.json",
+        f"{bids_dir}/{subject_path_prefix}/{session_path_prefix}/fmap/{subject_path_prefix}_{session_path_prefix}_acq-boldGRE_magnitude2.json",
     ]
-    session1_bold_intendedfor = [
-        "ses-session1/func/sub-005_ses-session1_task-checks_run-02_bold.nii.gz",
-        "ses-session1/func/sub-005_ses-session1_task-resting_bold.nii.gz",
-        "ses-session1/func/sub-005_ses-session1_task-motionloc_bold.nii.gz",
-        "ses-session1/func/sub-005_ses-session1_task-checks_run-01_bold.nii.gz",
+    session_diff_fmaps = [
+        f"{bids_dir}/{subject_path_prefix}/{session_path_prefix}/fmap/{subject_path_prefix}_{session_path_prefix}_acq-diffSE_dir-ap_epi.json",
+        f"{bids_dir}/{subject_path_prefix}/{session_path_prefix}/fmap/{subject_path_prefix}_{session_path_prefix}_acq-diffSE_dir-pa_epi.json",
     ]
-
-    session1_diff_intendedfor = [
-        "ses-session1/dwi/sub-005_ses-session1_acq-b1500_dir-ap_sbref.nii.gz",
-        "ses-session1/dwi/sub-005_ses-session1_acq-b1500_dir-ap_dwi.nii.gz",
-        "ses-session1/dwi/sub-005_ses-session1_acq-b1500_dir-pa_sbref.nii.gz",
-        "ses-session1/dwi/sub-005_ses-session1_acq-b1500_dir-pa_dwi.nii.gz",
+    session_bold_intendedfor = [
+        f"{session_path_prefix}/func/{subject_path_prefix}_{session_path_prefix}_task-checks_run-02_bold.nii.gz",
+        f"{session_path_prefix}/func/{subject_path_prefix}_{session_path_prefix}_task-resting_bold.nii.gz",
+        f"{session_path_prefix}/func/{subject_path_prefix}_{session_path_prefix}_task-motionloc_bold.nii.gz",
+        f"{session_path_prefix}/func/{subject_path_prefix}_{session_path_prefix}_task-checks_run-01_bold.nii.gz",
+    ]
+    session_diff_intendedfor = [
+        f"{session_path_prefix}/dwi/{subject_path_prefix}_{session_path_prefix}_acq-b1500_dir-ap_sbref.nii.gz",
+        f"{session_path_prefix}/dwi/{subject_path_prefix}_{session_path_prefix}_acq-b1500_dir-ap_dwi.nii.gz",
+        f"{session_path_prefix}/dwi/{subject_path_prefix}_{session_path_prefix}_acq-b1500_dir-pa_sbref.nii.gz",
+        f"{session_path_prefix}/dwi/{subject_path_prefix}_{session_path_prefix}_acq-b1500_dir-pa_dwi.nii.gz",
     ]
 
     # Verify session1 bold fmaps have been processed.
-    for json_file in subj_005_session1_fmaps[:3]:
+    for json_file in session_bold_fmaps:
         with open(json_file, "r") as f:
             data = json.load(f)
-            assert sorted(data["IntendedFor"]) == sorted(session1_bold_intendedfor)
+            assert sorted(data["IntendedFor"]) == sorted(session_bold_intendedfor)
             f.close()
 
     # Verify session1 diffusion fmaps have been processed.
-    for json_file in subj_005_session1_fmaps[3:]:
+    for json_file in session_diff_fmaps:
         with open(json_file, "r") as f:
             data = json.load(f)
-            assert sorted(data["IntendedFor"]) == sorted(session1_diff_intendedfor)
+            assert sorted(data["IntendedFor"]) == sorted(session_diff_intendedfor)
             f.close()
 
 
@@ -108,8 +120,14 @@ def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root, test_se
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
 
-    _, _, session, session_suffix = test_session
-    # TODO: skipseq is highly dependent on the specific session we use. Pull into the fixture?
+    # Define target session
+    session_data, session_data_clean, session_path_prefixes = test_session
+    project, subject, session, session_suffix = session_data
+    project_clean, subject_clean, session_clean, session_suffix_clean = session_data_clean
+    pi_path_prefix, project_path_prefix, subject_path_prefix, session_path_prefix = (
+        session_path_prefixes
+    )
+    # TODO: skipseq is dependent on the specific session we use. Pull into the fixture?
     skipseq = ["6"]
 
     # Run xnat2bids
@@ -123,14 +141,11 @@ def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root, test_se
 
     assert r.exit_code == 0
 
-    xnat_export_path = glob.glob(
-        f"{xnat_bids_root}/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
-    )[0]
+    xnat_export_path = f"{xnat_bids_root}/{pi_path_prefix}/{project_path_prefix}/xnat_export/{subject_path_prefix}/{session_path_prefix}"
 
     assert os.path.isdir(os.path.join(os.getcwd(), xnat_export_path))
 
     export_subdirs = [f.path for f in os.scandir(xnat_export_path) if f.is_dir()]
-
     for d in export_subdirs:
         series_desc = os.path.basename(d)
         for f in os.listdir(d):
@@ -152,8 +167,14 @@ def test_xnat2bids_skip_export(xnat_user, xnat_password, xnat_bids_root, test_se
     # TODO #187: This test relies on the previous test (test_xnat2bids_export_only) seeding the
     # TODO #187 xnat_bids_root directory. This needs to seed its own dicom export to be independent
 
-    _, _, session, _ = test_session
-    # TODO: skipseq is highly dependent on the specific session we use. Pull into the fixture?
+    # Define target session
+    session_data, session_data_clean, session_path_prefixes = test_session
+    project, subject, session, session_suffix = session_data
+    project_clean, subject_clean, session_clean, session_suffix_clean = session_data_clean
+    pi_path_prefix, project_path_prefix, subject_path_prefix, session_path_prefix = (
+        session_path_prefixes
+    )
+    # TODO: skipseq is dependent on the specific session we use. Pull into the fixture?
     skipseq = ["6"]
 
     # Run xnat2bids
@@ -167,42 +188,43 @@ def test_xnat2bids_skip_export(xnat_user, xnat_password, xnat_bids_root, test_se
 
     assert r.exit_code == 0
 
-    bids_dir = glob.glob(f"{xnat_bids_root}/*/study-*/bids")[0]
+    # The base .../bids directory
+    bids_dir = f"{xnat_bids_root}/{pi_path_prefix}/{project_path_prefix}/bids"
 
-    # TODO: All of these need to be computed from the fixtures
-    subj_005_session1_fmaps = [
-        f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_phasediff.json",
-        f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_magnitude1.json",
-        f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_magnitude2.json",
-        f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-diffSE_dir-ap_epi.json",
-        f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-diffSE_dir-pa_epi.json",
+    session_bold_fmaps = [
+        f"{bids_dir}/{subject_path_prefix}/{session_path_prefix}/fmap/{subject_path_prefix}_{session_path_prefix}_acq-boldGRE_phasediff.json",
+        f"{bids_dir}/{subject_path_prefix}/{session_path_prefix}/fmap/{subject_path_prefix}_{session_path_prefix}_acq-boldGRE_magnitude1.json",
+        f"{bids_dir}/{subject_path_prefix}/{session_path_prefix}/fmap/{subject_path_prefix}_{session_path_prefix}_acq-boldGRE_magnitude2.json",
     ]
-    session1_bold_intendedfor = [
-        "ses-session1/func/sub-005_ses-session1_task-checks_run-02_bold.nii.gz",
-        "ses-session1/func/sub-005_ses-session1_task-resting_bold.nii.gz",
-        "ses-session1/func/sub-005_ses-session1_task-motionloc_bold.nii.gz",
-        "ses-session1/func/sub-005_ses-session1_task-checks_run-01_bold.nii.gz",
+    session_diff_fmaps = [
+        f"{bids_dir}/{subject_path_prefix}/{session_path_prefix}/fmap/{subject_path_prefix}_{session_path_prefix}_acq-diffSE_dir-ap_epi.json",
+        f"{bids_dir}/{subject_path_prefix}/{session_path_prefix}/fmap/{subject_path_prefix}_{session_path_prefix}_acq-diffSE_dir-pa_epi.json",
     ]
-
-    session1_diff_intendedfor = [
-        "ses-session1/dwi/sub-005_ses-session1_acq-b1500_dir-ap_sbref.nii.gz",
-        "ses-session1/dwi/sub-005_ses-session1_acq-b1500_dir-ap_dwi.nii.gz",
-        "ses-session1/dwi/sub-005_ses-session1_acq-b1500_dir-pa_sbref.nii.gz",
-        "ses-session1/dwi/sub-005_ses-session1_acq-b1500_dir-pa_dwi.nii.gz",
+    session_bold_intendedfor = [
+        f"{session_path_prefix}/func/{subject_path_prefix}_{session_path_prefix}_task-checks_run-02_bold.nii.gz",
+        f"{session_path_prefix}/func/{subject_path_prefix}_{session_path_prefix}_task-resting_bold.nii.gz",
+        f"{session_path_prefix}/func/{subject_path_prefix}_{session_path_prefix}_task-motionloc_bold.nii.gz",
+        f"{session_path_prefix}/func/{subject_path_prefix}_{session_path_prefix}_task-checks_run-01_bold.nii.gz",
+    ]
+    session_diff_intendedfor = [
+        f"{session_path_prefix}/dwi/{subject_path_prefix}_{session_path_prefix}_acq-b1500_dir-ap_sbref.nii.gz",
+        f"{session_path_prefix}/dwi/{subject_path_prefix}_{session_path_prefix}_acq-b1500_dir-ap_dwi.nii.gz",
+        f"{session_path_prefix}/dwi/{subject_path_prefix}_{session_path_prefix}_acq-b1500_dir-pa_sbref.nii.gz",
+        f"{session_path_prefix}/dwi/{subject_path_prefix}_{session_path_prefix}_acq-b1500_dir-pa_dwi.nii.gz",
     ]
 
     # Verify session1 bold fmaps have been processed.
-    for json_file in subj_005_session1_fmaps[:3]:
+    for json_file in session_bold_fmaps:
         with open(json_file, "r") as f:
             data = json.load(f)
-            assert sorted(data["IntendedFor"]) == sorted(session1_bold_intendedfor)
+            assert sorted(data["IntendedFor"]) == sorted(session_bold_intendedfor)
             f.close()
 
     # Verify session1 diffusion fmaps have been processed.
-    for json_file in subj_005_session1_fmaps[3:]:
+    for json_file in session_diff_fmaps:
         with open(json_file, "r") as f:
             data = json.load(f)
-            assert sorted(data["IntendedFor"]) == sorted(session1_diff_intendedfor)
+            assert sorted(data["IntendedFor"]) == sorted(session_diff_intendedfor)
             f.close()
 
 
@@ -212,8 +234,14 @@ def test_xnat2bids_eeg(xnat_user, xnat_password, xnat_bids_root, eeg_session):
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
 
-    _, _, session, session_suffix = eeg_session
-    # TODO: skipseq is highly dependent on the specific session we use. Pull into the fixture?
+    # Define target session
+    session_data, session_data_clean, session_path_prefixes = eeg_session
+    project, subject, session, session_suffix = session_data
+    project_clean, subject_clean, session_clean, session_suffix_clean = session_data_clean
+    pi_path_prefix, project_path_prefix, subject_path_prefix, session_path_prefix = (
+        session_path_prefixes
+    )
+    # TODO: skipseq is dependent on the specific session we use. Pull into the fixture?
     skipseq = ["6"]
 
     # Run xnat2bids
@@ -227,31 +255,34 @@ def test_xnat2bids_eeg(xnat_user, xnat_password, xnat_bids_root, eeg_session):
 
     assert r.exit_code == 0
 
-    filepath = f"{xnat_bids_root}/*/study-*/bids/sub-*/ses-{session_suffix}"
-
     # ***************************************************************************
     # Test for successful execution
     # ***************************************************************************
-    assert len(glob.glob(f"{filepath}/*/*.json")) > 0
-    assert len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
+
+    bids_path = f"{xnat_bids_root}/{pi_path_prefix}/{project_path_prefix}/bids/{subject_path_prefix}/{session_path_prefix}"
+
+    assert len(glob.glob(f"{bids_path}/*/*.json")) > 0
+    assert len(glob.glob(f"{bids_path}/*/*.nii.gz")) > 0
 
     # ***************************************************************************
     # Test for successful BIDS conversion of EEG data
     # ***************************************************************************
-    bids_dir = glob.glob(f"{xnat_bids_root}/*/study-*/bids")[0]
+
+    # The base .../bids directory
+    bids_dir = f"{xnat_bids_root}/{pi_path_prefix}/{project_path_prefix}/bids"
 
     # TODO: All of these need to be computed from the fixtures
-    subj_bncmethods_ses_01_eeg = [
-        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-todo_eeg.eeg",
-        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-todo_eeg.json",
-        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-todo_eeg.vhdr",
-        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-todo_eeg.vmrk",
-        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-todo_events.json",
-        f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-todo_events.tsv",
+    session_eeg = [
+        f"{bids_dir}/{subject_path_prefix}/{session_path_prefix}/eeg/{subject_path_prefix}_{session_path_prefix}_task-todo_eeg.eeg",
+        f"{bids_dir}/{subject_path_prefix}/{session_path_prefix}/eeg/{subject_path_prefix}_{session_path_prefix}_task-todo_eeg.json",
+        f"{bids_dir}/{subject_path_prefix}/{session_path_prefix}/eeg/{subject_path_prefix}_{session_path_prefix}_task-todo_eeg.vhdr",
+        f"{bids_dir}/{subject_path_prefix}/{session_path_prefix}/eeg/{subject_path_prefix}_{session_path_prefix}_task-todo_eeg.vmrk",
+        f"{bids_dir}/{subject_path_prefix}/{session_path_prefix}/eeg/{subject_path_prefix}_{session_path_prefix}_task-todo_events.json",
+        f"{bids_dir}/{subject_path_prefix}/{session_path_prefix}/eeg/{subject_path_prefix}_{session_path_prefix}_task-todo_events.tsv",
     ]
 
     # Verify session1 diffusion fmaps have been processed.
-    for eeg_file in subj_bncmethods_ses_01_eeg:
+    for eeg_file in session_eeg:
         assert os.path.isfile(eeg_file)
 
 
@@ -259,14 +290,21 @@ def test_xnat2bids_correct_dicom_header(xnat_user, xnat_password, xnat_bids_root
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
 
-    _, _, session, session_suffix = test_session
-    includeseq = "17"
+    # Define target session
+    session_data, session_data_clean, session_path_prefixes = test_session
+    project, subject, session, session_suffix = session_data
+    project_clean, subject_clean, session_clean, session_suffix_clean = session_data_clean
+    pi_path_prefix, project_path_prefix, subject_path_prefix, session_path_prefix = (
+        session_path_prefixes
+    )
+    # TODO: includeseq is dependent on the specific session we use. Pull into the fixture?
+    includeseq = ["17"]
     dicom_fix_config_file = "./tests/dicom_fix_config_invalid_value.json"
 
     # Run xnat2bids
     xnat2bids_cmd = shlex.split(
         f"{session} {xnat_bids_root} -u {xnat_user} -p {xnat_password} \
-        -i {includeseq} --export-only --dicomfix-config {dicom_fix_config_file}"
+        -i {' -i '.join(includeseq)} --export-only --dicomfix-config {dicom_fix_config_file}"
     )
     print("Running xnat2bids application:")
     r = runner.invoke(app, xnat2bids_cmd)
@@ -274,13 +312,8 @@ def test_xnat2bids_correct_dicom_header(xnat_user, xnat_password, xnat_bids_root
 
     assert r.exit_code == 0
 
-    # TODO: Compute exact path here instead of globs
-    xnat_export_path = glob.glob(
-        f"{xnat_bids_root}/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
-    )[0]
-
+    xnat_export_path = f"{xnat_bids_root}/{pi_path_prefix}/{project_path_prefix}/xnat_export/{subject_path_prefix}/{session_path_prefix}"
     export_subdirs = [f.path for f in os.scandir(xnat_export_path) if f.is_dir()]
-
     for d in export_subdirs:
         for f in os.listdir(d):
             dataset = pydicom.dcmread(os.path.join(d, f))

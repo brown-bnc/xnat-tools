@@ -125,8 +125,8 @@ def bids_postprocess(
             files = os.listdir(bids_experiment_dir)
             includesubj = [x for x in files if x.startswith("sub-")]
 
+        # TODO: This strips "s" "u" and "b". Call "x.removeprefix" instead
         includesubj = [str(x).strip("sub-") for x in includesubj]
-
         skipsubj = [str(x).strip("sub-") for x in skipsubj]
 
         if skipsubj != []:

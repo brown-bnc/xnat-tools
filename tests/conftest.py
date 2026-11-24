@@ -3,6 +3,8 @@ import os
 import pytest
 from dotenv import load_dotenv
 
+from xnat_tools.bids_utils import path_string_preprocess, prepare_path_prefixes
+
 # Pytest will load this file before any of the tests automatically
 # The test fixtures are "asked for" by each test that needs them
 
@@ -32,20 +34,28 @@ def xnat_bids_root():
 
 @pytest.fixture
 def test_session():
-    """Legacy BNC demo session: project, subject, session, session_suffix"""
-    return (
-        # TODO: The values here are UPPER_CASE in XNAT but the callers use them in globs
-        # TODO: The globs should lowercase them as that's something the code actually does
-        os.environ.get("XNAT_PROJECT", "bnc_xnattest"),
-        os.environ.get("XNAT_SUBJECT", "005"),
-        os.environ.get("XNAT_SESSION", "XNAT_E03533"),
-        os.environ.get("XNAT_SESSION_SUFFIX", "session1"),
-    )
+    """Test BNC demo session: project, subject, session, session_suffix"""
+    project = os.environ.get("XNAT_PROJECT", "BNC_XNATTEST")
+    subject = os.environ.get("XNAT_SUBJECT", "005")
+    session_id = os.environ.get("XNAT_SESSION", "XNAT_E03533")
+    session_suffix = os.environ.get("XNAT_SESSION_SUFFIX", "SESSION1")
+
+    # The relevant session data
+    session = (project, subject, session_id, session_suffix)
+    # The cleaned session data
+    session_data_clean = path_string_preprocess(project, subject, session_suffix)
+
+    # The directory names of each piece of session data
+    # TODO: This is not always a directory, sometimes part of a filename
+    # TODO: We need a better name for it
+    session_path_prefixes = prepare_path_prefixes(*session_data_clean)
+
+    return (session, session_data_clean, session_path_prefixes)
 
 
 @pytest.fixture
 def test_session2():
-    """Legacy BNC demo session: project, subject, session, session_suffix"""
+    """Test BNC demo session: project, subject, session, session_suffix"""
     return (
         # TODO: The values here are UPPER_CASE in XNAT but the callers use them in globs
         # TODO: The globs should lowercase them as that's something the code actually does

@@ -20,19 +20,35 @@ def test_postprocessing(
 ):
     """Integration test for bids-postprocessing executable"""
 
+    # TODO: This test assumes test_session and test_session2 are a part of the same project
+    # TODO: But the variables can be overridden so this is not necessarily the case
+
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
 
-    # NOTE: The study is the same between the same two sessions so we only need to pull it out once
-    study1, subject1, session1, session_suffix1 = test_session
-    _, subject2, session2, session_suffix2 = test_session2
+    # Define target sessions
+    session_data1, session_data_clean1, session_path_prefixes1 = test_session
+    project1, subject1, session1, session_suffix1 = session_data1
+    project_clean1, subject_clean1, session_clean1, session_suffix_clean1 = session_data_clean1
+    pi_path_prefix1, project_path_prefix1, subject_path_prefix1, session_path_prefix1 = (
+        session_path_prefixes1
+    )
+    session_data2, session_data_clean2, session_path_prefixes2 = test_session2
+    # NOTE: The project is the same between the two sessions so we only need to pull it out once
+    project2, subject2, session2, session_suffix2 = session_data2
+    project_clean2, subject_clean2, session_clean2, session_suffix_clean2 = session_data_clean2
+    pi_path_prefix2, project_path_prefix2, subject_path_prefix2, session_path_prefix2 = (
+        session_path_prefixes2
+    )
+
+    # TODO: Is this fixed to the specific study? Does it need to be a part of the fixture?
     skiplist = ["6"]
 
     # Run xnat2bids against session 1
     xnat2bids_cmd = shlex.split(
         f"{session1} {xnat_bids_root} -u {xnat_user} -p {xnat_password} -s {' -s '.join(skiplist)}"
     )
-    print("Running xnat2bids application:")
+    print("Running xnat2bids application (session 1):")
     r = runner.invoke(xnat2bids_app, xnat2bids_cmd)
     print(r.stdout)
 
@@ -40,47 +56,50 @@ def test_postprocessing(
     xnat2bids_split_cmd = shlex.split(
         f"{session2} {xnat_bids_root} -u {xnat_user} -p {xnat_password} --s {' -s '.join(skiplist)}"
     )
-    print("Running xnat2bids application:")
+    print("Running xnat2bids application (session 2):")
     r = runner.invoke(xnat2bids_app, xnat2bids_split_cmd)
     print(r.stdout)
 
-    # TODO: Should this be split between the two sessions?
-    # TODO: This is not the correct subdir? Need to strip the BNC folder
-    bids_dir = f"{xnat_bids_root}/bnc/study-{study1}/bids"
+    # TODO: This assumes both test sessions are a part of the same project (e.g. same bids_dir)
+    bids_dir = f"{xnat_bids_root}/{pi_path_prefix1}/{project_path_prefix1}/bids"
 
-    # TODO: We should split the "bold" and normal fmaps into separate arrays
-    # TODO: This is what we do for the intendedfor below
-    subj_005_session1_fmaps = [
-        f"{bids_dir}/sub-{subject1}/ses-{session_suffix1}/fmap/sub-{subject1}_ses-{session_suffix1}_acq-boldGRE_phasediff.json",
-        f"{bids_dir}/sub-{subject1}/ses-{session_suffix1}/fmap/sub-{subject1}_ses-{session_suffix1}_acq-boldGRE_magnitude1.json",
-        f"{bids_dir}/sub-{subject1}/ses-{session_suffix1}/fmap/sub-{subject1}_ses-{session_suffix1}_acq-boldGRE_magnitude2.json",
-        f"{bids_dir}/sub-{subject1}/ses-{session_suffix1}/fmap/sub-{subject1}_ses-{session_suffix1}_acq-diffSE_dir-ap_epi.json",
-        f"{bids_dir}/sub-{subject1}/ses-{session_suffix1}/fmap/sub-{subject1}_ses-{session_suffix1}_acq-diffSE_dir-pa_epi.json",
+    session1_bold_fmaps = [
+        f"{bids_dir}/{subject_path_prefix1}/{session_path_prefix1}/fmap/{subject_path_prefix1}_{session_path_prefix1}_acq-boldGRE_phasediff.json",
+        f"{bids_dir}/{subject_path_prefix1}/{session_path_prefix1}/fmap/{subject_path_prefix1}_{session_path_prefix1}_acq-boldGRE_magnitude1.json",
+        f"{bids_dir}/{subject_path_prefix1}/{session_path_prefix1}/fmap/{subject_path_prefix1}_{session_path_prefix1}_acq-boldGRE_magnitude2.json",
     ]
-
-    # TODO: We should split the "bold" and normal fmaps into separate arrays
-    subj_005_session2_fmaps = [
-        f"{bids_dir}/sub-{subject2}/ses-{session_suffix2}/fmap/sub-{subject2}_ses-{session_suffix2}_acq-boldGRE_phasediff.json",
-        f"{bids_dir}/sub-{subject2}/ses-{session_suffix2}/fmap/sub-{subject2}_ses-{session_suffix2}_acq-boldGRE_magnitude1.json",
-        f"{bids_dir}/sub-{subject2}/ses-{session_suffix2}/fmap/sub-{subject2}_ses-{session_suffix2}_acq-boldGRE_magnitude2.json",
-        f"{bids_dir}/sub-{subject2}/ses-{session_suffix2}/fmap/sub-{subject2}_ses-{session_suffix2}_acq-diffSE_dir-ap_epi.json",
-        f"{bids_dir}/sub-{subject2}/ses-{session_suffix2}/fmap/sub-{subject2}_ses-{session_suffix2}_acq-diffSE_dir-pa_epi.json",
+    session1_diff_fmaps = [
+        f"{bids_dir}/{subject_path_prefix1}/{session_path_prefix1}/fmap/{subject_path_prefix1}_{session_path_prefix1}_acq-diffSE_dir-ap_epi.json",
+        f"{bids_dir}/{subject_path_prefix1}/{session_path_prefix1}/fmap/{subject_path_prefix1}_{session_path_prefix1}_acq-diffSE_dir-pa_epi.json",
     ]
+    session1_fmaps = [*session1_bold_fmaps, *session1_diff_fmaps]
 
-    all_fieldmaps = [*subj_005_session1_fmaps, *subj_005_session2_fmaps]
+    session2_bold_fmaps = [
+        f"{bids_dir}/{subject_path_prefix2}/{session_path_prefix2}/fmap/{subject_path_prefix2}_{session_path_prefix2}_acq-boldGRE_phasediff.json",
+        f"{bids_dir}/{subject_path_prefix2}/{session_path_prefix2}/fmap/{subject_path_prefix2}_{session_path_prefix2}_acq-boldGRE_magnitude1.json",
+        f"{bids_dir}/{subject_path_prefix2}/{session_path_prefix2}/fmap/{subject_path_prefix2}_{session_path_prefix2}_acq-boldGRE_magnitude2.json",
+    ]
+    session2_diff_fmaps = [
+        f"{bids_dir}/{subject_path_prefix2}/{session_path_prefix2}/fmap/{subject_path_prefix2}_{session_path_prefix2}_acq-diffSE_dir-ap_epi.json",
+        f"{bids_dir}/{subject_path_prefix2}/{session_path_prefix2}/fmap/{subject_path_prefix2}_{session_path_prefix2}_acq-diffSE_dir-pa_epi.json",
+    ]
+    session2_fmaps = [*session2_bold_fmaps, *session2_diff_fmaps]
 
+    all_fieldmaps = [*session1_fmaps, *session2_fmaps]
+
+    # TODO: Do these need the full path?
     session1_bold_intendedfor = [
-        f"ses-{session_suffix1}/func/sub-{subject1}_ses-{session_suffix1}_task-checks_run-02_bold.nii.gz",
-        f"ses-{session_suffix1}/func/sub-{subject1}_ses-{session_suffix1}_task-resting_bold.nii.gz",
-        f"ses-{session_suffix1}/func/sub-{subject1}_ses-{session_suffix1}_task-motionloc_bold.nii.gz",
-        f"ses-{session_suffix1}/func/sub-{subject1}_ses-{session_suffix1}_task-checks_run-01_bold.nii.gz",
+        f"{session_path_prefix1}/func/{subject_path_prefix1}_{session_path_prefix1}_task-checks_run-02_bold.nii.gz",
+        f"{session_path_prefix1}/func/{subject_path_prefix1}_{session_path_prefix1}_task-resting_bold.nii.gz",
+        f"{session_path_prefix1}/func/{subject_path_prefix1}_{session_path_prefix1}_task-motionloc_bold.nii.gz",
+        f"{session_path_prefix1}/func/{subject_path_prefix1}_{session_path_prefix1}_task-checks_run-01_bold.nii.gz",
     ]
 
     session1_diff_intendedfor = [
-        f"ses-{session_suffix1}/dwi/sub-{subject1}_ses-{session_suffix1}_acq-b1500_dir-ap_sbref.nii.gz",
-        f"ses-{session_suffix1}/dwi/sub-{subject1}_ses-{session_suffix1}_acq-b1500_dir-ap_dwi.nii.gz",
-        f"ses-{session_suffix1}/dwi/sub-{subject1}_ses-{session_suffix1}_acq-b1500_dir-pa_sbref.nii.gz",
-        f"ses-{session_suffix1}/dwi/sub-{subject1}_ses-{session_suffix1}_acq-b1500_dir-pa_dwi.nii.gz",
+        f"{session_path_prefix1}/dwi/{subject_path_prefix1}_{session_path_prefix1}_acq-b1500_dir-ap_sbref.nii.gz",
+        f"{session_path_prefix1}/dwi/{subject_path_prefix1}_{session_path_prefix1}_acq-b1500_dir-ap_dwi.nii.gz",
+        f"{session_path_prefix1}/dwi/{subject_path_prefix1}_{session_path_prefix1}_acq-b1500_dir-pa_sbref.nii.gz",
+        f"{session_path_prefix1}/dwi/{subject_path_prefix1}_{session_path_prefix1}_acq-b1500_dir-pa_dwi.nii.gz",
     ]
 
     # Clean IntendedFor keys from all fieldmaps.
@@ -154,8 +173,10 @@ def test_postprocessing(
         session="",
         includesess=[],
         includesubj=[],
-        # TODO: Should I pass both subject1 and subject2? Even though they're the same?
-        skipsubj=["005"],
+        # TODO: Can I use the raw values here instead?
+        # TODO: The two subjects here are the same, make sure the tests still pass
+        # skipsubj=[subject_clean1],
+        skipsubj=[subject_clean1, subject_clean2],
         skipsess=[],
         log_file="",
         verbose=0,
@@ -172,8 +193,10 @@ def test_postprocessing(
         host=xnat_host,
         session="",
         includesess=[session_suffix1],
-        # TODO: Should I pass both subject1 and subject2? Even though they're the same?
-        includesubj=[subject1],
+        # TODO: Can I use the raw values here instead?
+        # TODO: The two subjects here are the same, make sure the tests still pass
+        # includesubj=[subject_clean1],
+        includesubj=[subject_clean1, subject_clean2],
         skipsubj=[],
         skipsess=[],
         log_file="",
@@ -182,13 +205,13 @@ def test_postprocessing(
     )
 
     # Verify session1 bold fmaps have not been processed.
-    verifyProcessed(subj_005_session1_fmaps[:3], session1_bold_intendedfor)
+    verifyProcessed(session1_bold_fmaps, session1_bold_intendedfor)
 
-    # Verify session1 diffusion fmaps have ot been processed.
-    verifyProcessed(subj_005_session1_fmaps[3:], session1_diff_intendedfor)
+    # Verify session1 diffusion fmaps have not been processed.
+    verifyProcessed(session1_diff_fmaps, session1_diff_intendedfor)
 
     # Verify session2 fmap has not been processed.
-    verifySkipped(subj_005_session2_fmaps)
+    verifySkipped(session2_fmaps)
 
     # Delete each fieldmaps' IntendedFor property.
     cleanIntendedForData(all_fieldmaps)
@@ -210,15 +233,13 @@ def test_postprocessing(
     )
 
     # Verify session1 bold fmaps have been processed.
-    # TODO: We should split these arrays in the variables themselves
-    verifyProcessed(subj_005_session1_fmaps[:3], session1_bold_intendedfor)
+    verifyProcessed(session1_bold_fmaps, session1_bold_intendedfor)
 
     # Verify session1 diffusion fmaps have been processed.
-    # TODO: We should split these arrays in the variables themselves
-    verifyProcessed(subj_005_session1_fmaps[3:], session1_diff_intendedfor)
+    verifyProcessed(session1_diff_fmaps, session1_diff_intendedfor)
 
     # Verify session2 fmap has not been processed.
-    verifySkipped(subj_005_session2_fmaps)
+    verifySkipped(session2_fmaps)
 
     # Delete each fieldmaps' IntendedFor property.
     cleanIntendedForData(all_fieldmaps)
@@ -240,15 +261,13 @@ def test_postprocessing(
     )
 
     # Verify session1 bold fmaps have been processed.
-    # TODO: We should split these arrays in the variables themselves
-    verifyProcessed(subj_005_session1_fmaps[:3], session1_bold_intendedfor)
+    verifyProcessed(session1_bold_fmaps, session1_bold_intendedfor)
 
     # Verify session1 diffusion fmaps have been processed.
-    # TODO: We should split these arrays in the variables themselves
-    verifyProcessed(subj_005_session1_fmaps[3:], session1_diff_intendedfor)
+    verifyProcessed(session1_diff_fmaps, session1_diff_intendedfor)
 
-    # Verify session2 fmaps have not been processed.
-    verifySkipped(subj_005_session2_fmaps)
+    # Verify session2 fmap has not been processed.
+    verifySkipped(session2_fmaps)
 
     # NOTE: you can locally run bids-validator
     # bids_directory=f"{PWD}/{xnat_bids_root}/study-demodat/bids/
