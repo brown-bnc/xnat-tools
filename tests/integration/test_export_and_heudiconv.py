@@ -1,5 +1,3 @@
-import glob
-import os
 import shlex
 
 from typer.testing import CliRunner
@@ -20,11 +18,19 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host, test_
     reset_directory(xnat_bids_root)
 
     # Define target session
-    session_data, session_data_clean, session_path_prefixes = test_session
+    session_data, session_data_clean, session_suffix_path_prefixes = test_session
     project, subject, session, session_suffix = session_data
-    project_clean, subject_clean, session_clean, session_suffix_clean = session_data_clean
-    pi_path_prefix, project_path_prefix, subject_path_prefix, session_path_prefix = (
-        session_path_prefixes
+    project_clean, subject_clean, session_suffix_clean = session_data_clean
+    pi_path_prefix, project_path_prefix, subject_path_prefix, session_suffix_path_prefix = (
+        session_suffix_path_prefixes
+    )
+    export_dir = (
+        xnat_bids_root
+        / pi_path_prefix
+        / project_path_prefix
+        / "xnat-export"
+        / subject_path_prefix
+        / session_suffix_path_prefix
     )
 
     # ***************************************************************************
@@ -36,7 +42,7 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host, test_
 
     p, s, ss = dicom_export(
         session,
-        xnat_bids_root,
+        str(xnat_bids_root),
         user=xnat_user,
         password=xnat_password,
         host=xnat_host,
@@ -56,15 +62,13 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host, test_
     assert s == subject_clean
     assert ss == session_suffix_clean
 
-    filepath = f"{xnat_bids_root}/{pi_path_prefix}/{project_path_prefix}/xnat-export/{subject_path_prefix}/{session_path_prefix}"
+    assert any(export_dir.glob("*/*.IMA")) or any(export_dir.glob("*/*.dcm"))
 
-    assert len(glob.glob(f"{filepath}/*/*.IMA")) > 0 or len(glob.glob(f"{filepath}/*/*.dcm")) > 0
-
-    subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
+    subdirs = [d for d in export_dir.iterdir() if d.is_dir()]
     assert len(subdirs) == 1
     for d in subdirs:
-        for f in os.listdir(d):
-            idx = series_idx(f)
+        for f in d.iterdir():
+            idx = series_idx(f.name)
             assert idx == "10"
 
     # ***************************************************************************
@@ -79,13 +83,12 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host, test_
     r = runner.invoke(export_app, export_cmd)
     print(r.stdout)
 
-    filepath = f"{xnat_bids_root}/{pi_path_prefix}/{project_path_prefix}/xnat-export/{subject_path_prefix}/{session_path_prefix}"
-    subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
+    subdirs = [d for d in export_dir.iterdir() if d.is_dir()]
 
     assert len(subdirs) == 2
     for d in subdirs:
-        for f in os.listdir(d):
-            idx = series_idx(f)
+        for f in d.iterdir():
+            idx = series_idx(f.name)
             assert idx in ["8", "10"]
 
     # # ***************************************************************************
@@ -99,14 +102,13 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host, test_
     r = runner.invoke(export_app, export_cmd)
     print(r.stdout)
 
-    filepath = f"{xnat_bids_root}/{pi_path_prefix}/{project_path_prefix}/xnat-export/{subject_path_prefix}/{session_path_prefix}"
-    subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
+    subdirs = [d for d in export_dir.iterdir() if d.is_dir()]
 
     assert len(subdirs) == 1
 
     for d in subdirs:
-        for f in os.listdir(d):
-            idx = series_idx(f)
+        for f in d.iterdir():
+            idx = series_idx(f.name)
             assert idx == "10"
 
 
@@ -119,11 +121,11 @@ def test_heudiconv(xnat_bids_root, test_session):
     # TODO #186: xnat_bids_root directory. This needs to seed its own dicom export to be independent
 
     # Define target session
-    session_data, session_data_clean, session_path_prefixes = test_session
+    session_data, session_data_clean, session_suffix_path_prefixes = test_session
     project, subject, session, session_suffix = session_data
-    project_clean, subject_clean, session_clean, session_suffix_clean = session_data_clean
-    pi_path_prefix, project_path_prefix, subject_path_prefix, session_path_prefix = (
-        session_path_prefixes
+    project_clean, subject_clean, session_suffix_clean = session_data_clean
+    pi_path_prefix, project_path_prefix, subject_path_prefix, session_suffix_path_prefix = (
+        session_suffix_path_prefixes
     )
 
     # Run run_heudiconv
@@ -140,10 +142,15 @@ def test_heudiconv(xnat_bids_root, test_session):
 
     assert r.exit_code == 0
 
-    filepath = f"{xnat_bids_root}/{pi_path_prefix}/{project_path_prefix}/bids/{subject_path_prefix}/{session_path_prefix}"
-    assert (
-        len(glob.glob(f"{filepath}/*/*.json")) > 0 or len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
+    bids_session_dir = (
+        xnat_bids_root
+        / pi_path_prefix
+        / project_path_prefix
+        / "bids"
+        / subject_path_prefix
+        / session_suffix_path_prefix
     )
+    assert any(bids_session_dir.glob("*/*.json")) or any(bids_session_dir.glob("*/*.nii.gz"))
 
     # # ***************************************************************************
     # # Test for RuntimeError Heudiconv doesn't allow overwrite

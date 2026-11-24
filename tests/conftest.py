@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import pytest
 from dotenv import load_dotenv
@@ -27,9 +28,7 @@ def xnat_password():
 def xnat_bids_root():
     """The root directory to store the bids data"""
     # TODO: This should be at the root of the repository
-    xnat_bids_root = os.environ.get("XNAT_BIDS_ROOT", "tests/xnat2bids")
-
-    return xnat_bids_root
+    return Path(os.environ.get("XNAT_BIDS_ROOT", "tests/xnat2bids"))
 
 
 @pytest.fixture
@@ -48,9 +47,9 @@ def test_session():
     # The directory names of each piece of session data
     # TODO: This is not always a directory, sometimes part of a filename
     # TODO: We need a better name for it
-    session_path_prefixes = prepare_path_prefixes(*session_data_clean)
+    session_suffix_path_prefixes = prepare_path_prefixes(*session_data_clean)
 
-    return (session, session_data_clean, session_path_prefixes)
+    return (session, session_data_clean, session_suffix_path_prefixes)
 
 
 @pytest.fixture
