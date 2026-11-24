@@ -44,7 +44,6 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root, test_session):
     # Test for successful execution
     # ***************************************************************************
 
-    # The base .../bids directory
     bids_dir = xnat_bids_root / pi_path_prefix / project_path_prefix / "bids"
     bids_path = bids_dir / subject_path_prefix / session_suffix_path_prefix
 
@@ -288,7 +287,6 @@ def test_xnat2bids_eeg(xnat_user, xnat_password, xnat_bids_root, eeg_session):
     eeg_dir = bids_path / "eeg"
     file_prefix = f"{subject_path_prefix}_{session_suffix_path_prefix}"
 
-    # TODO: All of these need to be computed from the fixtures
     session_eeg = [
         eeg_dir / f"{file_prefix}_task-todo_eeg.eeg",
         eeg_dir / f"{file_prefix}_task-todo_eeg.json",

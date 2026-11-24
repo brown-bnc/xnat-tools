@@ -32,6 +32,19 @@ def xnat_bids_root():
 
 
 @pytest.fixture
+def xnat_host():
+    return "https://xnat.bnc.brown.edu"
+
+
+@pytest.fixture
+def fake_host():
+    return "https://example.com/xnat"
+
+
+# -------------------- SESSION FIXTURES --------------------
+
+
+@pytest.fixture
 def test_session():
     """Test BNC demo session: project, subject, session, session_suffix"""
     project = os.environ.get("XNAT_PROJECT", "BNC_XNATTEST")
@@ -85,13 +98,3 @@ def eeg_session():
     session_suffix_path_prefixes = prepare_path_prefixes(*session_data_clean)
 
     return (session, session_data_clean, session_suffix_path_prefixes)
-
-
-@pytest.fixture
-def xnat_host():
-    return "https://xnat.bnc.brown.edu"
-
-
-@pytest.fixture
-def fake_host():
-    return "https://example.com/xnat"
