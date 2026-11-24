@@ -1,5 +1,5 @@
-import os
 import shutil
+from pathlib import Path
 
 
 def series_idx(f):
@@ -13,7 +13,7 @@ def series_idx(f):
         return 0
 
 
-def reset_directory(path):
+def reset_directory(path: Path):
     """Delete and recreate a directory. Use to reset xnat_bids_root between tests"""
     shutil.rmtree(path, ignore_errors=True)
-    os.makedirs(path)
+    path.mkdir(parents=True)
