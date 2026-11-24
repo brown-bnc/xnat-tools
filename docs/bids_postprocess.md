@@ -10,24 +10,24 @@ mutually exclusive according to BIDS spec
 **Usage**:
 
 ```console
-$ bids_postprocess [OPTIONS] {bids_experiment_dir}
+$ bids_postprocess [OPTIONS] BIDS_EXPERIMENT_DIR
 ```
 
 **Arguments**:
 
-* `bids_experiment_dir <str>`: Root output directory for exporting the files  [required]
+* `BIDS_EXPERIMENT_DIR`: Root output directory for exporting the files  [required]
 
 **Options**:
 
-* `-u, --user <str>`: XNAT User
-* `-p, --pass <str>`: XNAT Password
-* `-h, --host <str>`: XNAT&#x27;s URL  [default: https://xnat.bnc.brown.edu]
-* `--session <str>`: XNAT Session ID, that is the Accession # for an experiment.
-* `-n, --includesess <list[str]>`: Include this session only, this flag can be specified multiple time
-* `-i, --includesubj <list[str]>`: Include this participant only, this flag can be specified multiple times
-* `-s, --skipsubj <list[str]>`: Skip this participant, this flag can be specified multiple times
-* `-k, --skipsess <list[str]>`: Skip this session, this flag can be specified multiple times
-* `--log-file <str>`: File to send logs to
+* `-u, --user TEXT`: XNAT User
+* `-p, --pass TEXT`: XNAT Password
+* `-h, --host TEXT`: XNAT&#x27;s URL  [default: https://xnat.bnc.brown.edu]
+* `--session TEXT`: XNAT Session ID, that is the Accession # for an experiment.
+* `-n, --includesess TEXT`: Include this session only, this flag can be specified multiple time
+* `-i, --includesubj TEXT`: Include this participant only, this flag can be specified multiple times
+* `-s, --skipsubj TEXT`: Skip this participant, this flag can be specified multiple times
+* `-k, --skipsess TEXT`: Skip this session, this flag can be specified multiple times
+* `--log-file TEXT`: File to send logs to
 * `-v, --verbose`: Verbosity level. This flag can be specified multiple times to increase verbosity  [default: 0]
 * `--overwrite`: Inititate BIDS post-processing on all subjects located at the specified BIDS             directory, with intent to ovewrite existing data.
 * `--install-completion`: Install completion for the current shell.
