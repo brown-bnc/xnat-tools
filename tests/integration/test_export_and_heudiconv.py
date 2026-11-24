@@ -19,7 +19,7 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host, test_
 
     # Define target session
     session_data, session_data_clean, session_suffix_path_prefixes = test_session
-    project, subject, session, session_suffix = session_data
+    _, _, session, session_suffix = session_data
     project_clean, subject_clean, session_suffix_clean = session_data_clean
     pi_path_prefix, project_path_prefix, subject_path_prefix, session_suffix_path_prefix = (
         session_suffix_path_prefixes
@@ -121,9 +121,8 @@ def test_heudiconv(xnat_bids_root, test_session):
     # TODO #186: xnat_bids_root directory. This needs to seed its own dicom export to be independent
 
     # Define target session
-    session_data, session_data_clean, session_suffix_path_prefixes = test_session
-    project, subject, session, session_suffix = session_data
-    project_clean, subject_clean, session_suffix_clean = session_data_clean
+    session_data, _, session_suffix_path_prefixes = test_session
+    project, subject, _, session_suffix = session_data
     pi_path_prefix, project_path_prefix, subject_path_prefix, session_suffix_path_prefix = (
         session_suffix_path_prefixes
     )

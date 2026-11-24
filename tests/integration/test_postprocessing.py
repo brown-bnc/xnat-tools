@@ -27,18 +27,16 @@ def test_postprocessing(
 
     # Define target sessions
     session_data1, session_data_clean1, session_suffix_path_prefixes1 = test_session
-    project1, subject1, session1, session_suffix1 = session_data1
-    project_clean1, subject_clean1, session_suffix_clean1 = session_data_clean1
+    _, subject1, session1, session_suffix1 = session_data1
+    _, subject_clean1, _ = session_data_clean1
     pi_path_prefix1, project_path_prefix1, subject_path_prefix1, session_suffix_path_prefix1 = (
         session_suffix_path_prefixes1
     )
     session_data2, session_data_clean2, session_suffix_path_prefixes2 = test_session2
     # NOTE: The project is the same between the two sessions so we only need to pull it out once
-    project2, subject2, session2, session_suffix2 = session_data2
-    project_clean2, subject_clean2, session_suffix_clean2 = session_data_clean2
-    pi_path_prefix2, project_path_prefix2, subject_path_prefix2, session_suffix_path_prefix2 = (
-        session_suffix_path_prefixes2
-    )
+    _, _, session2, session_suffix2 = session_data2
+    _, subject_clean2, _ = session_data_clean2
+    _, _, subject_path_prefix2, session_suffix_path_prefix2 = session_suffix_path_prefixes2
 
     # TODO: Is this fixed to the specific study? Does it need to be a part of the fixture?
     skiplist = ["6"]

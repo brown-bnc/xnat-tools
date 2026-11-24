@@ -21,9 +21,8 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root, test_session):
     reset_directory(xnat_bids_root)
 
     # Define target session
-    session_data, session_data_clean, session_suffix_path_prefixes = test_session
-    project, subject, session, session_suffix = session_data
-    project_clean, subject_clean, session_suffix_clean = session_data_clean
+    session_data, _, session_suffix_path_prefixes = test_session
+    _, _, session, _ = session_data
     pi_path_prefix, project_path_prefix, subject_path_prefix, session_suffix_path_prefix = (
         session_suffix_path_prefixes
     )
@@ -129,9 +128,8 @@ def test_xnat2bids_export_only(xnat_user, xnat_password, xnat_bids_root, test_se
     reset_directory(xnat_bids_root)
 
     # Define target session
-    session_data, session_data_clean, session_suffix_path_prefixes = test_session
-    project, subject, session, session_suffix = session_data
-    project_clean, subject_clean, session_suffix_clean = session_data_clean
+    session_data, _, session_suffix_path_prefixes = test_session
+    _, _, session, _ = session_data
     pi_path_prefix, project_path_prefix, subject_path_prefix, session_suffix_path_prefix = (
         session_suffix_path_prefixes
     )
@@ -183,9 +181,8 @@ def test_xnat2bids_skip_export(xnat_user, xnat_password, xnat_bids_root, test_se
     # TODO #187 xnat_bids_root directory. This needs to seed its own dicom export to be independent
 
     # Define target session
-    session_data, session_data_clean, session_suffix_path_prefixes = test_session
-    project, subject, session, session_suffix = session_data
-    project_clean, subject_clean, session_suffix_clean = session_data_clean
+    session_data, _, session_suffix_path_prefixes = test_session
+    _, _, session, _ = session_data
     pi_path_prefix, project_path_prefix, subject_path_prefix, session_suffix_path_prefix = (
         session_suffix_path_prefixes
     )
@@ -254,9 +251,8 @@ def test_xnat2bids_eeg(xnat_user, xnat_password, xnat_bids_root, eeg_session):
     reset_directory(xnat_bids_root)
 
     # Define target session
-    session_data, session_data_clean, session_suffix_path_prefixes = eeg_session
-    project, subject, session, session_suffix = session_data
-    project_clean, subject_clean, session_suffix_clean = session_data_clean
+    session_data, _, session_suffix_path_prefixes = eeg_session
+    _, _, session, _ = session_data
     pi_path_prefix, project_path_prefix, subject_path_prefix, session_suffix_path_prefix = (
         session_suffix_path_prefixes
     )
@@ -312,9 +308,8 @@ def test_xnat2bids_correct_dicom_header(xnat_user, xnat_password, xnat_bids_root
     reset_directory(xnat_bids_root)
 
     # Define target session
-    session_data, session_data_clean, session_suffix_path_prefixes = test_session
-    project, subject, session, session_suffix = session_data
-    project_clean, subject_clean, session_suffix_clean = session_data_clean
+    session_data, _, session_suffix_path_prefixes = test_session
+    _, _, session, _ = session_data
     pi_path_prefix, project_path_prefix, subject_path_prefix, session_suffix_path_prefix = (
         session_suffix_path_prefixes
     )

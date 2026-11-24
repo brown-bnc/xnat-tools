@@ -15,8 +15,8 @@ def test_run_plus(xnat_user, xnat_password, xnat_bids_root, test_session):
     reset_directory(xnat_bids_root)
 
     # Define target session
-    session_data, session_data_clean, session_suffix_path_prefixes = test_session
-    study, subject, session, session_suffix = session_data
+    session_data, _, session_suffix_path_prefixes = test_session
+    _, _, session, _ = session_data
     pi_path_prefix, project_path_prefix, subject_path_prefix, session_suffix_path_prefix = (
         session_suffix_path_prefixes
     )
