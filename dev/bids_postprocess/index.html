@@ -829,24 +829,24 @@ the AcquisitionDuration key from func jsons if
 RepetitionTime is present, because they are
 mutually exclusive according to BIDS spec</p>
 <p><strong>Usage</strong>:</p>
-<div class="codehilite"><pre><span></span><code><span class="gp">$ </span>bids_postprocess<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span><span class="o">{</span>bids_experiment_dir<span class="o">}</span>
+<div class="codehilite"><pre><span></span><code><span class="gp">$ </span>bids_postprocess<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>BIDS_EXPERIMENT_DIR
 </code></pre></div>
 
 <p><strong>Arguments</strong>:</p>
 <ul>
-<li><code>bids_experiment_dir &lt;str&gt;</code>: Root output directory for exporting the files  [required]</li>
+<li><code>BIDS_EXPERIMENT_DIR</code>: Root output directory for exporting the files  [required]</li>
 </ul>
 <p><strong>Options</strong>:</p>
 <ul>
-<li><code>-u, --user &lt;str&gt;</code>: XNAT User</li>
-<li><code>-p, --pass &lt;str&gt;</code>: XNAT Password</li>
-<li><code>-h, --host &lt;str&gt;</code>: XNAT&#x27;s URL  [default: https://xnat.bnc.brown.edu]</li>
-<li><code>--session &lt;str&gt;</code>: XNAT Session ID, that is the Accession # for an experiment.</li>
-<li><code>-n, --includesess &lt;list[str]&gt;</code>: Include this session only, this flag can be specified multiple time</li>
-<li><code>-i, --includesubj &lt;list[str]&gt;</code>: Include this participant only, this flag can be specified multiple times</li>
-<li><code>-s, --skipsubj &lt;list[str]&gt;</code>: Skip this participant, this flag can be specified multiple times</li>
-<li><code>-k, --skipsess &lt;list[str]&gt;</code>: Skip this session, this flag can be specified multiple times</li>
-<li><code>--log-file &lt;str&gt;</code>: File to send logs to</li>
+<li><code>-u, --user TEXT</code>: XNAT User</li>
+<li><code>-p, --pass TEXT</code>: XNAT Password</li>
+<li><code>-h, --host TEXT</code>: XNAT&#x27;s URL  [default: https://xnat.bnc.brown.edu]</li>
+<li><code>--session TEXT</code>: XNAT Session ID, that is the Accession # for an experiment.</li>
+<li><code>-n, --includesess TEXT</code>: Include this session only, this flag can be specified multiple time</li>
+<li><code>-i, --includesubj TEXT</code>: Include this participant only, this flag can be specified multiple times</li>
+<li><code>-s, --skipsubj TEXT</code>: Skip this participant, this flag can be specified multiple times</li>
+<li><code>-k, --skipsess TEXT</code>: Skip this session, this flag can be specified multiple times</li>
+<li><code>--log-file TEXT</code>: File to send logs to</li>
 <li><code>-v, --verbose</code>: Verbosity level. This flag can be specified multiple times to increase verbosity  [default: 0]</li>
 <li><code>--overwrite</code>: Inititate BIDS post-processing on all subjects located at the specified BIDS             directory, with intent to ovewrite existing data.</li>
 <li><code>--install-completion</code>: Install completion for the current shell.</li>
