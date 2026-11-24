@@ -15,7 +15,7 @@ def test_run_plus(xnat_user, xnat_password, xnat_bids_root, test_session):
     # Reset the xnat_bids_root directory
     reset_directory(xnat_bids_root)
 
-    _, _, session, session_suffix = test_session
+    study, subject, session, session_suffix = test_session
     seqlist = ["10", "11"]
     skiplist = ["6"]
 
@@ -28,8 +28,10 @@ def test_run_plus(xnat_user, xnat_password, xnat_bids_root, test_session):
     r = runner.invoke(app, xnat2bids_cmd)
     print(r.stdout)
 
+    # TODO: The study path here includes "BNC_" - the prefix needs to be stripped out
+    # TODO: This is done in prepare_path_prefixes
     xnat_export_path = (
-        f"{xnat_bids_root}/bnc/study-demodat/xnat-export/sub-005/ses-{session_suffix}/"
+        f"{xnat_bids_root}/bnc/study-{study}/xnat-export/sub-{subject}/ses-{session_suffix}/"
     )
     task_name = "func-bold_task-checks_run"
 

@@ -9,10 +9,11 @@ def test_unauthorized_user_exception_handling(xnat_host, test_session):
     _, _, session, _ = test_session
 
     connection = establish_connection("base_user", "bad_password")
+    url = f"{xnat_host}/data/experiments/{session}"
     try:
         get(
             connection,
-            f"{xnat_host}/data/experiments/{session}",
+            url,
             params={
                 "format": "json",
                 "handler": "values",
@@ -26,13 +27,14 @@ def test_unauthorized_user_exception_handling(xnat_host, test_session):
 def test_xnat_reachable_exception_handling(xnat_host, xnat_user, xnat_password):
     """Test unauthorized user HTTPError response"""
 
-    session = "XNAT_BADPROJECT"
+    session = "XNAT_BAD_PROJECT"
 
     connection = establish_connection(xnat_user, xnat_password)
+    url = f"{xnat_host}/data/experiments/{session}"
     try:
         get(
             connection,
-            f"{xnat_host}/data/experiments/{session}",
+            url,
             params={
                 "format": "json",
                 "handler": "values",

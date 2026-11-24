@@ -26,11 +26,11 @@ def test_postprocessing(
     # NOTE: The study is the same between the same two sessions so we only need to pull it out once
     study1, subject1, session1, session_suffix1 = test_session
     _, subject2, session2, session_suffix2 = test_session2
+    skiplist = ["6"]
 
     # Run xnat2bids against session 1
     xnat2bids_cmd = shlex.split(
-        # TODO: The other tests always pull out "skipseq = ["6"]"" for this
-        f"{session1} {xnat_bids_root} -u {xnat_user} -p {xnat_password} -s 6"
+        f"{session1} {xnat_bids_root} -u {xnat_user} -p {xnat_password} -s {' -s '.join(skiplist)}"
     )
     print("Running xnat2bids application:")
     r = runner.invoke(xnat2bids_app, xnat2bids_cmd)
@@ -38,14 +38,14 @@ def test_postprocessing(
 
     # Run xnat2bids against session 2
     xnat2bids_split_cmd = shlex.split(
-        # TODO: The other tests always pull out "skipseq = ["6"]"" for this
-        f"{session2} {xnat_bids_root} -u {xnat_user} -p {xnat_password} -s 6"
+        f"{session2} {xnat_bids_root} -u {xnat_user} -p {xnat_password} --s {' -s '.join(skiplist)}"
     )
     print("Running xnat2bids application:")
     r = runner.invoke(xnat2bids_app, xnat2bids_split_cmd)
     print(r.stdout)
 
     # TODO: Should this be split between the two sessions?
+    # TODO: This is not the correct subdir? Need to strip the BNC folder
     bids_dir = f"{xnat_bids_root}/bnc/study-{study1}/bids"
 
     # TODO: We should split the "bold" and normal fmaps into separate arrays
@@ -171,9 +171,9 @@ def test_postprocessing(
         xnat_password,
         host=xnat_host,
         session="",
+        includesess=[session_suffix1],
         # TODO: Should I pass both subject1 and subject2? Even though they're the same?
-        includesess=["session1"],
-        includesubj=["005"],
+        includesubj=[subject1],
         skipsubj=[],
         skipsess=[],
         log_file="",
@@ -201,9 +201,9 @@ def test_postprocessing(
         host=xnat_host,
         session="",
         includesess=[],
-        includesubj=["005"],
+        includesubj=[subject1],
         skipsubj=[],
-        skipsess=["session2"],
+        skipsess=[session_suffix2],
         log_file="",
         verbose=0,
         overwrite=False,
@@ -224,7 +224,6 @@ def test_postprocessing(
     cleanIntendedForData(all_fieldmaps)
 
     # Run bids_postprocess for a single session.
-    # TODO: SHould I be checking session 1 and session 2?
     bids_postprocess(
         bids_dir,
         xnat_user,

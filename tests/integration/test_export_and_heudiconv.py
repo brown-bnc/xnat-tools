@@ -12,6 +12,7 @@ from xnat_tools.run_heudiconv import app as heudi_app
 runner = CliRunner()
 
 
+# TODO: Should this be split into smaller tests?
 def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host, test_session):
     """Integration test for xnat-dicom-export"""
 
@@ -36,6 +37,7 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host, test_
         host=xnat_host,
         session_suffix=session_suffix,
         bidsmap_file="",
+        # TODO?: Is this specific to the old session? Or can it be used for everything?
         includeseq=["10"],
         skipseq=[],
         log_id="pytest",
@@ -47,13 +49,13 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host, test_
 
     assert p == project
     assert s == subject
-    assert ss == "session1"
+    assert ss == session_suffix
 
+    # TODO: This should NOT use globs. Call the python functions instead.
     filepath = glob.glob(f"{xnat_bids_root}/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
-
     assert len(glob.glob(f"{filepath}/*/*.IMA")) > 0 or len(glob.glob(f"{filepath}/*/*.dcm")) > 0
-    subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
+    subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
     assert len(subdirs) == 1
     for d in subdirs:
         for f in os.listdir(d):
@@ -72,11 +74,11 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host, test_
     r = runner.invoke(export_app, export_cmd)
     print(r.stdout)
 
+    # TODO: This should NOT use globs. Call the python functions instead.
     filepath = glob.glob(f"{xnat_bids_root}/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
     subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
     assert len(subdirs) == 2
-
     for d in subdirs:
         for f in os.listdir(d):
             idx = series_idx(f)
@@ -93,6 +95,7 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host, test_
     r = runner.invoke(export_app, export_cmd)
     print(r.stdout)
 
+    # TODO: This should NOT use globs. Call the python functions instead.
     filepath = glob.glob(f"{xnat_bids_root}/*/study-*/xnat-export/sub-*/ses-{ss}")[0]
     subdirs = [f.path for f in os.scandir(filepath) if f.is_dir()]
 
@@ -104,6 +107,7 @@ def test_dicom_export(xnat_user, xnat_password, xnat_bids_root, xnat_host, test_
             assert idx == "10"
 
 
+# TODO: Should this be split into smaller tests?
 def test_heudiconv(xnat_bids_root, test_session):
     """Integration test for running the run-heudiconv executable on the output
     of xnat-dicom-export"""
@@ -124,7 +128,10 @@ def test_heudiconv(xnat_bids_root, test_session):
     # Test for successful execution
     # ***************************************************************************
 
+    filepath = None
     try:
+        # TODO: This should NOT use globs. Call the python functions instead.
+        # TODO: We wouldn't need the Try block at all in that case
         filepath = glob.glob(f"{xnat_bids_root}/*/study-*/bids/sub-*/ses-{session_suffix}")[0]
     except Exception:
         cmd = f"ls {xnat_bids_root}/bnc/study-demodat/bids/sub-005/ses-session1"
@@ -135,7 +142,6 @@ def test_heudiconv(xnat_bids_root, test_session):
         )
 
     assert r.exit_code == 0
-
     assert (
         len(glob.glob(f"{filepath}/*/*.json")) > 0 or len(glob.glob(f"{filepath}/*/*.nii.gz")) > 0
     )

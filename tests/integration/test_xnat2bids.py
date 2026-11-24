@@ -33,6 +33,7 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root, test_session):
 
     assert r.exit_code == 0
 
+    # TODO: Is this safe as a glob here? Or should it be a computed string
     filepath = f"{xnat_bids_root}/*/study-*/bids/sub-*/ses-{session_suffix}"
 
     # ***************************************************************************
@@ -50,7 +51,6 @@ def test_xnat2bids(xnat_user, xnat_password, xnat_bids_root, test_session):
     assert os.path.isdir(os.path.join(os.getcwd(), xnat_export_path))
 
     export_subdirs = [f.path for f in os.scandir(xnat_export_path) if f.is_dir()]
-
     for d in export_subdirs:
         series_desc = os.path.basename(d)
         for f in os.listdir(d):
@@ -169,6 +169,7 @@ def test_xnat2bids_skip_export(xnat_user, xnat_password, xnat_bids_root, test_se
 
     bids_dir = glob.glob(f"{xnat_bids_root}/*/study-*/bids")[0]
 
+    # TODO: All of these need to be computed from the fixtures
     subj_005_session1_fmaps = [
         f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_phasediff.json",
         f"{bids_dir}/sub-005/ses-session1/fmap/sub-005_ses-session1_acq-boldGRE_magnitude1.json",
@@ -239,6 +240,7 @@ def test_xnat2bids_eeg(xnat_user, xnat_password, xnat_bids_root, eeg_session):
     # ***************************************************************************
     bids_dir = glob.glob(f"{xnat_bids_root}/*/study-*/bids")[0]
 
+    # TODO: All of these need to be computed from the fixtures
     subj_bncmethods_ses_01_eeg = [
         f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-todo_eeg.eeg",
         f"{bids_dir}/sub-bncmethods/ses-01/eeg/sub-bncmethods_ses-01_task-todo_eeg.json",
@@ -272,6 +274,7 @@ def test_xnat2bids_correct_dicom_header(xnat_user, xnat_password, xnat_bids_root
 
     assert r.exit_code == 0
 
+    # TODO: Compute exact path here instead of globs
     xnat_export_path = glob.glob(
         f"{xnat_bids_root}/*/study-*/xnat-export/sub-*/ses-{session_suffix}"
     )[0]
